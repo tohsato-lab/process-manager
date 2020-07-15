@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 )
 
+// Unzip zipファイル展開
 func Unzip(src, dest string) error {
 	r, err := zip.OpenReader(src)
 	if err != nil {
@@ -20,8 +21,7 @@ func Unzip(src, dest string) error {
 			return err
 		}
 		defer rc.Close()
-
-		path := filepath.Join(dest)
+		path := filepath.Join(dest, f.Name)
 		if f.FileInfo().IsDir() {
 			os.MkdirAll(path, f.Mode())
 		} else {
