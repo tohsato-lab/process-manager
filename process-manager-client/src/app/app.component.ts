@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import config from '../../config';
 
 
 @Component({
@@ -48,10 +49,9 @@ export class AppComponent {
     formData.append('file', file, file.name);
      */
 
-    this.http.post('http://localhost:8081/upload', formData)
-      .subscribe(value => {
-        console.log(value);
-      });
+    this.http.post(`${config.urlScheme}${config.host}:${config.port}/upload`, formData).subscribe(value => {
+      console.log(value);
+    });
   }
 
 }
