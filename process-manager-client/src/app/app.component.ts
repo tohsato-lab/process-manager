@@ -11,45 +11,23 @@ import config from '../../config';
 
 export class AppComponent {
 
-  title = 'dropzone';
-  files: File[] = [];
-
   constructor(private http: HttpClient) {
   }
 
-
   public onSelect(event): void {
     console.log(event);
-    this.files.push(...event.addedFiles);
-    const formData = new FormData();
-    for (const file of this.files) {
-      formData.append('file', file);
+    for (const file of [...event.addedFiles]) {
+      this.upload(file);
     }
-
-    this.upload(formData);
-
   }
 
-  public onRemove(event): void {
-    console.log(event);
-    this.files.splice(this.files.indexOf(event), 1);
-
-  }
-
-  private upload(formData): void {
+  private upload(file): void {
     console.log('upload');
-    /*
-    if (files.length <= 0) {
-      return;
-    }
-
-    const file = files[0];
     const formData = new FormData();
-
     formData.append('file', file, file.name);
-     */
-
-    this.http.post(`${config.urlScheme}${config.host}:${config.port}/upload`, formData).subscribe(value => {
+    this.http.post(
+      `${config.urlScheme}${config.host}:${config.port}/upload`, formData
+    ).subscribe(value => {
       console.log(value);
     });
   }
