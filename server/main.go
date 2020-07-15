@@ -46,6 +46,7 @@ func uploadHander(w http.ResponseWriter, r *http.Request) {
 	var e error
 	var uploadedFileName string
 	// POSTされたファイルデータを取得する
+	fmt.Println(r.Form)
 	file, fileHeader, e = r.FormFile("file")
 	fmt.Printf("%T\n", file)
 	if e != nil {
