@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./utils"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,29 +11,9 @@ import (
 	"os"
 )
 
-type Response struct {
+type response struct {
 	Status string `json:"status"`
 	Data   string `json:"data"`
-}
-
-func main() {
-	http.HandleFunc("/hello", helloHandler)
-	http.HandleFunc("/upload", uploadHander)
-	log.Fatal(http.ListenAndServe(":8081", nil))
-}
-
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, "GET hello!\n")
-	case http.MethodPost:
-		w.WriteHeader(http.StatusCreated)
-		fmt.Fprint(w, "POST hello!\n")
-	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		fmt.Fprint(w, "Method not allowed.\n")
-	}
 }
 
 func uploadHander(w http.ResponseWriter, r *http.Request) {
@@ -46,7 +27,6 @@ func uploadHander(w http.ResponseWriter, r *http.Request) {
 	var e error
 	var uploadedFileName string
 	// POSTされたファイルデータを取得する
-	fmt.Println(r.Form)
 	file, fileHeader, e = r.FormFile("file")
 	fmt.Printf("%T\n", file)
 	if e != nil {
@@ -62,20 +42,34 @@ func uploadHander(w http.ResponseWriter, r *http.Request) {
 	}
 	defer saveFile.Close()
 	defer file.Close()
-	size, e := io.Copy(saveFile, file)
+	_, e = io.Copy(saveFile, file)
 	if e != nil {
 		fmt.Println(e)
 		fmt.Println("アップロードしたファイルの書き込みに失敗しました。")
 		os.Exit(1)
 	}
-	fmt.Println("書き込んだByte数=>")
-	fmt.Println(size)
+	// unzip
+	utils.Unzip("./"+uploadedFileName, "output")
+	// return
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	response := Response{
+	response := response{
 		Status: "ok",
 		Data:   "test",
 	}
 	json, _ := json.Marshal(response)
-
 	w.Write(json)
+}
+
+func main() {
+	if err := os.Mkdir("dataset", 0777); err != nil {
+		fmt.Println(err)
+	}
+	if err := os.Mkdir("programs", 0777); err != nil {
+		fmt.Println(err)
+	}
+	if err := os.Mkdir("logs", 0777); err != nil {
+		fmt.Println(err)
+	}
+	http.HandleFunc("/upload", uploadHander)
+	log.Fatal(http.ListenAndServe(":8081", nil))
 }
