@@ -51,10 +51,10 @@ func UploadHander(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// unzip
-	utils.Unzip("./"+uploadedFileName, "./programs")
+	utils.Unzip("./"+uploadedFileName, "../programs")
 
 	// launch
-	go Launch("./programs/test")
+	go Launch("../programs/test/")
 
 	// return
 	w.Header().Set("Access-Control-Allow-Origin", "*")
