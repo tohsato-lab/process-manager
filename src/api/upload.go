@@ -1,12 +1,15 @@
 package api
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
+	"time"
 
 	"../utils"
 )
@@ -50,11 +53,15 @@ func UploadHander(w http.ResponseWriter, r *http.Request) {
 		os.Exit(1)
 	}
 
+	// target filename
+	md5 := md5.Sum([]byte(time.Now().String()))
+	targetFilename := hex.EncodeToString(md5[:])
+
 	// unzip
-	utils.Unzip("./"+uploadedFileName, "../programs")
+	utils.Unzip("./"+uploadedFileName, "../programs/"+targetFilename)
 
 	// 実行
-	go Execute("../programs/test/")
+	go Execute("../programs/" + targetFilename)
 
 	// return
 	w.Header().Set("Access-Control-Allow-Origin", "*")
