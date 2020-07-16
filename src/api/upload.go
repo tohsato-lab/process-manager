@@ -27,14 +27,14 @@ func UploadHander(w http.ResponseWriter, r *http.Request) {
 	var fileHeader *multipart.FileHeader
 	var e error
 	var uploadedFileName string
-	// POSTされたファイルデータを取得する
+
 	file, fileHeader, e = r.FormFile("file")
-	fmt.Printf("%T\n", file)
 	if e != nil {
 		fmt.Fprintln(w, "ファイルアップロードを確認できませんでした。")
 		return
 	}
 	uploadedFileName = fileHeader.Filename
+
 	var saveFile *os.File
 	saveFile, e = os.Create("./" + uploadedFileName)
 	if e != nil {
@@ -53,8 +53,8 @@ func UploadHander(w http.ResponseWriter, r *http.Request) {
 	// unzip
 	utils.Unzip("./"+uploadedFileName, "../programs")
 
-	// launch
-	go Launch("../programs/test/")
+	// 実行
+	go Execute("../programs/test/")
 
 	// return
 	w.Header().Set("Access-Control-Allow-Origin", "*")
