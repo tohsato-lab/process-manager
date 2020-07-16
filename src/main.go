@@ -10,13 +10,13 @@ import (
 )
 
 func main() {
-	if err := os.Mkdir("dataset", 0777); err != nil {
+	if err := os.Mkdir("../dataset", 0777); err != nil {
 		fmt.Println(err)
 	}
-	if err := os.Mkdir("programs", 0777); err != nil {
+	if err := os.Mkdir("../programs", 0777); err != nil {
 		fmt.Println(err)
 	}
-	if err := os.Mkdir("logs", 0777); err != nil {
+	if err := os.Mkdir("../logs", 0777); err != nil {
 		fmt.Println(err)
 	}
 	http.HandleFunc("/upload", api.UploadHander)
