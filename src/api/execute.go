@@ -8,9 +8,9 @@ import (
 	"os/exec"
 )
 
-// Launch 起動スクリプト実行
-func Launch(shellPath string) {
-	cmd := exec.Command("sh", "-c", "cd "+shellPath+";bash launch.sh")
+// Execute 起動スクリプト実行
+func Execute(shellPath string) {
+	cmd := exec.Command("bash", "execute.sh", shellPath)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Run()
