@@ -4,17 +4,20 @@
     <div class="icon-title">Process Manager</div>
     <div class="menu-item">Home</div>
     <div class="menu-item">Dataset</div>
-    <div class="menu-item">Log</div>
+    <div class="menu-item">History</div>
   </div>
   <div class="home-base">
     <header class="home-header">プロセス一覧</header>
     <div class="home-add-button">
-      <img src="assets/icon/add-icon.svg" alt="add-icon">
+      <img src="assets/icon/add-icon.svg" alt="add-icon" (click)="onAddButton()">
     </div>
   </div>
 </div>
-<div [hidden]="true">
-  <ngx-dropzone (change)="onSelect($event)">
-    <ngx-dropzone-label>ここにファイルをドロップしてください</ngx-dropzone-label>
-  </ngx-dropzone>
+
+<div *ngIf="!hiddenUploadPage" class="upload-background">
+  <div class="upload-base">
+    <ngx-dropzone (change)="onSelect($event)">
+      <ngx-dropzone-label>ここにファイルをドロップしてください</ngx-dropzone-label>
+    </ngx-dropzone>
+  </div>
 </div>

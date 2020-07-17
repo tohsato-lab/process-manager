@@ -45,7 +45,6 @@
 }
 
 .home-add-button {
-    z-index: 10;
     width: 80px;
     height: 80px;
     position: absolute;
@@ -58,4 +57,23 @@
     transform: translate(-0%, -50%);
     -webkit-filter: drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
     filter: drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
+}
+
+.upload-background {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    height: 98vh;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.29);
+}
+
+
+.upload-base {
+    background-color: white;
+    border-radius: 10px;
+    width: 50%;
+    height: 80%;
 }
