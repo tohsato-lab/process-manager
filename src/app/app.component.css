@@ -17,11 +17,20 @@
     font-size: xx-large;
 }
 
-.icon {
-    margin: 15%;
+.main-icon {
+    margin: 15% 15% 0 15%;
     width: 50%;
     border-radius: 500px;
     border: 2px solid #ffffff;
+}
+
+.icon-title {
+    margin-bottom: 10%;
+    width: 60%;
+    text-align: center;
+    font-size: medium;
+    padding: 5%;
+    border-bottom: solid 1px #ffffffa6;
 }
 
 .home-base {
@@ -31,4 +40,22 @@
 .home-header {
     padding: 5%;
     font-size: xx-large;
+    background-color: #929292;
+    color: white;
+}
+
+.home-add-button {
+    z-index: 10;
+    width: 80px;
+    height: 80px;
+    position: absolute;
+    background-color: #f31414;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 85%;
+    transform: translate(-0%, -50%);
+    -webkit-filter: drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
+    filter: drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
 }
