@@ -63,6 +63,9 @@ func UploadHander(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	// unzip
 	utils.Unzip("./"+uploadedFileName, "../programs/"+targetFileID)
+	if err := os.Remove("./" + uploadedFileName); err != nil {
+		fmt.Println(err)
+	}
 
 	// regist proceess
 	modules.RegistProcess(db, &modules.Process{
