@@ -18,12 +18,20 @@
   <div class="upload-base">
     <header class="upload-header">
       <div>ファイルアップロード</div>
-      <div>×</div>
+      <div (click)="onCloseUpload()">×</div>
     </header>
     <div class="upload-content">
       <ngx-dropzone (change)="onSelect($event)" class="upload-drop-zone">
-      <ngx-dropzone-label>ここにファイルをドロップしてください</ngx-dropzone-label>
-    </ngx-dropzone>
+        <ngx-dropzone-label>ここにファイルをドロップしてください</ngx-dropzone-label>
+      </ngx-dropzone>
+      <div *ngFor="let file of files" class="upload-item">
+        <div>{{file.data.name}}</div>
+        <div>
+          <div style="font-size: smaller">VRAM(MB)</div>
+          <label><input type="number" style="width: 80%;" [(ngModel)]="file.vram"></label>
+        </div>
+      </div>
+      <div (click)="onUpload()" *ngIf="files.length != 0" class="upload-button">upload</div>
     </div>
   </div>
 </div>
