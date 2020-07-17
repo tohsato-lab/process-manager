@@ -11,6 +11,7 @@ import (
 	"os"
 	"time"
 
+	"../modules"
 	"../utils"
 )
 
@@ -61,13 +62,13 @@ func UploadHander(w http.ResponseWriter, r *http.Request) {
 	utils.Unzip("./"+uploadedFileName, "../programs/"+targetFilename)
 
 	// 実行
-	go Execute("../programs/" + targetFilename)
+	go modules.Execute("../programs/" + targetFilename)
 
 	// return
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	response := response{
 		Status: "ok",
-		Data:   "test",
+		Data:   "success",
 	}
 	json, _ := json.Marshal(response)
 	w.Write(json)
