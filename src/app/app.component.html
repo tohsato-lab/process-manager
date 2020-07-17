@@ -16,8 +16,14 @@
 
 <div *ngIf="!hiddenUploadPage" class="upload-background">
   <div class="upload-base">
-    <ngx-dropzone (change)="onSelect($event)">
+    <header class="upload-header">
+      <div>ファイルアップロード</div>
+      <div>×</div>
+    </header>
+    <div class="upload-content">
+      <ngx-dropzone (change)="onSelect($event)" class="upload-drop-zone">
       <ngx-dropzone-label>ここにファイルをドロップしてください</ngx-dropzone-label>
     </ngx-dropzone>
+    </div>
   </div>
 </div>

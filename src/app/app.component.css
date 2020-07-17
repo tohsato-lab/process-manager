@@ -70,10 +70,31 @@
     background-color: rgba(0, 0, 0, 0.29);
 }
 
-
 .upload-base {
+    display: flex;
+    flex-direction: column;
     background-color: white;
     border-radius: 10px;
     width: 50%;
-    height: 80%;
+}
+
+.upload-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2% 5% 2% 5%;
+    border-bottom: solid 1px gray;
+    color: black;
+    font-size: large;
+}
+
+.upload-content {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.upload-drop-zone {
+    margin: 10%;
+    width: 70%;
 }
