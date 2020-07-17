@@ -1,0 +1,34 @@
+.page-base {
+    display: flex;
+}
+
+.menu-base {
+    background-color: #3c3c3c;
+    color: white;
+    width: 20%;
+    min-height: 98vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.menu-item {
+    margin: 5%;
+    font-size: xx-large;
+}
+
+.icon {
+    margin: 15%;
+    width: 50%;
+    border-radius: 500px;
+    border: 2px solid #ffffff;
+}
+
+.home-base {
+    width: 100%;
+}
+
+.home-header {
+    padding: 5%;
+    font-size: xx-large;
+}

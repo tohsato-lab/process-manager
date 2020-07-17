@@ -1,4 +1,16 @@
-<h1>Angular Dropzone File Upload Example - HDTuto.com</h1>
-<ngx-dropzone (change)="onSelect($event)">
-  <ngx-dropzone-label>ここにファイルをドロップしてください</ngx-dropzone-label>
-</ngx-dropzone>
+<div class="page-base">
+  <div class="menu-base">
+    <img src="assets/icon/icon.png" alt="icon" class="icon">
+    <div class="menu-item">Home</div>
+    <div class="menu-item">Dataset</div>
+    <div class="menu-item">Log</div>
+  </div>
+  <div class="home-base">
+    <header class="home-header">プロセス一覧</header>
+  </div>
+</div>
+<div [hidden]="true">
+  <ngx-dropzone (change)="onSelect($event)">
+    <ngx-dropzone-label>ここにファイルをドロップしてください</ngx-dropzone-label>
+  </ngx-dropzone>
+</div>
