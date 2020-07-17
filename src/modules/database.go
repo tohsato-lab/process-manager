@@ -2,6 +2,7 @@ package modules
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"time"
 )
@@ -22,10 +23,11 @@ func RegistProcess(db *sql.DB, process *Process) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	ins.Exec("1qwdff8hf", "2", "ready", "test")
+	ins.Exec(process.ID, process.UseVram, process.Status, process.Filename)
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println("registed")
 }
 
 // UpdataProcess プロセスの更新
