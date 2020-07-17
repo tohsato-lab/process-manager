@@ -2,6 +2,7 @@ package api
 
 import (
 	"crypto/md5"
+	"database/sql"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -21,25 +22,26 @@ type response struct {
 }
 
 // UploadHander ファイルアップロードハンドラー
-func UploadHander(w http.ResponseWriter, r *http.Request) {
+func UploadHander(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+
 	// このハンドラ関数へのアクセスはPOSTメソッドのみ認める
 	if r.Method != "POST" {
 		fmt.Fprintln(w, "許可したメソッドとはことなります。")
 		return
 	}
 	var file multipart.File
+	var saveFile *os.File
 	var fileHeader *multipart.FileHeader
 	var e error
 	var uploadedFileName string
 
+	// get file
 	file, fileHeader, e = r.FormFile("file")
 	if e != nil {
 		fmt.Fprintln(w, "ファイルアップロードを確認できませんでした。")
 		return
 	}
 	uploadedFileName = fileHeader.Filename
-
-	var saveFile *os.File
 	saveFile, e = os.Create("./" + uploadedFileName)
 	if e != nil {
 		fmt.Fprintln(w, "サーバ側でファイル確保できませんでした。")
@@ -62,7 +64,14 @@ func UploadHander(w http.ResponseWriter, r *http.Request) {
 	utils.Unzip("./"+uploadedFileName, "../programs/"+targetFilename)
 
 	// 実行
-	go modules.Execute("../programs/" + targetFilename)
+	// go modules.Execute("../programs/" + targetFilename)
+	process := modules.Process{
+		ID:       "",
+		UseVram:  0.0,
+		Status:   "",
+		Filename: "",
+	}
+	modules.RegistProcess(db, &process)
 
 	// return
 	w.Header().Set("Access-Control-Allow-Origin", "*")
