@@ -10,6 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"../modules"
@@ -58,20 +59,18 @@ func UploadHander(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	// target filename
 	md5 := md5.Sum([]byte(time.Now().String()))
-	targetFilename := hex.EncodeToString(md5[:])
+	targetFileID := hex.EncodeToString(md5[:])
 
 	// unzip
-	utils.Unzip("./"+uploadedFileName, "../programs/"+targetFilename)
+	utils.Unzip("./"+uploadedFileName, "../programs/"+targetFileID)
 
-	// 実行
-	// go modules.Execute("../programs/" + targetFilename)
-	process := modules.Process{
-		ID:       "",
+	// regist proceess
+	modules.RegistProcess(db, &modules.Process{
+		ID:       targetFileID,
 		UseVram:  0.0,
-		Status:   "",
-		Filename: "",
-	}
-	modules.RegistProcess(db, &process)
+		Status:   "ready",
+		Filename: strings.Split(uploadedFileName, ".")[0],
+	})
 
 	// return
 	w.Header().Set("Access-Control-Allow-Origin", "*")
