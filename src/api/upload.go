@@ -60,6 +60,10 @@ func UploadHander(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	// get use vram
 	vram, e := strconv.ParseFloat(r.FormValue("vram"), 32)
+	if e != nil {
+		fmt.Fprintln(w, "使用VRAM容量を確認出来ませんでした。")
+		return
+	}
 
 	// target filename
 	md5 := md5.Sum([]byte(time.Now().String()))
@@ -78,6 +82,9 @@ func UploadHander(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		Status:   "ready",
 		Filename: strings.Split(uploadedFileName, ".")[0],
 	})
+
+	// update process
+	modules.UpdataAllProcess(db)
 
 	// return
 	w.Header().Set("Access-Control-Allow-Origin", "*")
