@@ -11,11 +11,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// Database データベース操作用
-type Database struct {
-	Val string
-}
-
 func main() {
 	if err := os.Mkdir("../dataset", 0777); err != nil {
 		fmt.Println(err)
@@ -35,6 +30,7 @@ func main() {
 	http.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
 		api.UploadHander(w, r, db)
 	})
+	http.HandleFunc("/process_status", api.ProcessStatusHandle)
 
 	log.Fatal(http.ListenAndServe(":8081", nil))
 }
