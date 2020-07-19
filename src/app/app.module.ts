@@ -8,6 +8,7 @@ import {HomeComponent} from './home/home.component';
 import {HistoryComponent} from './history/history.component';
 import {DatasetComponent} from './dataset/dataset.component';
 import {RouterModule, Routes} from '@angular/router';
+import { MenuComponent } from './components/menu/menu.component';
 
 const routes: Routes = [
     {path: '', component: HomeComponent},
@@ -21,7 +22,8 @@ const routes: Routes = [
         AppComponent,
         HomeComponent,
         HistoryComponent,
-        DatasetComponent
+        DatasetComponent,
+        MenuComponent
     ],
 
     imports: [
