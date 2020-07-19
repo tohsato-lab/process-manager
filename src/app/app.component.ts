@@ -1,7 +1,8 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import config from '../../config';
 
+import {webSocket} from 'rxjs/webSocket';
 
 @Component({
     selector: 'app-root',
@@ -9,12 +10,22 @@ import config from '../../config';
     styleUrls: ['./app.component.css']
 })
 
-export class AppComponent {
+export class AppComponent implements OnInit {
 
     public hiddenUploadPage = true;
     public files: any = [];
 
     constructor(private http: HttpClient) {
+    }
+
+    ngOnInit(): void {
+        webSocket('ws://localhost:8081/process_status').subscribe(
+            (message: any) => {
+                console.log(message);
+            },
+            err => console.log(err),
+            () => console.log('complete')
+        );
     }
 
     public onAddButton(): void {
