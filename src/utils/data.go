@@ -1,6 +1,8 @@
 package utils
 
-import "time"
+import (
+	"time"
+)
 
 //Process is struct
 type Process struct {
