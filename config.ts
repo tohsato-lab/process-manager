@@ -2,7 +2,7 @@ const config = {
     httpScheme: 'http://',
     websocketScheme: 'ws://',
     host: 'localhost',
-    port: '8081'
+    port: '5983'
 };
 
 export default config;
