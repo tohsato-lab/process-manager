@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
 	"../utils"
 )
@@ -63,15 +64,6 @@ func UpdataAllProcess(db *sql.DB) {
 		// メモリに空きがある場合
 		fmt.Println(vramTotal - (float32(usedVRAM) + process.UseVram))
 		if vramTotal-(float32(usedVRAM)+process.UseVram) >= 0 {
-			statusUpdate, err := db.Prepare("UPDATE process_table SET status=? WHERE id=?")
-			if err != nil {
-				panic(err.Error())
-			}
-			defer statusUpdate.Close()
-
-			if statusUpdate.Exec("working", process.ID); err != nil {
-				panic(err.Error())
-			}
 			StartProcess(db, process.ID)
 		} else {
 			break
@@ -96,25 +88,27 @@ func UpdataAllProcess(db *sql.DB) {
 			panic(err.Error())
 		}
 
-		statusUpdate, err := db.Prepare("UPDATE process_table SET status=? WHERE id=?")
-		if err != nil {
-			panic(err.Error())
-		}
-		defer statusUpdate.Close()
-
-		if statusUpdate.Exec("working", process.ID); err != nil {
-			panic(err.Error())
-		}
 		StartProcess(db, process.ID)
 	}
 }
 
 // StartProcess プロセス実行
 func StartProcess(db *sql.DB, id string) {
+	statusUpdate, err := db.Prepare("UPDATE process_table SET status=?, start_date=? WHERE id=?")
+	if err != nil {
+		panic(err.Error())
+	}
+	defer statusUpdate.Close()
+
+	if statusUpdate.Exec("working", time.Now(), id); err != nil {
+		panic(err.Error())
+	}
+
 	go func() {
 		Execute("../programs/" + id)
 		ComplateProcess(db, id)
 	}()
+
 	utils.BroadcastProcess <- GetAllProcess(db)
 }
 
