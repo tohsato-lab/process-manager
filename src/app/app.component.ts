@@ -62,6 +62,7 @@ export class AppComponent implements OnInit {
             `${config.httpScheme}${config.host}:${config.port}/upload`, formData
         ).subscribe(value => {
             console.log(value);
+            this.onCloseUpload();
         }, error => {
             console.log(error);
         });
