@@ -4,10 +4,16 @@ import {AppComponent} from './app.component';
 import {HttpClientModule} from '@angular/common/http';
 import {NgxDropzoneModule} from 'ngx-dropzone';
 import {FormsModule} from '@angular/forms';
+import { HomeComponent } from './home/home.component';
+import { HistoryComponent } from './history/history.component';
+import { DatasetComponent } from './dataset/dataset.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HomeComponent,
+    HistoryComponent,
+    DatasetComponent
   ],
 
     imports: [
