@@ -1,1 +1,54 @@
-<p>home works!</p>
+<div class="home-base">
+  <header class="home-header">プロセス一覧</header>
+  <div class="home-add-button">
+    <img src="assets/icon/add-icon.svg" alt="add-icon" (click)="onAddButton()">
+  </div>
+  <table>
+    <thead>
+    <tr>
+      <th>ファイル名</th>
+      <th>VRAM設定量</th>
+      <th>状態</th>
+      <th>開始時間</th>
+      <th>終了時間</th>
+    </tr>
+    </thead>
+    <tr *ngFor="let process of processList" class="table-item">
+      <th>{{process["Filename"]}}</th>
+      <th>{{process["UseVram"]}}</th>
+      <th>
+        <div [ngClass]="{
+          'table-ready': process['Status']=='ready',
+           'table-working': process['Status']=='working',
+            'table-complete': process['Status']=='complete'}">{{process["Status"]}}</div>
+      </th>
+      <th>{{process["StartDate"]}}</th>
+      <th>{{process["CompleteDate"]}}</th>
+    </tr>
+  </table>
+  <div *ngIf="processList.length == 0" class="none-process">
+    プロセスが追加されていません
+  </div>
+</div>
+
+<div *ngIf="!hiddenUploadPage" class="upload-background">
+  <div class="upload-base">
+    <header class="upload-header">
+      <div>ファイルアップロード</div>
+      <div (click)="onCloseUpload()">×</div>
+    </header>
+    <div class="upload-content">
+      <ngx-dropzone (change)="onSelect($event)" class="upload-drop-zone">
+        <ngx-dropzone-label>ここにファイルをドロップしてください</ngx-dropzone-label>
+      </ngx-dropzone>
+      <div *ngFor="let file of files" class="upload-item">
+        <div>{{file.data.name}}</div>
+        <div>
+          <div style="font-size: smaller">VRAM(MB)</div>
+          <label><input type="number" style="width: 80%;" [(ngModel)]="file['vram']"></label>
+        </div>
+      </div>
+      <div (click)="onUpload()" *ngIf="files.length != 0" class="upload-button">upload</div>
+    </div>
+  </div>
+</div>
