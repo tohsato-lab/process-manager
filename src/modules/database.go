@@ -114,13 +114,13 @@ func StartProcess(db *sql.DB, id string) {
 
 // ComplateProcess プロセス終了時にデータベースを更新
 func ComplateProcess(db *sql.DB, id string) {
-	statusUpdate, err := db.Prepare("UPDATE process_table SET status=? WHERE id=?")
+	statusUpdate, err := db.Prepare("UPDATE process_table SET status=?, complete_date=? WHERE id=?")
 	if err != nil {
 		panic(err.Error())
 	}
 	defer statusUpdate.Close()
 
-	if statusUpdate.Exec("complete", id); err != nil {
+	if statusUpdate.Exec("complete", time.Now(), id); err != nil {
 		panic(err.Error())
 	}
 
