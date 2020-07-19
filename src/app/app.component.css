@@ -47,7 +47,7 @@
 .home-add-button {
     width: 80px;
     height: 80px;
-    position: absolute;
+    position: fixed;
     background-color: #f31414;
     border-radius: 50%;
     display: flex;
@@ -75,6 +75,26 @@ table tr:nth-child(odd) {
     background-color: #eee
 }
 
+.table-ready {
+    border-radius: 10px;
+    background-color: #d00606;
+    font-weight: lighter;
+    color: #ffffff;
+}
+
+.table-working {
+    border-radius: 10px;
+    background-color: #0099ff;
+    font-weight: lighter;
+    color: #ffffff;
+}
+
+.table-complete {
+    border-radius: 10px;
+    background-color: #ffd400;
+    font-weight: lighter;
+}
+
 .none-process {
     display: flex;
     color: gray;
@@ -84,7 +104,7 @@ table tr:nth-child(odd) {
 }
 
 .upload-background {
-    position: absolute;
+    position: fixed;
     display: flex;
     justify-content: center;
     align-items: center;

@@ -24,7 +24,12 @@
       <tr *ngFor="let process of processList">
         <th>{{process["Filename"]}}</th>
         <th>{{process["UseVram"]}}</th>
-        <th>{{process["Status"]}}</th>
+        <th>
+          <div [ngClass]="{
+          'table-ready': process['Status']=='ready',
+           'table-working': process['Status']=='working',
+            'table-complete': process['Status']=='complete'}">{{process["Status"]}}</div>
+        </th>
         <th>{{process["StartDate"]}}</th>
         <th>{{process["CompleteDate"]}}</th>
       </tr>
