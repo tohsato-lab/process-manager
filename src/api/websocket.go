@@ -8,6 +8,9 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// WebSocket サーバーにつなぎにいくクライアント
+var clients = make(map[*websocket.Conn]bool)
+
 // WebSocket 更新用
 // request origin not allowed by Upgrader.CheckOrigin エラーを突破
 var upgrader = websocket.Upgrader{
@@ -19,27 +22,21 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-// WebSocket サーバーにつなぎにいくクライアント
-var clients = make(map[*websocket.Conn]bool)
-
-// ProcessStatusHandle プロセス一覧をリアルタイムで返す
-func ProcessStatusHandle(w http.ResponseWriter, r *http.Request) {
+// WebSocketHandle ソケット接続
+func WebSocketHandle(w http.ResponseWriter, r *http.Request) {
 	// websocket の状態を更新
-
 	websocket, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Fatal("error upgrading GET request to a websocket::", err)
 	}
-
-	// websocket を閉じる
-	defer websocket.Close()
-
 	clients[websocket] = true
+}
 
+// WebSocketKernel WebSocketで情報を投げる
+func WebSocketKernel() {
 	for {
 		// メッセージ受け取り
 		process := <-utils.BroadcastProcess
-
 		// クライアントの数だけループ
 		for client := range clients {
 			//　書き込む

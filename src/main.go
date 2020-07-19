@@ -30,7 +30,8 @@ func main() {
 	http.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
 		api.UploadHander(w, r, db)
 	})
-	http.HandleFunc("/process_status", api.ProcessStatusHandle)
+	http.HandleFunc("/process_status", api.WebSocketHandle)
+	go api.WebSocketKernel()
 
 	log.Fatal(http.ListenAndServe(":8081", nil))
 }
