@@ -4,23 +4,12 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"time"
 
 	"../utils"
 )
 
-//Process is struct
-type Process struct {
-	ID           string
-	UseVram      float32
-	Status       string
-	Filename     string
-	StartDate    *time.Time
-	CompleteDate *time.Time
-}
-
 // RegistProcess データベースに新規登録
-func RegistProcess(db *sql.DB, process *Process) {
+func RegistProcess(db *sql.DB, process utils.Process) {
 	ins, err := db.Prepare("INSERT INTO process_table (id, use_vram, status, filename) VALUES (?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)
@@ -30,6 +19,7 @@ func RegistProcess(db *sql.DB, process *Process) {
 		log.Fatal(err)
 	}
 	fmt.Println("registed")
+	utils.BroadcastProcess <- process
 }
 
 // UpdataAllProcess プロセスの更新
@@ -53,7 +43,7 @@ func UpdataAllProcess(db *sql.DB) {
 		}
 		// メモリに空きがある場合
 		if vramTotal-float32(usedVRAM) >= 0 {
-			var process Process
+			var process utils.Process
 			dbReady.Scan(&process.ID, &process.UseVram)
 			statusUpdate, err := db.Prepare("UPDATE process_table SET status=? WHERE id=?")
 			if err != nil {
@@ -82,7 +72,7 @@ func UpdataAllProcess(db *sql.DB) {
 		panic(err.Error())
 	}
 	if countReady != 0 && countWorking == 0 {
-		var process Process
+		var process utils.Process
 		err = db.QueryRow("SELECT id, use_vram FROM process_table WHERE use_vram = 0 AND status = ?", "ready").Scan(&process.ID, &process.UseVram)
 		if err != nil {
 			panic(err.Error())

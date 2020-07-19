@@ -76,7 +76,7 @@ func UploadHander(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	// regist proceess
-	modules.RegistProcess(db, &modules.Process{
+	modules.RegistProcess(db, utils.Process{
 		ID:       targetFileID,
 		UseVram:  float32(vram),
 		Status:   "ready",
