@@ -22,11 +22,11 @@
       </tr>
       </thead>
       <tr *ngFor="let process of processList">
-        <th>{{process.Filename}}</th>
-        <th>{{process.UseVram}}</th>
-        <th>{{process.Status}}</th>
-        <th>{{process.StartDate}}</th>
-        <th>{{process.CompleteDate}}</th>
+        <th>{{process["Filename"]}}</th>
+        <th>{{process["UseVram"]}}</th>
+        <th>{{process["Status"]}}</th>
+        <th>{{process["StartDate"]}}</th>
+        <th>{{process["CompleteDate"]}}</th>
       </tr>
     </table>
     <div *ngIf="processList.length == 0" class="none-process">
@@ -49,7 +49,7 @@
         <div>{{file.data.name}}</div>
         <div>
           <div style="font-size: smaller">VRAM(MB)</div>
-          <label><input type="number" style="width: 80%;" [(ngModel)]="file.vram"></label>
+          <label><input type="number" style="width: 80%;" [(ngModel)]="file['vram']"></label>
         </div>
       </div>
       <div (click)="onUpload()" *ngIf="files.length != 0" class="upload-button">upload</div>
