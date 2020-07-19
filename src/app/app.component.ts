@@ -12,6 +12,7 @@ import {webSocket} from 'rxjs/webSocket';
 
 export class AppComponent implements OnInit {
 
+    title = 'process manager ';
     public hiddenUploadPage = true;
     public files: any = [];
     public processList = [];
