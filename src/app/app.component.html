@@ -11,6 +11,27 @@
     <div class="home-add-button">
       <img src="assets/icon/add-icon.svg" alt="add-icon" (click)="onAddButton()">
     </div>
+    <table>
+      <thead>
+      <tr>
+        <th>ファイル名</th>
+        <th>VRAM使用量</th>
+        <th>状態</th>
+        <th>開始時間</th>
+        <th>終了時間</th>
+      </tr>
+      </thead>
+      <tr *ngFor="let process of processList">
+        <th>{{process.Filename}}</th>
+        <th>{{process.UseVram}}</th>
+        <th>{{process.Status}}</th>
+        <th>{{process.StartDate}}</th>
+        <th>{{process.CompleteDate}}</th>
+      </tr>
+    </table>
+    <div *ngIf="processList.length == 0" class="none-process">
+      プロセスが追加されていません
+    </div>
   </div>
 </div>
 

@@ -14,14 +14,16 @@ export class AppComponent implements OnInit {
 
     public hiddenUploadPage = true;
     public files: any = [];
+    public processList = [];
 
     constructor(private http: HttpClient) {
     }
 
     ngOnInit(): void {
-        webSocket('ws://localhost:8081/process_status').subscribe(
+        webSocket(`${config.websocketScheme}${config.host}:${config.port}/process_status`).subscribe(
             (message: any) => {
                 console.log(message);
+                this.processList = message;
             },
             err => console.log(err),
             () => console.log('complete')
@@ -57,7 +59,7 @@ export class AppComponent implements OnInit {
         formData.append('file', file, file.name);
         formData.append('vram', vram);
         this.http.post(
-            `${config.urlScheme}${config.host}:${config.port}/upload`, formData
+            `${config.httpScheme}${config.host}:${config.port}/upload`, formData
         ).subscribe(value => {
             console.log(value);
         }, error => {
