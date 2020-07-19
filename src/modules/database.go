@@ -8,7 +8,8 @@ import (
 	"../utils"
 )
 
-func getAllProcess(db *sql.DB) []utils.Process {
+// GetAllProcess プロセス一覧取得
+func GetAllProcess(db *sql.DB) []utils.Process {
 	processes := []utils.Process{}
 
 	dbSelect, err := db.Query("SELECT * FROM process_table")
@@ -34,8 +35,7 @@ func RegistProcess(db *sql.DB, process utils.Process) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	utils.BroadcastProcess <- getAllProcess(db)
-	fmt.Println("registed")
+	utils.BroadcastProcess <- GetAllProcess(db)
 
 }
 
@@ -43,7 +43,6 @@ func RegistProcess(db *sql.DB, process utils.Process) {
 func UpdataAllProcess(db *sql.DB) {
 
 	vramTotal := utils.GetTotalVRAM()
-	fmt.Println(vramTotal)
 
 	// 0より大きく設定されたプロセスを先に実行
 	dbReady, err := db.Query("SELECT id, use_vram FROM process_table WHERE use_vram > 0 AND status = ? ORDER BY use_vram", "ready")
@@ -58,10 +57,12 @@ func UpdataAllProcess(db *sql.DB) {
 		if err != nil {
 			panic(err.Error())
 		}
+		var process utils.Process
+		dbReady.Scan(&process.ID, &process.UseVram)
+
 		// メモリに空きがある場合
-		if vramTotal-float32(usedVRAM) >= 0 {
-			var process utils.Process
-			dbReady.Scan(&process.ID, &process.UseVram)
+		fmt.Println(vramTotal - (float32(usedVRAM) + process.UseVram))
+		if vramTotal-(float32(usedVRAM)+process.UseVram) >= 0 {
 			statusUpdate, err := db.Prepare("UPDATE process_table SET status=? WHERE id=?")
 			if err != nil {
 				panic(err.Error())
@@ -114,7 +115,7 @@ func StartProcess(db *sql.DB, id string) {
 		Execute("../programs/" + id)
 		ComplateProcess(db, id)
 	}()
-	utils.BroadcastProcess <- getAllProcess(db)
+	utils.BroadcastProcess <- GetAllProcess(db)
 }
 
 // ComplateProcess プロセス終了時にデータベースを更新
@@ -125,11 +126,11 @@ func ComplateProcess(db *sql.DB, id string) {
 	}
 	defer statusUpdate.Close()
 
-	if statusUpdate.Exec("complate", id); err != nil {
+	if statusUpdate.Exec("complete", id); err != nil {
 		panic(err.Error())
 	}
 
-	utils.BroadcastProcess <- getAllProcess(db)
+	utils.BroadcastProcess <- GetAllProcess(db)
 
 	UpdataAllProcess(db)
 }

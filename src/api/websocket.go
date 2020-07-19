@@ -1,9 +1,11 @@
 package api
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 
+	"../modules"
 	"../utils"
 	"github.com/gorilla/websocket"
 )
@@ -23,13 +25,14 @@ var upgrader = websocket.Upgrader{
 }
 
 // WebSocketHandle ソケット接続
-func WebSocketHandle(w http.ResponseWriter, r *http.Request) {
+func WebSocketHandle(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// websocket の状態を更新
 	websocket, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Fatal("error upgrading GET request to a websocket::", err)
 	}
 	clients[websocket] = true
+	utils.BroadcastProcess <- modules.GetAllProcess(db)
 }
 
 // WebSocketKernel WebSocketで情報を投げる

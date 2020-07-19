@@ -2,7 +2,6 @@ package modules
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -19,5 +18,5 @@ func Execute(shellPath string) {
 	multiWriter := io.MultiWriter(&buf, os.Stdout)
 	cmd.Stdout = multiWriter
 
-	fmt.Println(buf.String())
+	// fmt.Println(buf.String())
 }
