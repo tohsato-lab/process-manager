@@ -13,4 +13,4 @@ type Process struct {
 }
 
 // BroadcastProcess データベースの情報を格納する
-var BroadcastProcess = make(chan Process)
+var BroadcastProcess = make(chan []Process)

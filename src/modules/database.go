@@ -8,6 +8,22 @@ import (
 	"../utils"
 )
 
+func getAllProcess(db *sql.DB) []utils.Process {
+	processes := []utils.Process{}
+
+	dbSelect, err := db.Query("SELECT * FROM process_table")
+	if err != nil {
+		panic(err.Error())
+	}
+	defer dbSelect.Close()
+	for dbSelect.Next() {
+		var process utils.Process
+		dbSelect.Scan(&process.ID, &process.UseVram, &process.Status, &process.Filename, &process.StartDate, &process.CompleteDate)
+		processes = append(processes, process)
+	}
+	return processes
+}
+
 // RegistProcess データベースに新規登録
 func RegistProcess(db *sql.DB, process utils.Process) {
 	ins, err := db.Prepare("INSERT INTO process_table (id, use_vram, status, filename) VALUES (?, ?, ?, ?)")
@@ -18,8 +34,9 @@ func RegistProcess(db *sql.DB, process utils.Process) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	utils.BroadcastProcess <- getAllProcess(db)
 	fmt.Println("registed")
-	utils.BroadcastProcess <- process
+
 }
 
 // UpdataAllProcess プロセスの更新
@@ -37,7 +54,7 @@ func UpdataAllProcess(db *sql.DB) {
 
 	for dbReady.Next() {
 		usedVRAM := 0
-		err := db.QueryRow("SELECT SUM(use_vram) FROM process_table WHERE use_vram > 0 AND status = ?", "working").Scan(&usedVRAM)
+		err := db.QueryRow("SELECT IFNULL(SUM(use_vram), 0) FROM process_table WHERE use_vram > 0 AND status = ?", "working").Scan(&usedVRAM)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -97,6 +114,7 @@ func StartProcess(db *sql.DB, id string) {
 		Execute("../programs/" + id)
 		ComplateProcess(db, id)
 	}()
+	utils.BroadcastProcess <- getAllProcess(db)
 }
 
 // ComplateProcess プロセス終了時にデータベースを更新
@@ -110,5 +128,8 @@ func ComplateProcess(db *sql.DB, id string) {
 	if statusUpdate.Exec("complate", id); err != nil {
 		panic(err.Error())
 	}
+
+	utils.BroadcastProcess <- getAllProcess(db)
+
 	UpdataAllProcess(db)
 }
