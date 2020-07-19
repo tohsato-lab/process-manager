@@ -53,7 +53,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    left: 85%;
+    left: 90vw;
+    top: 90vh;
     transform: translate(-0%, -50%);
     -webkit-filter: drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
     filter: drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
