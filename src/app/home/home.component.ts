@@ -15,7 +15,8 @@ export class HomeComponent implements OnInit {
     public files: any = [];
     public processList = [];
 
-    constructor(private http: HttpClient) {
+    constructor(
+        private http: HttpClient) {
     }
 
     ngOnInit(): void {
