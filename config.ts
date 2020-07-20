@@ -1,7 +1,7 @@
 const config = {
     httpScheme: 'https://',
     websocketScheme: 'wss://',
-    host: 'localhost',
+    host: '133.19.106.94',
     port: '5983'
 };
 
