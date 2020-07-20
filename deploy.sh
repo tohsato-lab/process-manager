@@ -1,2 +1,2 @@
-ng build --output-path='docs' --prod --baseHref="https://HiroRittsu.github.io/process-manager/"
-
+ng build --prod --baseHref="https://HiroRittsu.github.io/process-manager/"
+mv dist docs
