@@ -74,6 +74,32 @@ table tr:nth-child(odd) {
     margin-top: 40vh;
 }
 
+.auth-background {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 99%;
+    background-color: rgba(0, 0, 0, 0.29);
+}
+
+.auth-base {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 10px;
+    width: 50%;
+}
+
+.auth-content {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
 .upload-background {
     position: fixed;
     display: flex;
@@ -85,6 +111,25 @@ table tr:nth-child(odd) {
     width: 99%;
     background-color: rgba(0, 0, 0, 0.29);
 }
+
+.links2 {
+    background-color: #fff;
+    border: 2px solid #111;
+    border-radius: 10px;
+    list-style: none;
+    position: relative;
+    margin: 3em;
+    padding: 1.5em 1em;
+}
+
+.links2:before {
+    content: "エラー";
+    color: #ff0000;
+    background-color: #fff;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
 
 .upload-base {
     display: flex;

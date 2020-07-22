@@ -31,6 +31,20 @@
   </div>
 </div>
 
+<div *ngIf="!hiddenAuthPage" class="auth-background">
+  <div class="upload-base">
+    <div class="auth-content">
+      <ul class="links2">
+        <li>サーバーと通信が出来ません</li>
+        <br>
+        <li>・ネットワークの確認</li>
+        <li>・サーバーが起動しているかの確認</li>
+        <li>・<a href="{{serverAddress}}">{{serverAddress}}</a>に表示されている「詳細」からアクセスを許可してください</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
 <div *ngIf="!hiddenUploadPage" class="upload-background">
   <div class="upload-base">
     <header class="upload-header">
