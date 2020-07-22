@@ -11,4 +11,4 @@ RUN apt -y install python3-pip
 RUN apt -y install wget curl
 RUN git clone https://github.com/HiroRittsu/process-manager-server.git && cd process-manager-server && go get github.com/go-sql-driver/mysql && go get github.com/gorilla/websocket
 
-RUN service mysql start
+CMD ["service mysql start"]
