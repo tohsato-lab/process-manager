@@ -1,15 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import config from '../../../config';
 
 @Component({
-  selector: 'app-dataset',
-  templateUrl: './dataset.component.html',
-  styleUrls: ['./dataset.component.css']
+    selector: 'app-dataset',
+    templateUrl: './dataset.component.html',
+    styleUrls: ['./dataset.component.css']
 })
 export class DatasetComponent implements OnInit {
 
-  constructor() { }
+    public customHost = '';
 
-  ngOnInit(): void {
-  }
+    constructor() {
+    }
+
+    ngOnInit(): void {
+        this.customHost = config.host;
+    }
+
+    public setHost(): void {
+        config.host = this.customHost;
+    }
 
 }

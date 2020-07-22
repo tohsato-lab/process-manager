@@ -12,6 +12,8 @@ export class HomeComponent implements OnInit {
 
     title = 'process manager ';
     public hiddenUploadPage = true;
+    public hiddenAuthPage = true;
+    public serverAddress = `${config.httpScheme}${config.host}:${config.port}`;
     public files: any = [];
     public processList = [];
 
@@ -25,7 +27,11 @@ export class HomeComponent implements OnInit {
                 console.log(message);
                 this.processList = message;
             },
-            err => console.log(err),
+            err => {
+                console.log(err);
+                console.log(`${config.httpScheme}${config.host}:${config.port}`);
+                this.hiddenAuthPage = false;
+            },
             () => console.log('complete')
         );
     }
