@@ -89,7 +89,7 @@ func UploadHander(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// return
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	response := response{
-		Status: "ok",
+		Status: "200",
 		Data:   "success",
 	}
 	json, _ := json.Marshal(response)
