@@ -7,14 +7,15 @@ import {FormsModule} from '@angular/forms';
 import {HomeComponent} from './home/home.component';
 import {HistoryComponent} from './history/history.component';
 import {DatasetComponent} from './dataset/dataset.component';
+import {CommonService} from './service/commom.service';
 import {RouterModule, Routes} from '@angular/router';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { LayoutModule } from '@angular/cdk/layout';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {LayoutModule} from '@angular/cdk/layout';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatButtonModule} from '@angular/material/button';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatIconModule} from '@angular/material/icon';
+import {MatListModule} from '@angular/material/list';
 
 const routes: Routes = [
     {path: '', component: HomeComponent},
@@ -46,7 +47,7 @@ const routes: Routes = [
         MatListModule,
     ],
 
-    providers: [],
+    providers: [CommonService],
     bootstrap: [AppComponent]
 })
 
