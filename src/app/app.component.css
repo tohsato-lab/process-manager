@@ -11,6 +11,13 @@
     background: inherit;
 }
 
+.mat-toolbar-header {
+    padding: 5%;
+    font-size: xx-large;
+    background-color: #929292;
+    color: white;
+}
+
 .mat-toolbar.mat-primary {
     position: sticky;
     top: 0;
@@ -19,9 +26,11 @@
 
 .mat-toolbar-single-row {
     height: auto;
+    /*
     display: flex;
     flex-direction: column;
     justify-content: center;
+     */
 }
 
 .mat-list-item {
