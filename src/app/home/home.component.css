@@ -107,14 +107,14 @@ table tr:nth-child(odd) {
     align-items: center;
     top: 0;
     left: 0;
-    height: 100%;
-    width: 99%;
+    height: 100vh;
+    width: 100vw;
+    z-index: 1;
     background-color: rgba(0, 0, 0, 0.29);
 }
 
 .links2 {
     background-color: #fff;
-    border: 2px solid #111;
     border-radius: 10px;
     list-style: none;
     position: relative;
