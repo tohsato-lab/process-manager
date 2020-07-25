@@ -1,22 +1,29 @@
 package modules
 
 import (
-	"bytes"
-	"io"
+	"database/sql"
 	"os"
 	"os/exec"
+	"strconv"
 )
 
 // Execute 起動スクリプト実行
-func Execute(shellPath string) {
-	cmd := exec.Command("bash", "execute.sh", shellPath)
+func Execute(db *sql.DB, id string) {
+	//実行
+	cmd := exec.Command("bash", "execute.sh", "../programs/"+id)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.Run()
+	cmd.Start()
 
-	var buf bytes.Buffer
-	multiWriter := io.MultiWriter(&buf, os.Stdout)
-	cmd.Stdout = multiWriter
+	// PID登録
+	statusUpdate, err := db.Prepare("UPDATE process_table SET pid=? WHERE id=?")
+	if err != nil {
+		panic(err.Error())
+	}
+	defer statusUpdate.Close()
+	if statusUpdate.Exec(strconv.Itoa(cmd.Process.Pid), id); err != nil {
+		panic(err.Error())
+	}
 
-	// fmt.Println(buf.String())
+	cmd.Wait()
 }

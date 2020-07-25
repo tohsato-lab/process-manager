@@ -13,7 +13,7 @@ import (
 func GetAllProcess(db *sql.DB) []utils.Process {
 	processes := []utils.Process{}
 
-	dbSelect, err := db.Query("SELECT * FROM process_table")
+	dbSelect, err := db.Query("SELECT id, use_vram, status, filename, start_date, complete_date FROM process_table")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -105,7 +105,7 @@ func StartProcess(db *sql.DB, id string) {
 	}
 
 	go func() {
-		Execute("../programs/" + id)
+		Execute(db, id)
 		ComplateProcess(db, id)
 	}()
 
