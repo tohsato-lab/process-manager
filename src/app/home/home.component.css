@@ -27,6 +27,19 @@
     filter: drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
 }
 
+.float-page-background {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.29);
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -74,18 +87,6 @@ table tr:nth-child(odd) {
     margin-top: 40vh;
 }
 
-.auth-background {
-    position: fixed;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 99%;
-    background-color: rgba(0, 0, 0, 0.29);
-}
-
 .auth-base {
     display: flex;
     flex-direction: column;
@@ -98,19 +99,6 @@ table tr:nth-child(odd) {
     display: flex;
     align-items: center;
     flex-direction: column;
-}
-
-.upload-background {
-    position: fixed;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 100vw;
-    z-index: 1;
-    background-color: rgba(0, 0, 0, 0.29);
 }
 
 .links2 {
