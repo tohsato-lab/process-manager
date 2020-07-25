@@ -12,7 +12,7 @@
       <th>終了時間</th>
     </tr>
     </thead>
-    <tr *ngFor="let process of processList" class="table-item">
+    <tr *ngFor="let process of processList" (click)="onTable(process)" class="table-item">
       <th>{{process["Filename"]}}</th>
       <th>{{process["UseVram"]}}</th>
       <th>
@@ -30,7 +30,7 @@
   </div>
 </div>
 
-<div *ngIf="!hiddenAuthPage" class="auth-background">
+<div *ngIf="!hiddenAuthPage" class="float-page-background">
   <div class="upload-base">
     <div class="auth-content">
       <ul class="links2">
@@ -43,7 +43,16 @@
   </div>
 </div>
 
-<div *ngIf="!hiddenUploadPage" class="upload-background">
+<div *ngIf="!hiddenCtrlPage" class="float-page-background">
+  <div class="upload-base">
+    <header class="upload-header">
+      <div>コントロールパネル</div>
+      <div (click)="onCloseCtrl()">×</div>
+    </header>
+  </div>
+</div>
+
+<div *ngIf="!hiddenUploadPage" class="float-page-background">
   <div class="upload-base">
     <header class="upload-header">
       <div>ファイルアップロード</div>

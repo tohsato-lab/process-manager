@@ -15,6 +15,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     public headerTitle = 'プロセス一覧';
     public hiddenUploadPage = true;
     public hiddenAuthPage = true;
+    public hiddenCtrlPage = true;
     public serverAddress = `${config.httpScheme}${location.hostname}:${config.port}`;
     public files: any = [];
     public processList = [];
@@ -64,6 +65,14 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
     }
 
+    public onTable(process): void {
+        this.hiddenCtrlPage = false;
+    }
+
+    public onCloseCtrl(): void {
+        this.hiddenCtrlPage = true;
+    }
+
     public onUpload(): void {
         for (const file of this.files) {
             this.upload(file.data, file.vram);
@@ -76,11 +85,11 @@ export class HomeComponent implements OnInit, OnDestroy {
         const formData = new FormData();
         formData.append('file', file, file.name);
         formData.append('vram', vram);
+        this.onCloseUpload();
         this.http.post(
             `${config.httpScheme}${location.hostname}:${config.port}/upload`, formData
         ).subscribe(value => {
             console.log(value);
-            this.onCloseUpload();
         }, error => {
             console.log(error);
         });
