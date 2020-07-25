@@ -19,6 +19,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     public serverAddress = `${config.httpScheme}${location.hostname}:${config.port}`;
     public files: any = [];
     public processList = [];
+    public processCtrlData: any = null;
 
     private subscription: Subscription;
 
@@ -66,7 +67,18 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     public onTable(process): void {
+        this.processCtrlData = process;
         this.hiddenCtrlPage = false;
+    }
+
+    public onKill(): void {
+        this.http.get(
+            `${config.httpScheme}${location.hostname}:${config.port}/kill?id=${this.processCtrlData.ID}`
+        ).subscribe(value => {
+            console.log(value);
+        }, error => {
+            console.log(error);
+        });
     }
 
     public onCloseCtrl(): void {

@@ -33,8 +33,6 @@ bash launch.sh
 
 # Note
 
-注意点などがあれば書く
-
 # Author
 
 * Hirorittsu
