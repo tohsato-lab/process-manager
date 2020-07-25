@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import config from '../../../config';
 
 @Component({
     selector: 'app-dataset',
@@ -14,11 +13,11 @@ export class DatasetComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.customHost = config.host;
+        this.customHost = '';
     }
 
     public setHost(): void {
-        config.host = this.customHost;
+        console.log('location.hostname');
     }
 
 }

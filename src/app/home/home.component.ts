@@ -15,7 +15,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     public headerTitle = 'プロセス一覧';
     public hiddenUploadPage = true;
     public hiddenAuthPage = true;
-    public serverAddress = `${config.httpScheme}${config.host}:${config.port}`;
+    public serverAddress = `${config.httpScheme}${location.hostname}:${config.port}`;
     public files: any = [];
     public processList = [];
 
@@ -28,14 +28,14 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        webSocket(`${config.websocketScheme}${config.host}:${config.port}/process_status`).subscribe(
+        webSocket(`${config.websocketScheme}${location.hostname}:${config.port}/process_status`).subscribe(
             (message: any) => {
                 console.log(message);
                 this.processList = message;
             },
             err => {
                 console.log(err);
-                console.log(`${config.httpScheme}${config.host}:${config.port}`);
+                console.log(`${config.httpScheme}${location.hostname}:${config.port}`);
                 this.hiddenAuthPage = false;
             },
             () => console.log('complete')
@@ -77,7 +77,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         formData.append('file', file, file.name);
         formData.append('vram', vram);
         this.http.post(
-            `${config.httpScheme}${config.host}:${config.port}/upload`, formData
+            `${config.httpScheme}${location.hostname}:${config.port}/upload`, formData
         ).subscribe(value => {
             console.log(value);
             this.onCloseUpload();
