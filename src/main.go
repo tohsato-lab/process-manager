@@ -36,5 +36,5 @@ func main() {
 	})
 	go api.WebSocketKernel()
 
-	log.Fatal(http.ListenAndServeTLS(":5983", "../ssl/cert.pem", "../ssl/key.pem", nil))
+	log.Fatal(http.ListenAndServe(":5983", nil))
 }
