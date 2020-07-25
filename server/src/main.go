@@ -30,6 +30,9 @@ func main() {
 	http.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
 		api.UploadHander(w, r, db)
 	})
+	http.HandleFunc("/kill", func(w http.ResponseWriter, r *http.Request) {
+		api.KillHander(w, r, db)
+	})
 	http.Handle("/histories/", http.StripPrefix("/histories/", http.FileServer(http.Dir("../histories"))))
 	http.HandleFunc("/process_status", func(w http.ResponseWriter, r *http.Request) {
 		api.WebSocketHandle(w, r, db)
