@@ -3,7 +3,7 @@
 }
 
 .sidenav {
-    width: 200px;
+    width: 250px;
     background-color: #3c3c3c;
 }
 
@@ -16,6 +16,8 @@
     font-size: xx-large;
     background-color: #929292;
     color: white;
+    width: 100%;
+    min-width: 700px;
 }
 
 .mat-toolbar.mat-primary {
@@ -26,11 +28,6 @@
 
 .mat-toolbar-single-row {
     height: auto;
-    /*
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-     */
 }
 
 .mat-list-item {
@@ -38,6 +35,10 @@
     font-weight: lighter;
     font-size: large;
     margin-top: 10px;
+}
+
+.mat-drawer-content{
+    z-index: 2;
 }
 
 .main-icon {
