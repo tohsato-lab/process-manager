@@ -106,21 +106,21 @@ func StartProcess(db *sql.DB, id string) {
 
 	go func() {
 		Execute(db, id)
-		ComplateProcess(db, id)
+		ComplateProcess(db, id, "complete")
 	}()
 
 	utils.BroadcastProcess <- GetAllProcess(db)
 }
 
 // ComplateProcess プロセス終了時にデータベースを更新
-func ComplateProcess(db *sql.DB, id string) {
+func ComplateProcess(db *sql.DB, id string, status string) {
 	statusUpdate, err := db.Prepare("UPDATE process_table SET status=?, complete_date=? WHERE id=?")
 	if err != nil {
 		panic(err.Error())
 	}
 	defer statusUpdate.Close()
 
-	if statusUpdate.Exec("complete", time.Now(), id); err != nil {
+	if statusUpdate.Exec(status, time.Now(), id); err != nil {
 		panic(err.Error())
 	}
 
