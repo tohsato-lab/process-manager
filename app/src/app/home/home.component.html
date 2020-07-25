@@ -16,10 +16,10 @@
       <th>{{process["Filename"]}}</th>
       <th>{{process["UseVram"]}}</th>
       <th>
-        <div [ngClass]="{
-          'table-ready': process['Status']=='ready',
-           'table-working': process['Status']=='working',
-            'table-complete': process['Status']=='complete'}">{{process["Status"]}}</div>
+        <div [ngClass]="
+        process['Status']=='ready'?'table-ready':
+        process['Status']=='working'?'table-working':
+        'table-complete'">{{process["Status"]}}</div>
       </th>
       <th>{{process["StartDate"]}}</th>
       <th>{{process["CompleteDate"]}}</th>
@@ -49,6 +49,11 @@
       <div>コントロールパネル</div>
       <div (click)="onCloseCtrl()">×</div>
     </header>
+    <div>
+      <div><h3>詳細情報</h3></div>
+      <div>{{processCtrlData.Filename}}</div>
+      <button (click)="onKill()">kill</button>
+    </div>
   </div>
 </div>
 
