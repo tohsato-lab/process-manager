@@ -4,5 +4,6 @@ CREATE TABLE `process_table` (
   `status` VARCHAR(100) NOT NULL COMMENT "状態",
   `filename` VARCHAR(200) NOT NULL COMMENT "ファイル名",
   `start_date` datetime DEFAULT NULL COMMENT "実行開始日時",
-  `complete_date` datetime DEFAULT NULL COMMENT "実行完了日時"
+  `complete_date` datetime DEFAULT NULL COMMENT "実行完了日時",
+  `pid` int DEFAULT NULL COMMENT "PID"
 ) DEFAULT CHARACTER SET=utf8;
