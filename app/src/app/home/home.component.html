@@ -2,9 +2,20 @@
   <div class="home-add-button">
     <img src="assets/icon/add-icon.svg" alt="add-icon" (click)="onAddButton()">
   </div>
+  <div class="ctrl-panel">
+    <div class="panel-item">
+      <div>delete</div>
+    </div>
+    <div class="panel-item">
+      <div>kill</div>
+    </div>
+  </div>
   <table style="min-width: 700px;">
     <thead>
     <tr>
+      <th style="text-align: right;">
+        <label><input type="checkbox" class="table-checkbox"/> </label>
+      </th>
       <th>ファイル名</th>
       <th>VRAM設定値</th>
       <th>状態</th>
@@ -12,7 +23,10 @@
       <th>終了時間</th>
     </tr>
     </thead>
-    <tr *ngFor="let process of processList" (click)="onTable(process)" class="table-item">
+    <tr *ngFor="let process of processList" class="table-item">
+      <th style="text-align: right;">
+        <label><input type="checkbox" class="table-checkbox"/></label>
+      </th>
       <th>{{process["Filename"]}}</th>
       <th>{{process["UseVram"]}}</th>
       <th>
@@ -31,7 +45,7 @@
 </div>
 
 <div *ngIf="!hiddenAuthPage" class="float-page-background">
-  <div class="upload-base">
+  <div class="auth-base">
     <div class="auth-content">
       <ul class="links2">
         <li>サーバーと通信が出来ません</li>
@@ -51,7 +65,7 @@
     </header>
     <div>
       <div><h3>詳細情報</h3></div>
-      <div>{{processCtrlData.Filename}}</div>
+      <div>{{processCtrlData["Filename"]}}</div>
       <button (click)="onKill()">kill</button>
     </div>
   </div>
