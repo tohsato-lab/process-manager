@@ -2,31 +2,19 @@
   <div class="home-add-button">
     <img src="assets/icon/add-icon.svg" alt="add-icon" (click)="onAddButton()">
   </div>
-  <div class="ctrl-panel">
-    <div class="panel-item">
-      <div>delete</div>
-    </div>
-    <div class="panel-item">
-      <div>kill</div>
-    </div>
-  </div>
   <table style="min-width: 700px;">
     <thead>
     <tr>
-      <th style="text-align: right;">
-        <label><input type="checkbox" class="table-checkbox"/> </label>
-      </th>
       <th>ファイル名</th>
       <th>VRAM設定値</th>
-      <th>状態</th>
+      <th style="width: 100px;">状態</th>
       <th>開始時間</th>
       <th>終了時間</th>
+      <th style="width: 50px;"></th>
+      <th></th>
     </tr>
     </thead>
     <tr *ngFor="let process of processList" class="table-item">
-      <th style="text-align: right;">
-        <label><input type="checkbox" class="table-checkbox"/></label>
-      </th>
       <th>{{process["Filename"]}}</th>
       <th>{{process["UseVram"]}}</th>
       <th>
@@ -37,6 +25,10 @@
       </th>
       <th>{{process["StartDate"]}}</th>
       <th>{{process["CompleteDate"]}}</th>
+      <th>
+        <div style="border-radius: 10px; background: red; color: white;">kill</div>
+      </th>
+      <th><img src="assets/icon/trash.svg" alt="delete"></th>
     </tr>
   </table>
   <div *ngIf="processList.length == 0" class="none-process">
@@ -57,20 +49,6 @@
   </div>
 </div>
 
-<div *ngIf="!hiddenCtrlPage" class="float-page-background">
-  <div class="upload-base">
-    <header class="upload-header">
-      <div>コントロールパネル</div>
-      <div (click)="onCloseCtrl()">×</div>
-    </header>
-    <div>
-      <div><h3>詳細情報</h3></div>
-      <div>{{processCtrlData["Filename"]}}</div>
-      <button (click)="onKill()">kill</button>
-    </div>
-  </div>
-</div>
-
 <div *ngIf="!hiddenUploadPage" class="float-page-background">
   <div class="upload-base">
     <header class="upload-header">
@@ -78,7 +56,7 @@
       <div (click)="onCloseUpload()">×</div>
     </header>
     <div class="upload-content">
-      <ngx-dropzone (change)="onSelect($event)" class="upload-drop-zone">
+      <ngx-dropzone (change)="onSelectFiles($event)" class="upload-drop-zone">
         <ngx-dropzone-label>ここにファイルをドロップしてください</ngx-dropzone-label>
       </ngx-dropzone>
       <div *ngFor="let file of files" class="upload-item">

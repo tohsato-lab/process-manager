@@ -15,7 +15,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     public headerTitle = 'プロセス一覧';
     public hiddenUploadPage = true;
     public hiddenAuthPage = true;
-    public hiddenCtrlPage = true;
+    public hiddenCtrlPanel = true;
     public serverAddress = `${config.httpScheme}${location.hostname}:${config.port}`;
     public files: any = [];
     public processList = [];
@@ -62,16 +62,20 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.files = [];
     }
 
-    public onSelect(event): void {
+    public onSelectFiles(event): void {
         console.log(event);
         for (const file of [...event.addedFiles]) {
             this.files.push({data: file, vram: 0.0});
         }
     }
 
-    public onTable(process): void {
-        this.processCtrlData = process;
-        this.hiddenCtrlPage = false;
+    public onSelectCheck(process): void {
+        process.selected = !process.selected;
+        this.hiddenCtrlPanel = false;
+    }
+
+    public onSelectAllCheck(): void {
+        this.hiddenCtrlPanel = !this.hiddenCtrlPanel;
     }
 
     public onKill(): void {
@@ -85,7 +89,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     public onCloseCtrl(): void {
-        this.hiddenCtrlPage = true;
+        this.hiddenCtrlPanel = true;
     }
 
     public onUpload(): void {

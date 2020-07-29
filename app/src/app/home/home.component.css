@@ -27,44 +27,10 @@
     filter: drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
 }
 
-.ctrl-panel {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    transform: translateY(-50%);
-    height: 5%;
-    width: 80%;
-    padding: 1%;
-    z-index: 2;
-    background: #1dc533;
-    left: 10%;
-    filter: drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
-}
-
-.panel-item {
-    color: white;
-    width: 20%;
-    height: 100%;
-    margin: 0 1%;
-    font-size: x-large;
-    font-weight: lighter;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.panel-item:hover {
-    color: white;
-    background: #25e33c;
-    border-radius: 10px;
-    width: 20%;
-    height: 100%;
-    margin: 0 1%;
-    font-size: x-large;
-    font-weight: lighter;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+@media (max-width: 600px) {
+    .home-add-button {
+        display: none;
+    }
 }
 
 .float-page-background {
@@ -76,7 +42,7 @@
     left: 0;
     height: 100vh;
     width: 100vw;
-    z-index: 1;
+    z-index: 5;
     background-color: rgba(0, 0, 0, 0.29);
 }
 
@@ -93,47 +59,6 @@ table th, table td {
 
 table tr:nth-child(odd) {
     background-color: #eee
-}
-
-.table-checkbox {
-    position: relative;
-    margin: 0 1rem 0 0;
-    cursor: pointer;
-}
-
-.table-checkbox:before {
-    position: absolute;
-    z-index: 1;
-    top: 0.125rem;
-    left: 0.1875rem;
-    width: 0.75rem;
-    height: 0.375rem;
-    content: '';
-    -webkit-transition: -webkit-transform 0.4s cubic-bezier(0.45, 1.8, 0.5, 0.75);
-    transition: transform 0.4s cubic-bezier(0.45, 1.8, 0.5, 0.75);
-    -webkit-transform: rotate(-45deg) scale(0, 0);
-    transform: rotate(-45deg) scale(0, 0);
-    border: 2px solid #da3c41;
-    border-top-style: none;
-    border-right-style: none;
-}
-
-.table-checkbox:checked:before {
-    -webkit-transform: rotate(-45deg) scale(1, 1);
-    transform: rotate(-45deg) scale(1, 1);
-}
-
-.table-checkbox:after {
-    position: absolute;
-    top: -0.125rem;
-    left: 0;
-    width: 1rem;
-    height: 1rem;
-    content: '';
-    cursor: pointer;
-    border: 2px solid #8e8e8e;
-    border-radius: 5px;
-    background: #ffffff;
 }
 
 .table-item {
