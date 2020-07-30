@@ -20,7 +20,16 @@ func GetAllProcess(db *sql.DB) []utils.Process {
 	defer dbSelect.Close()
 	for dbSelect.Next() {
 		var process utils.Process
-		dbSelect.Scan(&process.ID, &process.UseVram, &process.Status, &process.Filename, &process.StartDate, &process.CompleteDate)
+		var startDate time.Time
+		var completeDate time.Time
+		dbSelect.Scan(&process.ID, &process.UseVram, &process.Status, &process.Filename, &startDate, &completeDate)
+		jst, _ := time.LoadLocation("Asia/Tokyo")
+		if !startDate.IsZero() {
+			process.StartDate = startDate.In(jst).Format("2006年01月02日 15時04分05秒")
+		}
+		if !completeDate.IsZero() {
+			process.CompleteDate = completeDate.In(jst).Format("2006年01月02日 15時04分05秒")
+		}
 		processes = append(processes, process)
 	}
 	return processes

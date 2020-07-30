@@ -69,15 +69,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
     }
 
-    public onSelectCheck(process): void {
-        process.selected = !process.selected;
-        this.hiddenCtrlPanel = false;
-    }
-
-    public onSelectAllCheck(): void {
-        this.hiddenCtrlPanel = !this.hiddenCtrlPanel;
-    }
-
     public onKill(id): void {
         this.http.get(
             `${config.httpScheme}${location.hostname}:${config.port}/kill?id=${id}`
