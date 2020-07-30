@@ -105,8 +105,8 @@ func StartProcess(db *sql.DB, id string) {
 	}
 
 	go func() {
-		Execute(db, id)
-		ComplateProcess(db, id, "complete")
+		status := Execute(db, id)
+		ComplateProcess(db, id, status)
 	}()
 
 	utils.BroadcastProcess <- GetAllProcess(db)
