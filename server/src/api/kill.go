@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"os/exec"
 	"strconv"
-
-	"../modules"
 )
 
 // KillHander kill命令実行
@@ -26,13 +24,8 @@ func KillHander(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if pid != 0 {
 		// 親子共々kill
 		if err := exec.Command("sh", "-c", "kill `ps ho pid --ppid="+strconv.Itoa(pid)+"`").Run(); err != nil {
-			panic(err.Error())
+			status = "not kill"
 		}
-		if err := exec.Command("kill", strconv.Itoa(pid)).Run(); err != nil {
-			panic(err.Error())
-		}
-		// DBアップデート
-		modules.ComplateProcess(db, id, status)
 	} else {
 		status = "not kill"
 	}
