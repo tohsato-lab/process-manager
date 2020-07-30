@@ -81,8 +81,25 @@ table tr:nth-child(odd) {
 
 .table-complete {
     border-radius: 10px;
+    background-color: #41c515;
+    font-weight: lighter;
+    color: #ffffff;
+}
+
+.table-error {
+    border-radius: 10px;
     background-color: #ffd400;
     font-weight: lighter;
+}
+
+.kill-button {
+    border-radius: 10px;
+    background: red;
+    color: white;
+}
+
+.kill-button:hover {
+    box-shadow: 0 0 0 0 #424242, 0 0 10px 0 #ff1f1f;
 }
 
 .none-process {
