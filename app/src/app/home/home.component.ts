@@ -78,9 +78,9 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.hiddenCtrlPanel = !this.hiddenCtrlPanel;
     }
 
-    public onKill(): void {
+    public onKill(id): void {
         this.http.get(
-            `${config.httpScheme}${location.hostname}:${config.port}/kill?id=${this.processCtrlData.ID}`
+            `${config.httpScheme}${location.hostname}:${config.port}/kill?id=${id}`
         ).subscribe(value => {
             console.log(value);
         }, error => {

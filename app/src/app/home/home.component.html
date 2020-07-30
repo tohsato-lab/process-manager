@@ -26,7 +26,7 @@
       <th>{{process["StartDate"]}}</th>
       <th>{{process["CompleteDate"]}}</th>
       <th>
-        <div style="border-radius: 10px; background: red; color: white;">kill</div>
+        <div (click)="onKill(process['ID'])" style="border-radius: 10px; background: red; color: white;">kill</div>
       </th>
       <th><img src="assets/icon/trash.svg" alt="delete"></th>
     </tr>
