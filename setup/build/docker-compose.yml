@@ -1,0 +1,12 @@
+version: "2.4"
+services:
+  process_manager:
+    build: .
+    ports:
+      - "3316:3306"
+      - "5983:5983"
+    volumes:
+      - "/home/migly/LAB/data:/process-manager/server/dataset:ro"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    runtime: nvidia
