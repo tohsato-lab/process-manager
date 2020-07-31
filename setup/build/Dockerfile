@@ -43,7 +43,8 @@ RUN git clone https://github.com/tohsato-lab/process-manager.git && \
 
 WORKDIR /process-manager
 
-RUN mysql -u root < ./setup/data/init.sql
+RUN service mysql restart && \
+    mysql -u root < ./setup/data/init.sql
 
 RUN cd ./app && \
     npm install

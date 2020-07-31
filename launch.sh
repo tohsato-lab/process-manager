@@ -1,3 +1,5 @@
+#!/bin/bash
+
 cd app
 bash launch.sh &
 cd ../server/src
