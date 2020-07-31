@@ -22,6 +22,9 @@ RUN wget -P /opt https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_6
 # install server env
 RUN apt-get install -y mysql-server golang-go
 
+RUN mkdir -p /var/run/mysqld/ && \
+    chmod 777 /var/run/mysqld/
+
 # install angular
 RUN apt install -y nodejs npm && \
     npm install n -g && \
@@ -37,3 +40,14 @@ RUN apt-get clean && \
 RUN git clone https://github.com/tohsato-lab/process-manager.git && \
     go get github.com/go-sql-driver/mysql && \
     go get github.com/gorilla/websocket
+
+WORKDIR /process-manager
+
+RUN mysql -u root < ./setup/data/init.sql
+
+RUN cd ./app && \
+    npm install
+
+RUN chmod 777 ./launch.sh
+
+CMD [ "./launch.sh" ]
