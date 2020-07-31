@@ -6,5 +6,5 @@ curl -s -L https://nvidia.github.io/nvidia-container-runtime/gpgkey | \
   sudo tee /etc/apt/sources.list.d/nvidia-container-runtime.list
  sudo apt update
  sudo apt install nvidia-container-runtime
- sudo cp data/daemon.json /etc/docker/daemon.json
+ sudo cp ../data/daemon.json /etc/docker/daemon.json
  sudo reboot
