@@ -22,6 +22,7 @@ RUN wget -P /opt https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_6
 # install server env
 RUN apt-get install -y mysql-server golang-go
 
+# socketエラーの対策
 RUN mkdir -p /var/run/mysqld/ && \
     chmod 777 /var/run/mysqld/
 
@@ -32,7 +33,7 @@ RUN apt install -y nodejs npm && \
     . /root/.bashrc && \
     echo n | npm install -g --silent @angular/cli
 
-# tidying up
+# キャッシュ削除
 RUN apt-get clean && \
     apt-get autoclean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -42,6 +43,9 @@ RUN git clone https://github.com/tohsato-lab/process-manager.git && \
     go get github.com/gorilla/websocket
 
 WORKDIR /process-manager
+
+# 世界時間情報
+ADD ./setup/data/zoneinfo.tar.gz /
 
 RUN service mysql restart && \
     mysql -u root < ./setup/data/init.sql

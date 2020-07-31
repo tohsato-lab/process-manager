@@ -10,3 +10,6 @@ CREATE TABLE IF NOT EXISTS `process_table` (
   `complete_date` datetime DEFAULT NULL COMMENT "実行完了日時",
   `pid` int DEFAULT NULL COMMENT "PID"
 ) DEFAULT CHARACTER SET=utf8;
+
+CREATE user `golang`@`localhost` IDENTIFIED BY 'golang';
+GRANT all privileges on process_manager_db.* to golang@localhost IDENTIFIED BY 'golang';
