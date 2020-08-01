@@ -79,6 +79,16 @@ export class HomeComponent implements OnInit, OnDestroy {
         });
     }
 
+    public onDelete(id): void {
+        this.http.get(
+            `${config.httpScheme}${location.hostname}:${config.port}/delete?id=${id}`
+        ).subscribe(value => {
+            console.log(value);
+        }, error => {
+            console.log(error);
+        });
+    }
+
     public onCloseCtrl(): void {
         this.hiddenCtrlPanel = true;
     }
