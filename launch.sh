@@ -1,5 +1,7 @@
 #!/bin/bash
 
+git pull origin master
+
 service mysql restart
 
 cd app

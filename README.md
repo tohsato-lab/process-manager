@@ -33,9 +33,6 @@ docker-compose up -d
 # Update
 ```bash
 cd ./setup
-docker exec -it server /bin/bash
-git pull origin master
-exit
 docker-compose down
 docker-compose up -d
 ```
