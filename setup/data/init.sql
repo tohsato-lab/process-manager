@@ -11,5 +11,5 @@ CREATE TABLE IF NOT EXISTS `process_table` (
   `pid` int DEFAULT NULL COMMENT "PID"
 ) DEFAULT CHARACTER SET=utf8;
 
-CREATE user `golang`@`localhost` IDENTIFIED BY 'golang';
-GRANT all privileges on process_manager_db.* to golang@localhost IDENTIFIED BY 'golang';
+CREATE user `golang`@'%' IDENTIFIED BY 'golang';
+GRANT ALL PRIVILEGES ON process_manager_db.* to `golang`@'%' IDENTIFIED BY 'golang'

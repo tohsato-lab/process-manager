@@ -42,10 +42,10 @@ RUN git clone https://github.com/tohsato-lab/process-manager.git && \
     go get github.com/go-sql-driver/mysql && \
     go get github.com/gorilla/websocket
 
-WORKDIR /process-manager
-
 # 世界時間情報
-ADD ./setup/data/zoneinfo.tar.gz /
+ADD ./data/zoneinfo.tar.gz /
+
+WORKDIR /process-manager
 
 RUN service mysql restart && \
     mysql -u root < ./setup/data/init.sql
@@ -54,5 +54,3 @@ RUN cd ./app && \
     npm install
 
 RUN chmod 777 ./launch.sh
-
-CMD [ "./launch.sh" ]
