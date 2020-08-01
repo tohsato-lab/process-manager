@@ -21,7 +21,7 @@ func main() {
 	if err := os.Mkdir("../histories", 0777); err != nil {
 		fmt.Println(err)
 	}
-	db, err := sql.Open("mysql", "golang:golang@tcp(server)/process_manager_db?parseTime=true")
+	db, err := sql.Open("mysql", "golang:golang@/process_manager_db?parseTime=true")
 	if err != nil {
 		panic(err.Error())
 	}
