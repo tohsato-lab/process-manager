@@ -6,6 +6,7 @@ services:
       - "3306:3306"
       - "5983:5983"
       - "8080:8080"
+    command: ./launch.sh
     volumes:
       - "/home/migly/LAB/data:/process-manager/server/dataset:ro"
     environment:
