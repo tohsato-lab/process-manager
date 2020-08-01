@@ -8,13 +8,13 @@ RUN apt-get update && \
     apt-get update && \
     apt-get install -y less man curl wget git unzip bzip2 vim emacs && \
     apt-get install -y build-essential gcc clang zlib1g-dev libeigen3-dev cmake && \
-    apt-get install -y python3 python3-dev python3-pip python3-venv python3-setuptools
+    apt-get install -y python3 python3-dev python3-pip python3-venv python3-setuptools && \
+    touch /root/.bashrc
 
 # install anaconda
 RUN wget -P /opt https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh && \
     bash /opt/Anaconda3-2020.02-Linux-x86_64.sh -b -p /opt/anaconda3 && \
     rm /opt/Anaconda3-2020.02-Linux-x86_64.sh && \
-    touch /root/.bashrc && \
     echo "export PATH=/opt/anaconda3/bin:$PATH" >> /root/.bashrc && \
     . /root/.bashrc && \
     conda init
@@ -52,5 +52,9 @@ RUN service mysql restart && \
 
 RUN cd ./app && \
     npm install
+
+RUN conda config --set auto_activate_base false && \
+    conda env create -f=./setup/data/conda_pytorch.yml && \
+    conda env create -f=./setup/data/conda_keras.yml
 
 RUN chmod 777 ./launch.sh
