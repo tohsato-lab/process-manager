@@ -20,7 +20,7 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	status := ""
-	if dbStatus != "ready" && dbStatus != "working" {
+	if dbStatus != "working" {
 		modules.DeleteProcess(db, id)
 		status = "deleted"
 	} else {
