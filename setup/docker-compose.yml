@@ -9,9 +9,12 @@ services:
     command: ./launch.sh
     volumes:
       - "/home/migly/LAB/data:/process-manager/server/dataset:ro"
-      - "./mysql:/var/lib/mysql"
+      - "dbvolume/mysql:/var/lib/mysql"
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     runtime: nvidia
     container_name: server
     tty: true
+
+volumes:
+  dbvolume:
