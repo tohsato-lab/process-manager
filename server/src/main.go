@@ -28,10 +28,13 @@ func main() {
 	defer db.Close()
 
 	http.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
-		api.UploadHander(w, r, db)
+		api.UploadHandler(w, r, db)
 	})
 	http.HandleFunc("/kill", func(w http.ResponseWriter, r *http.Request) {
-		api.KillHander(w, r, db)
+		api.KillHandler(w, r, db)
+	})
+	http.HandleFunc("/delete", func(w http.ResponseWriter, r *http.Request) {
+		api.DeleteHandler(w, r, db)
 	})
 	http.Handle("/histories/", http.StripPrefix("/histories/", http.FileServer(http.Dir("../histories"))))
 	http.HandleFunc("/process_status", func(w http.ResponseWriter, r *http.Request) {

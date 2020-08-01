@@ -10,8 +10,8 @@ import (
 	"../modules"
 )
 
-// KillHander kill命令実行
-func KillHander(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+// KillHandler kill命令実行
+func KillHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	id := r.FormValue("id")
 
