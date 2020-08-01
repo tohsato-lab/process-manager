@@ -27,9 +27,17 @@ bash setup.sh
 # Usage
 
 ```bash
+cd ./setup
+docker-compose up -d
+```
+# Update
+```bash
+cd ./setup
 docker exec -it server /bin/bash
-cd process-manager
-bash launch.sh
+git pull origin master
+exit
+docker-compose down
+docker-compose up -d
 ```
 
 # Note
