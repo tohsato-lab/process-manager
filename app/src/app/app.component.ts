@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
-import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
+import {BreakpointObserver} from '@angular/cdk/layout';
 import {map, shareReplay} from 'rxjs/operators';
 import {CommonService} from './service/commom.service';
 
@@ -17,7 +17,7 @@ export class AppComponent implements OnInit {
     private subscription: Subscription;
 
     title = 'process manager';
-    isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
+    isHandset$: Observable<boolean> = this.breakpointObserver.observe('(max-width: 1100px)')
         .pipe(
             map(result => result.matches),
             shareReplay()
