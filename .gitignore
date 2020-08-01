@@ -9,6 +9,7 @@ dist/
 tmp/
 app/**/*.js
 app/**/*.js.map
+!app/server/server.js
 
 # dependencies
 node_modules/
