@@ -137,3 +137,18 @@ func ComplateProcess(db *sql.DB, id string, status string) {
 
 	UpdataAllProcess(db)
 }
+
+// DeleteProcess リストからプロセスを削除
+func DeleteProcess(db *sql.DB, id string) {
+	dbDelete, err := db.Prepare("DELETE FROM process_table WHERE id = ?")
+	if err != nil {
+		panic(err.Error())
+	}
+	defer dbDelete.Close()
+
+	if dbDelete.Exec(id); err != nil {
+		panic(err.Error())
+	}
+
+	utils.BroadcastProcess <- GetAllProcess(db)
+}

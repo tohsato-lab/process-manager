@@ -3,8 +3,9 @@ package api
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"net/http"
+
+	"../modules"
 )
 
 // DeleteHandler process命令実行
@@ -12,29 +13,25 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	id := r.FormValue("id")
 
-	// pid取得
-	dbDelete, err := db.Prepare("DELETE FROM process_table WHERE id = ?")
-	if err != nil {
-		panic(err.Error())
-	}
-	defer dbDelete.Close()
-
-	result, err := dbDelete.Exec(id)
+	dbStatus := ""
+	err := db.QueryRow("SELECT status FROM process_table WHERE id = ?", id).Scan(&dbStatus)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	rowsAffect, err := result.RowsAffected()
-	if err != nil {
-		panic(err.Error())
+	status := ""
+	if dbStatus != "ready" && dbStatus != "working" {
+		modules.DeleteProcess(db, id)
+		status = "deleted"
+	} else {
+		status = "not delete"
 	}
-	fmt.Println(rowsAffect)
 
 	// return
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	response := response{
 		Status: "200",
-		Data:   "deleted",
+		Data:   status,
 	}
 	json, _ := json.Marshal(response)
 	w.Write(json)
