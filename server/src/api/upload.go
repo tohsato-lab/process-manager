@@ -23,8 +23,8 @@ type response struct {
 	Data   string `json:"data"`
 }
 
-// UploadHander ファイルアップロードハンドラー
-func UploadHander(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+// UploadHandler ファイルアップロードハンドラー
+func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	// このハンドラ関数へのアクセスはPOSTメソッドのみ認める
 	if r.Method != "POST" {
