@@ -20,7 +20,8 @@ RUN wget -P /opt https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_6
     conda init
 
 # install server env
-RUN apt-get install -y mysql-server golang-go
+RUN apt-get update && \
+    apt-get install -y mysql-server golang-go
 
 # socketエラーの対策
 RUN mkdir -p /var/run/mysqld/ && \
@@ -53,8 +54,10 @@ RUN service mysql restart && \
 RUN cd ./app && \
     npm install
 
-RUN conda config --set auto_activate_base false && \
+RUN . /root/.bashrc && \
+    conda config --set auto_activate_base false && \
     conda env create -f=./setup/data/conda_pytorch.yml && \
     conda env create -f=./setup/data/conda_keras.yml
 
 RUN chmod 777 ./launch.sh
+
