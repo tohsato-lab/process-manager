@@ -2,7 +2,7 @@
   <div class="home-add-button">
     <img src="assets/icon/add-icon.svg" alt="add-icon" (click)="onAddButton()">
   </div>
-  <table style="min-width: 700px;">
+  <table style="min-width: 840px;">
     <thead>
     <tr>
       <th>ファイル名</th>
@@ -34,7 +34,7 @@
           kill
         </div>
       </th>
-      <th><img src="assets/icon/trash.svg" alt="delete"></th>
+      <th><img (click)="onDelete(process['ID'])" src="assets/icon/trash.svg" alt="delete"></th>
     </tr>
   </table>
   <div *ngIf="processList.length == 0" class="none-process">
