@@ -7,9 +7,8 @@
 # compiled output
 dist/
 tmp/
-app/**/*.js
-app/**/*.js.map
-!app/server/server.js
+app/src/app/**/*.js
+app/src/app/**/*.js.map
 
 # dependencies
 node_modules/
