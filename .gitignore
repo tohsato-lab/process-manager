@@ -54,4 +54,8 @@ e2e/*.map
 /vendor/
 /Godeps/
 
+logs/
+dataset/
+programs/
+
 # End of https://www.toptal.com/developers/gitignore/api/angular,go
