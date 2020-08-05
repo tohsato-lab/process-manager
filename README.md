@@ -21,7 +21,8 @@
 # Installation
 
 ```bash
-bash setup.sh
+cd ./setup/script
+bash docker-install.sh
 ```
 
 # Usage
@@ -34,6 +35,7 @@ docker-compose up -d
 ```bash
 cd ./setup
 docker-compose down
+git pull origin master
 docker-compose up -d
 ```
 
