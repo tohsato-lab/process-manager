@@ -60,3 +60,4 @@ RUN . /root/.bashrc && \
     conda env create -f=./setup/data/conda_keras.yml
 
 RUN chmod 777 ./launch.sh
+

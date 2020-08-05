@@ -9,6 +9,7 @@ services:
     command: ./launch.sh
     volumes:
       - "/home/migly/LAB/data:/process-manager/server/dataset:ro"
+      - "../server/programs:/process-manager/server/programs"
       - "mysql_data:/var/lib/mysql"
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
