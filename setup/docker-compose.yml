@@ -8,7 +8,7 @@ services:
     ports:
       - "3306:3306"
       - "5983:5983"
-    command: bash ./launch.sh
+    command: service mysql start && go run main.go
     volumes:
       - "/home/migly/LAB/data:/process-manager/data/dataset:ro"
       - "../data/programs:/process-manager/data/programs"
