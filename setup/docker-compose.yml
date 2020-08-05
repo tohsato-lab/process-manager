@@ -1,20 +1,15 @@
-version: "2.4"
+version: "3"
 services:
-  process_manager:
-    build: .
+  process_manager_app:
+    build:
+      context: .
+      dockerfile: DockerfileApp
     ports:
-      - "3306:3306"
-      - "5983:5983"
       - "8080:8080"
-    command: ./launch.sh
+    command: bash ./launch.sh
     volumes:
-      - "/home/migly/LAB/data:/process-manager/server/dataset:ro"
-      - "../server/programs:/process-manager/server/programs"
-      - "mysql_data:/var/lib/mysql"
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
-    runtime: nvidia
-    container_name: server
+      - "../app:/process-manager/app"
+    container_name: app
     tty: true
 
 volumes:

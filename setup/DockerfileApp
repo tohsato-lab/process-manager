@@ -1,0 +1,8 @@
+FROM node:latest
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# install angular
+RUN echo n | npm install -g --silent @angular/cli
+
+WORKDIR /process-manager/app
