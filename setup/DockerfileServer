@@ -27,37 +27,20 @@ RUN apt-get update && \
 RUN mkdir -p /var/run/mysqld/ && \
     chmod 777 /var/run/mysqld/
 
-# install angular
-RUN apt install -y nodejs npm && \
-    npm install n -g && \
-    n stable && \
-    . /root/.bashrc && \
-    echo n | npm install -g --silent @angular/cli
-
 # キャッシュ削除
 RUN apt-get clean && \
     apt-get autoclean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN git clone https://github.com/tohsato-lab/process-manager.git && \
-    go get github.com/go-sql-driver/mysql && \
-    go get github.com/gorilla/websocket
-
 # 世界時間情報
 ADD ./data/zoneinfo.tar.gz /
 
-WORKDIR /process-manager
+WORKDIR /process-manager/server
 
 RUN service mysql restart && \
     mysql -u root < ./setup/data/init.sql
-
-RUN cd ./app && \
-    npm install
 
 RUN . /root/.bashrc && \
     conda config --set auto_activate_base false && \
     conda env create -f=./setup/data/conda_pytorch.yml && \
     conda env create -f=./setup/data/conda_keras.yml
-
-RUN chmod 777 ./launch.sh
-
