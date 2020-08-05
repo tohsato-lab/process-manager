@@ -17,7 +17,8 @@ RUN wget -P /opt https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_6
     rm /opt/Anaconda3-2020.02-Linux-x86_64.sh && \
     echo "export PATH=/opt/anaconda3/bin:$PATH" >> /root/.bashrc && \
     . /root/.bashrc && \
-    conda init
+    conda init && \
+    conda update -n base -c defaults conda
 
 # install server env
 RUN apt-get update && \
@@ -32,15 +33,22 @@ RUN apt-get clean && \
     apt-get autoclean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+COPY ./data /process-manager/setup/data
+
 # 世界時間情報
 ADD ./data/zoneinfo.tar.gz /
 
-WORKDIR /process-manager/server
+WORKDIR /process-manager/setup/data
 
 RUN service mysql restart && \
-    mysql -u root < ./setup/data/init.sql
+    mysql -u root < ./init.sql
 
+# install Anaconda's package
 RUN . /root/.bashrc && \
     conda config --set auto_activate_base false && \
-    conda env create -f=./setup/data/conda_pytorch.yml && \
-    conda env create -f=./setup/data/conda_keras.yml
+    for package in `ls anaconda_packages`; do conda env create -f="anaconda_packages/$package"; done
+
+RUN go get github.com/go-sql-driver/mysql && \
+    go get github.com/gorilla/websocket
+
+WORKDIR /process-manager/server
