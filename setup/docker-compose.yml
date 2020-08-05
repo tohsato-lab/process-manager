@@ -8,7 +8,7 @@ services:
     ports:
       - "3306:3306"
       - "5983:5983"
-    command: go run main.go
+    command: bash ./launch.sh
     volumes:
       - "/home/migly/LAB/data:/process-manager/data/dataset:ro"
       - "../data/programs:/process-manager/data/programs"
@@ -30,8 +30,6 @@ services:
       - "../app:/process-manager/app"
     container_name: app
     tty: true
-
-
 
 volumes:
   mysql_data:

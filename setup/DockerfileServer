@@ -40,8 +40,9 @@ ADD ./data/zoneinfo.tar.gz /
 
 WORKDIR /process-manager/setup/data
 
-RUN service mysql restart && \
-    mysql -u root < ./init.sql
+RUN service mysql start && \
+    mysql -u root < ./init.sql && \
+    service mysql stop
 
 # install Anaconda's package
 RUN . /root/.bashrc && \
