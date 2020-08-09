@@ -67,7 +67,7 @@ table tr:nth-child(odd) {
 
 .table-ready {
     border-radius: 10px;
-    background-color: #d00606;
+    background-color: #4c4c4c;
     font-weight: lighter;
     color: #ffffff;
 }
@@ -88,8 +88,9 @@ table tr:nth-child(odd) {
 
 .table-error {
     border-radius: 10px;
-    background-color: #ffd400;
+    background-color: #ef2020;
     font-weight: lighter;
+    color: white;
 }
 
 .kill-button {
