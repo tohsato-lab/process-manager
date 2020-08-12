@@ -71,7 +71,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	// unzip
 	utils.Unzip("./"+uploadedFileName, "../data/programs/"+targetFileID)
-	if err := os.Remove("./" + uploadedFileName); err != nil {
+	if err := os.Rename("./"+uploadedFileName, "../data/programs/"+targetFileID+"/"+uploadedFileName); err != nil {
 		fmt.Println(err)
 	}
 
