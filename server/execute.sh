@@ -5,6 +5,10 @@ TARGET=$2
 CONDA_ENV=$3
 ROOT=`pwd`
 DIR=`find ./ | grep "$TARGET" | tail -n 1`
+if [[ -z $DIR ]]; then
+	echo 'targetfile not found!!' | tee "$ROOT/history.log"
+	exit 1
+fi
 cd $(dirname ${DIR})
 
 source /opt/anaconda3/etc/profile.d/conda.sh
