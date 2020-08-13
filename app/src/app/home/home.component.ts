@@ -15,10 +15,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     public headerTitle = 'プロセス一覧';
     public hiddenUploadPage = true;
     public hiddenAuthPage = true;
-    public hiddenCtrlPanel = true;
     public serverAddress = `${config.httpScheme}${location.hostname}:${config.port}`;
     public files: any = [];
     public processList = [];
+    public envList: any;
     public processCtrlData: any = null;
 
     private subscription: Subscription;
@@ -55,6 +55,13 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     public onAddButton(): void {
         this.hiddenUploadPage = false;
+        this.http.get(
+            `${config.httpScheme}${location.hostname}:${config.port}/env_info`
+        ).subscribe(value => {
+            this.envList = value;
+        }, error => {
+            console.log(error);
+        });
     }
 
     public onCloseUpload(): void {
@@ -87,10 +94,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         }, error => {
             console.log(error);
         });
-    }
-
-    public onCloseCtrl(): void {
-        this.hiddenCtrlPanel = true;
     }
 
     public onUpload(): void {

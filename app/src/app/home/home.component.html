@@ -68,6 +68,15 @@
       <div *ngFor="let file of files" class="upload-item">
         <div>{{file.data.name}}</div>
         <div>
+          <div style="font-size: smaller">Conda環境</div>
+          <label>
+            <select required>
+              <option hidden>選択してください</option>
+              <option *ngFor="let env of envList">{{env}}</option>
+            </select>
+          </label>
+        </div>
+        <div>
           <div style="font-size: smaller">VRAM(MB)</div>
           <label><input type="number" style="width: 80%;" [(ngModel)]="file['vram']"></label>
         </div>
