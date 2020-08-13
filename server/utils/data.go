@@ -8,6 +8,8 @@ type Process struct {
 	Filename     string
 	StartDate    string
 	CompleteDate string
+	TargetFile   string
+	EnvName      string
 }
 
 // BroadcastProcess データベースの情報を格納する
