@@ -37,7 +37,6 @@ func GetAllProcess(db *sql.DB) []utils.Process {
 
 // RegistProcess データベースに新規登録
 func RegistProcess(db *sql.DB, process utils.Process) {
-	fmt.Println(process)
 	ins, err := db.Prepare("INSERT INTO process_table (id, use_vram, status, filename, targetfile, env_name) VALUES (?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)
@@ -56,7 +55,7 @@ func UpdataAllProcess(db *sql.DB) {
 	vramTotal := utils.GetTotalVRAM()
 
 	// 0より大きく設定されたプロセスを先に実行
-	dbReady, err := db.Query("SELECT id, use_vram FROM process_table WHERE use_vram > 0 AND status = ? ORDER BY use_vram", "ready")
+	dbReady, err := db.Query("SELECT id, use_vram, targetfile, env_name FROM process_table WHERE use_vram > 0 AND status = ? ORDER BY use_vram", "ready")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -69,12 +68,12 @@ func UpdataAllProcess(db *sql.DB) {
 			panic(err.Error())
 		}
 		var process utils.Process
-		dbReady.Scan(&process.ID, &process.UseVram)
+		dbReady.Scan(&process.ID, &process.UseVram, &process.TargetFile, &process.EnvName)
 
 		// メモリに空きがある場合
 		fmt.Println(vramTotal - (float32(usedVRAM) + process.UseVram))
 		if vramTotal-(float32(usedVRAM)+process.UseVram) >= 0 {
-			StartProcess(db, process.ID)
+			StartProcess(db, process.ID, process.TargetFile, process.EnvName)
 		} else {
 			break
 		}
@@ -93,17 +92,16 @@ func UpdataAllProcess(db *sql.DB) {
 	}
 	if countReady != 0 && countWorking == 0 {
 		var process utils.Process
-		err = db.QueryRow("SELECT id, use_vram FROM process_table WHERE use_vram = 0 AND status = ?", "ready").Scan(&process.ID, &process.UseVram)
+		err = db.QueryRow("SELECT id, targetfile, env_name FROM process_table WHERE use_vram = 0 AND status = ?", "ready").Scan(&process.ID, &process.TargetFile, &process.EnvName)
 		if err != nil {
 			panic(err.Error())
 		}
-
-		StartProcess(db, process.ID)
+		StartProcess(db, process.ID, process.TargetFile, process.EnvName)
 	}
 }
 
 // StartProcess プロセス実行
-func StartProcess(db *sql.DB, id string) {
+func StartProcess(db *sql.DB, id string, targetfile string, envName string) {
 	statusUpdate, err := db.Prepare("UPDATE process_table SET status=?, start_date=? WHERE id=?")
 	if err != nil {
 		panic(err.Error())
@@ -115,7 +113,7 @@ func StartProcess(db *sql.DB, id string) {
 	}
 
 	go func() {
-		status := Execute(db, id)
+		status := Execute(db, id, targetfile, envName)
 		ComplateProcess(db, id, status)
 	}()
 
