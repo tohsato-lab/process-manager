@@ -37,11 +37,12 @@ func GetAllProcess(db *sql.DB) []utils.Process {
 
 // RegistProcess データベースに新規登録
 func RegistProcess(db *sql.DB, process utils.Process) {
-	ins, err := db.Prepare("INSERT INTO process_table (id, use_vram, status, filename) VALUES (?, ?, ?, ?)")
+	fmt.Println(process)
+	ins, err := db.Prepare("INSERT INTO process_table (id, use_vram, status, filename, targetfile, env_name) VALUES (?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)
 	}
-	ins.Exec(process.ID, process.UseVram, process.Status, process.Filename)
+	ins.Exec(process.ID, process.UseVram, process.Status, process.Filename, process.TargetFile, process.EnvName)
 	if err != nil {
 		log.Fatal(err)
 	}
