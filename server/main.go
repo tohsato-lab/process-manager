@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"./api"
+	"./utils"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -16,6 +17,8 @@ func main() {
 		panic(err.Error())
 	}
 	defer db.Close()
+
+	utils.GetCondaEnv()
 
 	http.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
 		api.UploadHandler(w, r, db)
