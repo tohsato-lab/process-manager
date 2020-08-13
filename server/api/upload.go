@@ -65,6 +65,12 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 
+	// get use env
+	env := r.FormValue("env")
+
+	// get use target
+	target := r.FormValue("target")
+
 	// target filename
 	md5 := md5.Sum([]byte(time.Now().String()))
 	targetFileID := hex.EncodeToString(md5[:])
@@ -77,10 +83,12 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	// regist proceess
 	modules.RegistProcess(db, utils.Process{
-		ID:       targetFileID,
-		UseVram:  float32(vram),
-		Status:   "ready",
-		Filename: strings.Split(uploadedFileName, ".")[0],
+		ID:         targetFileID,
+		UseVram:    float32(vram),
+		Status:     "ready",
+		Filename:   strings.Split(uploadedFileName, ".")[0],
+		TargetFile: target,
+		EnvName:    env,
 	})
 
 	// update process
