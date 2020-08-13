@@ -65,23 +65,26 @@
       <ngx-dropzone (change)="onSelectFiles($event)" class="upload-drop-zone">
         <ngx-dropzone-label>ここにファイルをドロップしてください</ngx-dropzone-label>
       </ngx-dropzone>
-      <div *ngFor="let file of files" class="upload-item">
-        <div>{{file.data.name}}</div>
+      <div *ngFor="let info of fileInfos" class="upload-item">
+        <div>{{info.file.name}}</div>
+        <div>
+          <div style="font-size: smaller">起動ファイル名</div>
+          <label><input style="width: 80%;" [(ngModel)]="info['target']"></label>
+        </div>
         <div>
           <div style="font-size: smaller">Conda環境</div>
           <label>
-            <select required>
-              <option hidden>選択してください</option>
+            <select required [(ngModel)]="info['env']">
               <option *ngFor="let env of envList">{{env}}</option>
             </select>
           </label>
         </div>
         <div>
           <div style="font-size: smaller">VRAM(MB)</div>
-          <label><input type="number" style="width: 80%;" [(ngModel)]="file['vram']"></label>
+          <label><input type="number" style="width: 80%;" [(ngModel)]="info['vram']"></label>
         </div>
       </div>
-      <div (click)="onUpload()" *ngIf="files.length != 0" class="upload-button">upload</div>
+      <div (click)="onUpload()" *ngIf="fileInfos.length != 0" class="upload-button">upload</div>
     </div>
   </div>
 </div>
