@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"./api"
-	"./utils"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -18,8 +17,6 @@ func main() {
 	}
 	defer db.Close()
 
-	utils.GetCondaEnv()
-
 	http.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
 		api.UploadHandler(w, r, db)
 	})
@@ -29,9 +26,13 @@ func main() {
 	http.HandleFunc("/delete", func(w http.ResponseWriter, r *http.Request) {
 		api.DeleteHandler(w, r, db)
 	})
+	http.HandleFunc("/env_info", func(w http.ResponseWriter, r *http.Request) {
+		api.EnvInfoHandler(w, r)
+	})
 	http.HandleFunc("/process_status", func(w http.ResponseWriter, r *http.Request) {
 		api.WebSocketHandle(w, r, db)
 	})
+
 	go api.WebSocketKernel()
 
 	fmt.Println("server start")
