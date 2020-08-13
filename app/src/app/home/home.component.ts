@@ -15,10 +15,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     public headerTitle = 'プロセス一覧';
     public hiddenUploadPage = true;
     public hiddenAuthPage = true;
-    public hiddenCtrlPanel = true;
     public serverAddress = `${config.httpScheme}${location.hostname}:${config.port}`;
-    public files: any = [];
+    public fileInfos: any = [];
     public processList = [];
+    public envList: any;
     public processCtrlData: any = null;
 
     private subscription: Subscription;
@@ -55,17 +55,24 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     public onAddButton(): void {
         this.hiddenUploadPage = false;
+        this.http.get(
+            `${config.httpScheme}${location.hostname}:${config.port}/env_info`
+        ).subscribe(value => {
+            this.envList = value;
+        }, error => {
+            console.log(error);
+        });
     }
 
     public onCloseUpload(): void {
         this.hiddenUploadPage = true;
-        this.files = [];
+        this.fileInfos = [];
     }
 
     public onSelectFiles(event): void {
         console.log(event);
         for (const file of [...event.addedFiles]) {
-            this.files.push({data: file, vram: 0.0});
+            this.fileInfos.push({file: file, vram: 0.0, env: 'base', target: 'main.py'});
         }
     }
 
@@ -89,22 +96,20 @@ export class HomeComponent implements OnInit, OnDestroy {
         });
     }
 
-    public onCloseCtrl(): void {
-        this.hiddenCtrlPanel = true;
-    }
-
     public onUpload(): void {
-        for (const file of this.files) {
-            this.upload(file.data, file.vram);
+        for (const fileInfo of this.fileInfos) {
+            this.upload(fileInfo);
         }
-        this.files = [];
+        this.fileInfos = [];
     }
 
-    private upload(file, vram): void {
+    private upload(info): void {
         console.log('upload');
         const formData = new FormData();
-        formData.append('file', file, file.name);
-        formData.append('vram', vram);
+        formData.append('file', info.file, info.file.name);
+        formData.append('vram', info.vram);
+        formData.append('env', info.env);
+        formData.append('target', info.target);
         this.onCloseUpload();
         this.http.post(
             `${config.httpScheme}${location.hostname}:${config.port}/upload`, formData
