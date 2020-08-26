@@ -4,6 +4,7 @@ import {webSocket} from 'rxjs/webSocket';
 import config from '../../../config';
 import {Subscription} from 'rxjs';
 import {CommonService} from '../service/commom.service';
+import {SseService} from '../sse.service';
 
 @Component({
     selector: 'app-home',
@@ -25,7 +26,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     constructor(
         private http: HttpClient,
-        private commonService: CommonService
+        private commonService: CommonService,
+        private sseService: SseService
     ) {
     }
 
@@ -46,6 +48,9 @@ export class HomeComponent implements OnInit, OnDestroy {
             () => console.log('complete')
         );
         this.commonService.onNotifySharedDataChanged(this.headerTitle);
+        this.sseService
+            .getServerSentEvent(`${config.httpScheme}${location.hostname}:${config.port}/event`)
+            .subscribe(data => console.log(data));
     }
 
     ngOnDestroy(): void {
