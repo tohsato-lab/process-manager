@@ -9,9 +9,13 @@ export class SseService {
     constructor(private _zone: NgZone) {
     }
 
-    getServerSentEvent(url: string): Observable<any> {
-        return Observable.create(observer => {
-            const eventSource = this.getEventSource(url);
+    private static getEventSource(url: string): EventSource {
+        return new EventSource(url);
+    }
+
+    public getServerSentEvent(url: string): Observable<any> {
+        return new Observable(observer => {
+            const eventSource = SseService.getEventSource(url);
             eventSource.onmessage = event => {
                 this._zone.run(() => {
                     observer.next(event);
@@ -25,7 +29,4 @@ export class SseService {
         });
     }
 
-    private getEventSource(url: string): EventSource {
-        return new EventSource(url);
-    }
 }
