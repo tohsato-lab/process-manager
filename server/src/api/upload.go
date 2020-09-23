@@ -93,6 +93,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	// update process
 	modules.UpdataAllProcess(db)
+	fmt.Fprintln(w, "アップロード完了")
 
 	// return
 	w.Header().Set("Access-Control-Allow-Origin", "*")
