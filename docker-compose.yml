@@ -2,7 +2,7 @@ version: "2.4"
 services:
   process_manager_server:
     build:
-      context: .
+      context: ./server
       dockerfile: DockerfileServer
     runtime: nvidia
     ports:
@@ -11,8 +11,8 @@ services:
     command: bash -c "service mysql start && go run main.go"
     volumes:
       - "/home/migly/LAB/data:/process-manager/data/dataset:ro"
-      - "../data/programs:/process-manager/data/programs"
-      - "../server:/process-manager/server"
+      - "./data/programs:/process-manager/data/programs"
+      - "./server/src:/process-manager/server/src"
       - "mysql_data:/var/lib/mysql"
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
@@ -21,13 +21,10 @@ services:
 
   process_manager_app:
     build:
-      context: .
+      context: ./client
       dockerfile: DockerfileApp
     ports:
       - "8080:8080"
-    command: bash -c "npm install && ng serve --host 0.0.0.0 --port 8080"
-    volumes:
-      - "../app:/process-manager/app"
     container_name: app
     tty: true
 

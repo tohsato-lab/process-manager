@@ -37,12 +37,12 @@ RUN apt-get clean && \
     apt-get autoclean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY ./data /process-manager/setup/data
+COPY ./docker /process-manager/server/docker
 
 # 世界時間情報
-ADD ./data/zoneinfo.tar.gz /
+ADD ./docker/zoneinfo.tar.gz /
 
-WORKDIR /process-manager/setup/data
+WORKDIR /process-manager/server/docker
 
 RUN service mysql start && \
     mysql -u root < ./init.sql && \
@@ -56,4 +56,6 @@ RUN . /root/.bashrc && \
 RUN go get github.com/go-sql-driver/mysql && \
     go get github.com/gorilla/websocket
 
-WORKDIR /process-manager/server
+WORKDIR /process-manager/server/src
+
+ENV PATH $PATH:/opt/anaconda3/bin

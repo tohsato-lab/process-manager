@@ -1,0 +1,29 @@
+FROM node:latest as build-stage
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# install angular
+RUN echo n | npm install -g --silent @angular/cli
+
+WORKDIR /app
+COPY ./app/ /app/
+
+RUN npm install
+
+# 警告の解決
+RUN npm cache --force clean && npm install --force node-sass
+
+# Angular アプリをビルドする
+ARG configuration=production
+RUN npm run build -- --output-path=./dist/out --configuration $configuration
+
+# -----------------------------------------------------
+# Nginx の Docker 環境を構築する
+# -----------------------------------------------------
+FROM nginx:latest
+
+# ビルドした成果物を Docker 上の Nginx のドキュメントとして扱うためにコピー(デプロイ)
+COPY --from=build-stage /app/dist/out/ /usr/share/nginx/html
+
+# Nginx の設定ファイルを Docker 上の Nginx にコピー
+COPY ./docker/nginx/nginx.conf /etc/nginx/nginx.conf
