@@ -76,8 +76,8 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	targetFileID := hex.EncodeToString(md5[:])
 
 	// unzip
-	utils.Unzip("./"+uploadedFileName, "../data/programs/"+targetFileID)
-	if err := os.Rename("./"+uploadedFileName, "../data/programs/"+targetFileID+"/"+uploadedFileName); err != nil {
+	utils.Unzip("./"+uploadedFileName, "../../data/programs/"+targetFileID)
+	if err := os.Rename("./"+uploadedFileName, "....//data/programs/"+targetFileID+"/"+uploadedFileName); err != nil {
 		fmt.Println(err)
 	}
 
