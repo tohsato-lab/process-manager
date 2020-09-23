@@ -10,7 +10,7 @@ import (
 // Execute 起動スクリプト実行
 func Execute(db *sql.DB, id string, targetfile string, envName string) string {
 	//実行
-	cmd := exec.Command("bash", "execute.sh", "../data/programs/"+id, targetfile, envName)
+	cmd := exec.Command("bash", "execute.sh", "../../data/programs/"+id, targetfile, envName)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Start()

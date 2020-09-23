@@ -13,7 +13,5 @@ func GetCondaEnv() []string {
 	if err != nil {
 		fmt.Println("Command Exec Error.")
 	}
-	println("debug")
-	println(string(out))
 	return strings.Split(string(out), "\n")[:4]
 }
