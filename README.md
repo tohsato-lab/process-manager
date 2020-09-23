@@ -28,15 +28,13 @@ bash docker-install.sh
 # Usage
 
 ```bash
-cd ./setup
 docker-compose up -d
 ```
 # Update
 ```bash
-cd ./setup
 docker-compose down
 git pull origin master
-docker-compose up -d
+docker-compose up --build -d
 ```
 
 # Note
