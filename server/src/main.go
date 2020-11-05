@@ -35,6 +35,9 @@ func main() {
 	http.HandleFunc("/event", func(w http.ResponseWriter, r *http.Request) {
 		api.GPUSstatus(w, r)
 	})
+	http.HandleFunc("/programs/", func(w http.ResponseWriter, r *http.Request) {
+		api.Exproler(w, r, db)
+	})
 	go api.WebSocketKernel()
 
 	fmt.Println("server start")

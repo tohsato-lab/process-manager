@@ -26,6 +26,8 @@ type response struct {
 // UploadHandler ファイルアップロードハンドラー
 func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
+	println("upload handler")
+
 	// このハンドラ関数へのアクセスはPOSTメソッドのみ認める
 	if r.Method != "POST" {
 		fmt.Fprintln(w, "許可したメソッドとはことなります。")
