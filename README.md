@@ -21,8 +21,9 @@
 # Installation
 
 ```bash
-cd ./setup/script
+cd ./setup
 bash docker-install.sh
+cd ../
 ```
 
 # Usage
