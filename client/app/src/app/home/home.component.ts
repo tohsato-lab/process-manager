@@ -4,7 +4,8 @@ import {webSocket} from 'rxjs/webSocket';
 import config from '../../../config';
 import {Subscription} from 'rxjs';
 import {CommonService} from '../service/commom.service';
-// import {SseService} from '../sse.service';
+
+import {SseService} from '../sse.service';
 
 @Component({
     selector: 'app-home',
@@ -27,7 +28,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     constructor(
         private http: HttpClient,
         private commonService: CommonService,
-        // private sseService: SseService
+        private sseService: SseService
     ) {
     }
 
@@ -48,16 +49,18 @@ export class HomeComponent implements OnInit, OnDestroy {
             () => console.log('complete')
         );
         this.commonService.onNotifySharedDataChanged(this.headerTitle);
-        /*
         this.sseService
-            .getServerSentEvent(`${config.httpScheme}${location.hostname}:${config.port}/event`)
-            .subscribe(data => console.log(data));
-         */
+            .getServerSentEvent(`${config.httpScheme}${location.hostname}:${config.port}/gpu_status`)
+            .subscribe(data => console.log(data.data));
     }
 
     ngOnDestroy(): void {
         //  リソースリーク防止のため CommonService から subcribe したオブジェクトを破棄する
         this.subscription.unsubscribe();
+    }
+
+    public onOpenExplorer(id) {
+        window.location.href = "http://localhost:5983/programs/" + id;
     }
 
     public onAddButton(): void {

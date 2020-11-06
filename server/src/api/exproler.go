@@ -5,10 +5,8 @@ import (
 	"net/http"
 )
 
-// Exproler kill命令実行
-func Exproler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
-	id := r.FormValue("id")
-	println(id)
+// Explorer ディレクトリの閲覧
+func Explorer(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	println(r.URL.Path[1:])
 	http.ServeFile(w, r, "../../data/"+r.URL.Path[1:])
 }

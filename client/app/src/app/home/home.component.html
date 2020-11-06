@@ -15,9 +15,9 @@
     </tr>
     </thead>
     <tr *ngFor="let process of processList" class="table-item">
-      <th>{{process["Filename"]}}</th>
-      <th>{{process["UseVram"]}}</th>
-      <th>
+      <th (click)="onOpenExplorer(process['ID'])">{{process["Filename"]}}</th>
+      <th (click)="onOpenExplorer(process['ID'])">{{process["UseVram"]}}</th>
+      <th (click)="onOpenExplorer(process['ID'])">
         <div [ngClass]="
         process['Status']=='ready'?'table-ready':
         process['Status']=='working'?'table-working':
@@ -47,7 +47,7 @@
     <div class="auth-content">
       <ul class="links2">
         <li>サーバーと通信が出来ません</li>
-        <br>
+        <\br>
         <li>・ネットワークの確認</li>
         <li>・サーバーが起動しているかの確認</li>
       </ul>
