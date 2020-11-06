@@ -32,11 +32,11 @@ func main() {
 	http.HandleFunc("/process_status", func(w http.ResponseWriter, r *http.Request) {
 		api.WebSocketHandle(w, r, db)
 	})
-	http.HandleFunc("/event", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/gpu_status", func(w http.ResponseWriter, r *http.Request) {
 		api.GPUSstatus(w, r)
 	})
 	http.HandleFunc("/programs/", func(w http.ResponseWriter, r *http.Request) {
-		api.Exproler(w, r, db)
+		api.Explorer(w, r, db)
 	})
 	go api.WebSocketKernel()
 

@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"../utils"
 )
 
 // GPUSstatus GPUの情報を配信
@@ -20,12 +22,10 @@ func GPUSstatus(w http.ResponseWriter, r *http.Request) {
 	t := time.NewTicker(1 * time.Second)
 	defer t.Stop()
 	go func() {
-		cnt := 1
 		for {
 			select {
 			case <-t.C:
-				fmt.Fprintf(w, "data: %d\n\n", cnt)
-				cnt++
+				fmt.Fprintf(w, "data: %f\n\n", utils.GetUsedVRAM()/utils.GetTotalVRAM())
 				flusher.Flush()
 			}
 		}
