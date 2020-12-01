@@ -11,7 +11,7 @@ COPY ./app/ /app/
 RUN npm install
 
 # 警告の解決
-RUN npm cache --force clean && npm install --force node-sass
+# RUN npm cache --force clean && npm install --force node-sass
 
 # Angular アプリをビルドする
 ARG configuration=production
