@@ -102,6 +102,7 @@ dependencies:
   - setuptools=50.3.0
   - six=1.15.0
   - sqlite=3.33.0
+  - scipy=1.5.3
   - tk=8.6.10
   - torchvision=0.8.1
   - tornado=6.0.4
