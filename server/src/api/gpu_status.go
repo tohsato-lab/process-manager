@@ -11,7 +11,12 @@ import (
 
 // GPUSstatus GPUの情報を配信
 func GPUSstatus(w http.ResponseWriter, r *http.Request) {
-	flusher, _ := w.(http.Flusher)
+	flusher, ok := w.(http.Flusher)
+
+	if !ok {
+		http.Error(w, "Streaming unsupported!", http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
