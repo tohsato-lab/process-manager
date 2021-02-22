@@ -9,8 +9,8 @@ import (
 	"../utils"
 )
 
-// GPUSstatus GPUの情報を配信
-func GPUSstatus(w http.ResponseWriter, r *http.Request) {
+// GPUStatus GPUの情報を配信
+func GPUStatus(w http.ResponseWriter, r *http.Request) {
 	flusher, ok := w.(http.Flusher)
 
 	if !ok {
@@ -30,8 +30,9 @@ func GPUSstatus(w http.ResponseWriter, r *http.Request) {
 		for {
 			select {
 			case <-t.C:
-				if utils.GetTotalVRAM() != 0 {
-					fmt.Fprintf(w, "data: %f\n\n", utils.GetUsedVRAM()/utils.GetTotalVRAM())
+				vram := utils.GetTotalVRAM()
+				if vram != 0 {
+					fmt.Fprintf(w, "data: %f\n\n", utils.GetUsedVRAM()/vram)
 				} else {
 					fmt.Fprintf(w, "data: %f\n\n", 0.0)
 				}
