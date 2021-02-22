@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	db, err := sql.Open("mysql", "golang:golang@/process_manager_db?parseTime=true")
+	db, err := sql.Open("mysql", "golang:process_manager@/process_manager_db?parseTime=true")
 	if err != nil {
 		panic(err.Error())
 	}
