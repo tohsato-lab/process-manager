@@ -30,7 +30,11 @@ func GPUSstatus(w http.ResponseWriter, r *http.Request) {
 		for {
 			select {
 			case <-t.C:
-				fmt.Fprintf(w, "data: %f\n\n", utils.GetUsedVRAM()/utils.GetTotalVRAM())
+				if utils.GetTotalVRAM() != 0 {
+					fmt.Fprintf(w, "data: %f\n\n", utils.GetUsedVRAM()/utils.GetTotalVRAM())
+				} else {
+					fmt.Fprintf(w, "data: %f\n\n", 0.0)
+				}
 				flusher.Flush()
 			}
 		}

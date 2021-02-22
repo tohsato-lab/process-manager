@@ -10,6 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 	"time"
@@ -78,9 +79,15 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	targetFileID := hex.EncodeToString(md5[:])
 
 	// unzip
-	utils.Unzip("./"+uploadedFileName, "../../data/programs/"+targetFileID)
-	if err := os.Rename("./"+uploadedFileName, "../../data/programs/"+targetFileID+"/"+uploadedFileName); err != nil {
-		fmt.Println(err)
+	targetDIR := "../../data/programs/" + targetFileID + "/"
+	if err := os.Mkdir(targetDIR, 0777); err != nil {
+		panic(err)
+	}
+	if err := os.Rename("./"+uploadedFileName, targetDIR+uploadedFileName); err != nil {
+		panic(err)
+	}
+	if _, err := exec.Command("sh", "-c", "unzip "+targetDIR+uploadedFileName+" -d "+targetDIR).Output(); err != nil {
+		panic(err)
 	}
 
 	// regist proceess
