@@ -33,7 +33,7 @@ func main() {
 		api.WebSocketHandle(w, r, db)
 	})
 	http.HandleFunc("/gpu_status", func(w http.ResponseWriter, r *http.Request) {
-		api.GPUSstatus(w, r)
+		api.GPUStatus(w, r)
 	})
 	http.HandleFunc("/programs/", func(w http.ResponseWriter, r *http.Request) {
 		api.Explorer(w, r, db)

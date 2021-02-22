@@ -8,12 +8,14 @@ import (
 )
 
 // Execute 起動スクリプト実行
-func Execute(db *sql.DB, id string, targetfile string, envName string) string {
+func Execute(db *sql.DB, id string, targetFile string, envName string) string {
 	//実行
-	cmd := exec.Command("bash", "execute.sh", "../../data/programs/"+id, targetfile, envName)
+	cmd := exec.Command("bash", "execute.sh", "../../data/programs/"+id, targetFile, envName)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.Start()
+	if err := cmd.Start(); err != nil {
+		panic(err.Error())
+	}
 
 	// PID登録
 	statusUpdate, err := db.Prepare("UPDATE process_table SET pid=? WHERE id=?")
@@ -21,11 +23,13 @@ func Execute(db *sql.DB, id string, targetfile string, envName string) string {
 		panic(err.Error())
 	}
 	defer statusUpdate.Close()
-	if statusUpdate.Exec(strconv.Itoa(cmd.Process.Pid), id); err != nil {
+	if _, err := statusUpdate.Exec(strconv.Itoa(cmd.Process.Pid), id); err != nil {
 		panic(err.Error())
 	}
 
-	cmd.Wait()
+	if err := cmd.Wait(); err != nil {
+		panic(err.Error())
+	}
 
 	status := ""
 	signal := cmd.ProcessState.ExitCode()

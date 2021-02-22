@@ -75,8 +75,8 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	target := r.FormValue("target")
 
 	// target filename
-	md5 := md5.Sum([]byte(time.Now().String()))
-	targetFileID := hex.EncodeToString(md5[:])
+	md5Data := md5.Sum([]byte(time.Now().String()))
+	targetFileID := hex.EncodeToString(md5Data[:])
 
 	// unzip
 	targetDIR := "../../data/programs/" + targetFileID + "/"
@@ -110,6 +110,6 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		Status: "200",
 		Data:   "success",
 	}
-	json, _ := json.Marshal(response)
-	w.Write(json)
+	jsonData, _ := json.Marshal(response)
+	w.Write(jsonData)
 }

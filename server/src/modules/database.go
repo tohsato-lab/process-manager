@@ -11,7 +11,7 @@ import (
 
 // GetAllProcess プロセス一覧取得
 func GetAllProcess(db *sql.DB) []utils.Process {
-	processes := []utils.Process{}
+	var processes []utils.Process
 
 	dbSelect, err := db.Query("SELECT id, use_vram, status, filename, start_date, complete_date FROM process_table ORDER BY start_date DESC")
 	if err != nil {
@@ -108,7 +108,7 @@ func StartProcess(db *sql.DB, id string, targetfile string, envName string) {
 	}
 	defer statusUpdate.Close()
 
-	if statusUpdate.Exec("working", time.Now(), id); err != nil {
+	if _, err := statusUpdate.Exec("working", time.Now(), id); err != nil {
 		panic(err.Error())
 	}
 
@@ -128,7 +128,7 @@ func ComplateProcess(db *sql.DB, id string, status string) {
 	}
 	defer statusUpdate.Close()
 
-	if statusUpdate.Exec(status, time.Now(), id); err != nil {
+	if _, err := statusUpdate.Exec(status, time.Now(), id); err != nil {
 		panic(err.Error())
 	}
 
@@ -145,7 +145,7 @@ func DeleteProcess(db *sql.DB, id string) {
 	}
 	defer dbDelete.Close()
 
-	if dbDelete.Exec(id); err != nil {
+	if _, err := dbDelete.Exec(id); err != nil {
 		panic(err.Error())
 	}
 
