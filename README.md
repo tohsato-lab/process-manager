@@ -39,6 +39,11 @@ docker-compose up --build -d
 ```
 
 # Note
+もしローカルでanaconda環境を利用している場合は、以下のコマンドを利用してパッケージリストを出力し、`./server/docker/anaconda_packages`の中に入れると、build時に導入することが可能。
+```bash
+conda activate 'hogehoge'
+conda env export | grep -v "^prefix: " > pytorch.yml
+```
 
 # Author
 
