@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"../modules"
+	"process-manager-server/modules"
 )
 
 // DeleteHandler process命令実行

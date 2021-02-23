@@ -15,8 +15,8 @@ import (
 	"strings"
 	"time"
 
-	"../modules"
-	"../utils"
+	"process-manager-server/modules"
+	"process-manager-server/utils"
 )
 
 type response struct {
@@ -119,7 +119,5 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		Data:   "success",
 	}
 	jsonData, _ := json.Marshal(response)
-	if _, err := w.Write(jsonData); err != nil {
-		return
-	}
+	w.Write(jsonData);
 }

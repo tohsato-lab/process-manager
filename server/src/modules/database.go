@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"../utils"
+	"process-manager-server/utils"
 )
 
 // GetAllProcess プロセス一覧取得
@@ -22,9 +22,7 @@ func GetAllProcess(db *sql.DB) []utils.Process {
 		var process utils.Process
 		var startDate time.Time
 		var completeDate time.Time
-		if err := dbSelect.Scan(&process.ID, &process.UseVram, &process.Status, &process.Filename, &startDate, &completeDate); err != nil {
-			return nil
-		}
+		dbSelect.Scan(&process.ID, &process.UseVram, &process.Status, &process.Filename, &startDate, &completeDate)
 		jst, _ := time.LoadLocation("Asia/Tokyo")
 		if !startDate.IsZero() {
 			process.StartDate = startDate.In(jst).Format("2006年01月02日 15時04分05秒")
@@ -43,7 +41,8 @@ func RegistProcess(db *sql.DB, process utils.Process) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if _, err := ins.Exec(process.ID, process.UseVram, process.Status, process.Filename, process.TargetFile, process.EnvName); err != nil {
+	ins.Exec(process.ID, process.UseVram, process.Status, process.Filename, process.TargetFile, process.EnvName)
+	if err != nil {
 		log.Fatal(err)
 	}
 	utils.BroadcastProcess <- GetAllProcess(db)
@@ -69,9 +68,7 @@ func UpdataAllProcess(db *sql.DB) {
 			panic(err.Error())
 		}
 		var process utils.Process
-		if err := dbReady.Scan(&process.ID, &process.UseVram, &process.TargetFile, &process.EnvName); err != nil {
-			return
-		}
+		dbReady.Scan(&process.ID, &process.UseVram, &process.TargetFile, &process.EnvName)
 
 		// メモリに空きがある場合
 		fmt.Println(vramTotal - (float32(usedVRAM) + process.UseVram))
@@ -111,7 +108,7 @@ func StartProcess(db *sql.DB, id string, targetfile string, envName string) {
 	}
 	defer statusUpdate.Close()
 
-	if _, err := statusUpdate.Exec("working", time.Now(), id); err != nil {
+	if statusUpdate.Exec("working", time.Now(), id); err != nil {
 		panic(err.Error())
 	}
 
@@ -131,7 +128,7 @@ func ComplateProcess(db *sql.DB, id string, status string) {
 	}
 	defer statusUpdate.Close()
 
-	if _, err := statusUpdate.Exec(status, time.Now(), id); err != nil {
+	if statusUpdate.Exec(status, time.Now(), id); err != nil {
 		panic(err.Error())
 	}
 
@@ -148,7 +145,7 @@ func DeleteProcess(db *sql.DB, id string) {
 	}
 	defer dbDelete.Close()
 
-	if _, err := dbDelete.Exec(id); err != nil {
+	if dbDelete.Exec(id); err != nil {
 		panic(err.Error())
 	}
 

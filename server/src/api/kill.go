@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"strconv"
 
-	"../modules"
+	"process-manager-server/modules"
 )
 
 // KillHandler kill命令実行

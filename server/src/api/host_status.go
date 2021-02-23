@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"../utils"
+	"process-manager-server/utils"
 )
 
 type Status struct {
