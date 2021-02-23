@@ -39,7 +39,7 @@ const routes: Routes = [
         HttpClientModule,
         NgxDropzoneModule,
         FormsModule,
-        RouterModule.forRoot(routes),
+        RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),
         BrowserAnimationsModule,
         LayoutModule,
         MatToolbarModule,
