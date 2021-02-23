@@ -17,6 +17,7 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatIconModule} from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
 import {HostsComponent} from './hosts/hosts.component';
+import {ChartsModule} from 'ng2-charts';
 
 const routes: Routes = [
     {path: '', component: HomeComponent},
@@ -39,7 +40,7 @@ const routes: Routes = [
         HttpClientModule,
         NgxDropzoneModule,
         FormsModule,
-        RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),
+        RouterModule.forRoot(routes, {relativeLinkResolution: 'legacy'}),
         BrowserAnimationsModule,
         LayoutModule,
         MatToolbarModule,
@@ -47,6 +48,7 @@ const routes: Routes = [
         MatSidenavModule,
         MatIconModule,
         MatListModule,
+        ChartsModule,
     ],
 
     providers: [CommonService],
