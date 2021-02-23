@@ -16,12 +16,13 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatIconModule} from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
+import {HostsComponent} from './hosts/hosts.component';
 
 const routes: Routes = [
     {path: '', component: HomeComponent},
     {path: 'home', component: HomeComponent},
     {path: 'dataset', component: DatasetComponent},
-    {path: 'history', component: HistoryComponent},
+    {path: 'hosts', component: HostsComponent},
 ];
 
 @NgModule({
@@ -30,6 +31,7 @@ const routes: Routes = [
         HomeComponent,
         HistoryComponent,
         DatasetComponent,
+        HostsComponent,
     ],
 
     imports: [

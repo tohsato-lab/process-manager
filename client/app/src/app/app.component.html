@@ -9,19 +9,19 @@
     </mat-toolbar>
     <mat-nav-list>
       <a mat-list-item href="home" style="display: flex; justify-content: center; font-size: x-large;">Home</a>
+      <a mat-list-item href="hosts" style="display: flex; justify-content: center; font-size: x-large;">Hosts</a>
       <a mat-list-item href="dataset" style="display: flex; justify-content: center; font-size: x-large;">Dataset</a>
-      <a mat-list-item href="history" style="display: flex; justify-content: center; font-size: x-large;">History</a>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
     <mat-toolbar class="mat-toolbar-header">
       <button
-          style="margin-right: 5%;"
-          type="button"
-          aria-label="Toggle sidenav"
-          mat-icon-button
-          (click)="drawer.toggle()"
-          *ngIf="isHandset$ | async">
+              style="margin-right: 5%;"
+              type="button"
+              aria-label="Toggle sidenav"
+              mat-icon-button
+              (click)="drawer.toggle()"
+              *ngIf="isHandset$ | async">
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
       <span>{{headerTitle}}</span>
