@@ -34,5 +34,7 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		Data:   status,
 	}
 	jsonData, _ := json.Marshal(response)
-	w.Write(jsonData)
+	if _, err := w.Write(jsonData); err != nil {
+		return
+	}
 }

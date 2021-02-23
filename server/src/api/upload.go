@@ -31,7 +31,9 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	// このハンドラ関数へのアクセスはPOSTメソッドのみ認める
 	if r.Method != "POST" {
-		fmt.Fprintln(w, "許可したメソッドとはことなります。")
+		if _, err := fmt.Fprintln(w, "許可したメソッドとはことなります。"); err != nil {
+			return
+		}
 		return
 	}
 	var file multipart.File
@@ -43,13 +45,17 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// get file
 	file, fileHeader, e = r.FormFile("file")
 	if e != nil {
-		fmt.Fprintln(w, "ファイルアップロードを確認できませんでした。")
+		if _, err := fmt.Fprintln(w, "ファイルアップロードを確認できませんでした。"); err != nil {
+			return
+		}
 		return
 	}
 	uploadedFileName = fileHeader.Filename
 	saveFile, e = os.Create("./" + uploadedFileName)
 	if e != nil {
-		fmt.Fprintln(w, "サーバ側でファイル確保できませんでした。")
+		if _, err := fmt.Fprintln(w, "サーバ側でファイル確保できませんでした。"); err != nil {
+			return
+		}
 		return
 	}
 	defer saveFile.Close()
@@ -64,7 +70,9 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// get use vram
 	vram, e := strconv.ParseFloat(r.FormValue("vram"), 32)
 	if e != nil {
-		fmt.Fprintln(w, "使用VRAM容量を確認出来ませんでした。")
+		if _, err := fmt.Fprintln(w, "使用VRAM容量を確認出来ませんでした。"); err != nil {
+			return
+		}
 		return
 	}
 
@@ -111,5 +119,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		Data:   "success",
 	}
 	jsonData, _ := json.Marshal(response)
-	w.Write(jsonData)
+	if _, err := w.Write(jsonData); err != nil {
+		return
+	}
 }
