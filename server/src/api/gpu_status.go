@@ -1,49 +1,36 @@
 package api
 
 import (
-	"fmt"
-	"log"
+	"github.com/janberktold/sse"
 	"net/http"
 	"time"
 
 	"../utils"
 )
 
+type Status struct {
+	RAM  float64
+	VRAM float64
+}
+
 // GPUStatus GPUの情報を配信
 func GPUStatus(w http.ResponseWriter, r *http.Request) {
-	flusher, ok := w.(http.Flusher)
 
-	if !ok {
-		http.Error(w, "Streaming unsupported!", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
 
-	// 1秒おきにデータを流す
-	t := time.NewTicker(1 * time.Second)
-	defer t.Stop()
-	go func() {
-		for {
-			select {
-			case <-t.C:
-				vram := utils.GetTotalVRAM()
-				if vram != 0 {
-					if _, err := fmt.Fprintf(w, "data: %f\n\n", utils.GetUsedVRAM()/vram); err != nil {
-						return
-					}
-				} else {
-					if _, err := fmt.Fprintf(w, "data: %f\n\n", 0.0); err != nil {
-						return
-					}
-				}
-				flusher.Flush()
-			}
+	conn, _ := sse.Upgrade(w, r)
+	for {
+		time.Sleep(1 * time.Second)
+		totalVRAM := utils.GetTotalVRAM()
+		var vram = 0.0
+		if totalVRAM != 0 {
+			vram = float64(utils.GetUsedVRAM() / totalVRAM)
 		}
-	}()
-	<-r.Context().Done()
-	log.Println("コネクションが閉じました")
+		if err := conn.WriteJson(&Status{
+			RAM:  0.0,
+			VRAM: vram,
+		}); err != nil {
+			return
+		}
+	}
 }
