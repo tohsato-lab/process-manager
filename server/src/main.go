@@ -1,13 +1,12 @@
 package main
 
 import (
+	"./api"
 	"database/sql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"
-
-	"./api"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
@@ -32,8 +31,8 @@ func main() {
 	http.HandleFunc("/process_status", func(w http.ResponseWriter, r *http.Request) {
 		api.WebSocketHandle(w, r, db)
 	})
-	http.HandleFunc("/gpu_status", func(w http.ResponseWriter, r *http.Request) {
-		api.GPUStatus(w, r)
+	http.HandleFunc("/host_status", func(w http.ResponseWriter, r *http.Request) {
+		api.HostStatus(w, r)
 	})
 	http.HandleFunc("/programs/", func(w http.ResponseWriter, r *http.Request) {
 		api.Explorer(w, r, db)

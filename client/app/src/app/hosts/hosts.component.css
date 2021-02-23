@@ -1,0 +1,31 @@
+.grid-bse {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.host-card-base {
+    margin: 50px;
+    height: 200px;
+    width: 200px;
+    border-radius: 10px;
+    border: solid gray 1px;
+}
+
+.chart {
+    display: inline-block;
+    width: 110px;
+    margin: 40px auto 20px;
+    padding: 0 10px;
+}
+
+.percentage,
+.label {
+    margin-bottom: 0.5em;
+    text-align: center;
+    font-weight: 100;
+}
+
+.percentage {
+    font-size: 17px;
+}

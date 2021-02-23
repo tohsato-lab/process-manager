@@ -4,16 +4,23 @@ import config from '../../../config';
 import {CommonService} from '../service/commom.service';
 import {Subscription} from 'rxjs';
 
+interface hostStatus {
+    RAM: number;
+    VRAM: number;
+}
+
 @Component({
     selector: 'app-hosts',
     templateUrl: './hosts.component.html',
     styleUrls: ['./hosts.component.css']
 })
+
+
 export class HostsComponent implements OnInit, OnDestroy {
 
-    public ramStatusList = {};
-    public IPList = [location.hostname];
+    public hostStatuses: { [ip: string]: hostStatus } = {};
 
+    private IPList: string[] = [location.hostname];
     private headerTitle = 'ホスト一覧';
     private subscription: Subscription;
 
@@ -23,13 +30,16 @@ export class HostsComponent implements OnInit, OnDestroy {
     ) {
     }
 
+    getKeys(data): any {
+        return Object.keys(data);
+    }
+
     ngOnInit(): void {
         this.commonService.onNotifySharedDataChanged(this.headerTitle);
         for (let ip of this.IPList) {
-            this.sseService.getServerSentEvent(`${config.httpScheme}${ip}:${config.port}/gpu_status`)
-                .subscribe(data => {
-                    this.ramStatusList[ip] = data.data;
-                });
+            this.sseService.getServerSentEvent(`${config.httpScheme}${ip}:${config.port}/host_status`).subscribe(hostData => {
+                this.hostStatuses[ip] = JSON.parse(hostData.data);
+            });
         }
     }
 

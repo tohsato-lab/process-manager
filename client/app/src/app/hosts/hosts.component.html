@@ -1,5 +1,16 @@
-<p>hosts works!</p>
-<div *ngFor="let ip of IPList">
-  <div>{{ramStatusList[ip]}}</div>
-  <div>{{ip}}</div>
+<div class="grid-bse">
+  <div *ngFor="let ip of getKeys(hostStatuses)" class="host-card-base">
+    <div>RAM : {{hostStatuses[ip]['RAM']}}</div>
+    <div>VRAM : {{hostStatuses[ip]['VRAM']}}</div>
+    <div class="chart">
+      <div class="percentage" data-percent="71">
+        <span>71</span><sup>%</sup>
+      </div>
+      <div class="label">New visits</div>
+    </div>
+    <div>{{ip}}</div>
+  </div>
+  <div class="host-card-base">test</div>
+  <div class="host-card-base">test</div>
+  <div class="host-card-base">test</div>
 </div>
