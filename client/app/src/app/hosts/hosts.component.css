@@ -1,7 +1,7 @@
 .grid-bse {
     display: grid;
     gap: 10px;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 550px));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 450px));
 }
 
 .host-card-base {
@@ -73,7 +73,7 @@
 }
 
 .bottom-graph-label-text {
-    top: 81%;
+    bottom: 15%;
 }
 
 .host-name-text {
@@ -81,4 +81,12 @@
     right: 5%;
     bottom: 5%;
     font-weight: 100;
+}
+
+.add-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: gray;
 }
