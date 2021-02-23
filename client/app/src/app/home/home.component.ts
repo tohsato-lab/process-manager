@@ -5,7 +5,6 @@ import config from '../../../config';
 import {Subscription} from 'rxjs';
 import {CommonService} from '../service/commom.service';
 
-import {SseService} from '../service/sse.service';
 
 @Component({
     selector: 'app-home',
@@ -14,16 +13,15 @@ import {SseService} from '../service/sse.service';
 })
 export class HomeComponent implements OnInit, OnDestroy {
 
-    public headerTitle = 'プロセス一覧';
     public hiddenUploadPage = true;
     public hiddenAuthPage = true;
-    public serverAddress = `${config.httpScheme}${location.hostname}:${config.port}`;
     public fileInfos: any = [];
     public processList = [];
     public envList: any;
     public processCtrlData: any = null;
 
     private subscription: Subscription;
+    private headerTitle = 'プロセス一覧';
 
     constructor(
         private http: HttpClient,
