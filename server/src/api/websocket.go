@@ -46,7 +46,9 @@ func WebSocketKernel() {
 			err := client.WriteJSON(process)
 			if err != nil {
 				log.Printf("error occurred while writing message to client: %v", err)
-				client.Close()
+				if err := client.Close(); err != nil {
+					return
+				}
 				delete(clients, client)
 			}
 		}

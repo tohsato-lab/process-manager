@@ -22,7 +22,9 @@ func GetAllProcess(db *sql.DB) []utils.Process {
 		var process utils.Process
 		var startDate time.Time
 		var completeDate time.Time
-		dbSelect.Scan(&process.ID, &process.UseVram, &process.Status, &process.Filename, &startDate, &completeDate)
+		if err := dbSelect.Scan(&process.ID, &process.UseVram, &process.Status, &process.Filename, &startDate, &completeDate); err != nil {
+			return nil
+		}
 		jst, _ := time.LoadLocation("Asia/Tokyo")
 		if !startDate.IsZero() {
 			process.StartDate = startDate.In(jst).Format("2006年01月02日 15時04分05秒")
@@ -41,8 +43,7 @@ func RegistProcess(db *sql.DB, process utils.Process) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	ins.Exec(process.ID, process.UseVram, process.Status, process.Filename, process.TargetFile, process.EnvName)
-	if err != nil {
+	if _, err := ins.Exec(process.ID, process.UseVram, process.Status, process.Filename, process.TargetFile, process.EnvName); err != nil {
 		log.Fatal(err)
 	}
 	utils.BroadcastProcess <- GetAllProcess(db)
@@ -68,7 +69,9 @@ func UpdataAllProcess(db *sql.DB) {
 			panic(err.Error())
 		}
 		var process utils.Process
-		dbReady.Scan(&process.ID, &process.UseVram, &process.TargetFile, &process.EnvName)
+		if err := dbReady.Scan(&process.ID, &process.UseVram, &process.TargetFile, &process.EnvName); err != nil {
+			return
+		}
 
 		// メモリに空きがある場合
 		fmt.Println(vramTotal - (float32(usedVRAM) + process.UseVram))
