@@ -1,12 +1,12 @@
 package main
 
 import (
-	"./api"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"
+	"process-manager-server/api"
 )
 
 func main() {

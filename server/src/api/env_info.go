@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"../utils"
+	"process-manager-server/utils"
 )
 
 // EnvInfoHandler Env一覧取得

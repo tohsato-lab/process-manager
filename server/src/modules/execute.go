@@ -13,9 +13,7 @@ func Execute(db *sql.DB, id string, targetFile string, envName string) string {
 	cmd := exec.Command("bash", "execute.sh", "../../data/programs/"+id, targetFile, envName)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	if err := cmd.Start(); err != nil {
-		panic(err.Error())
-	}
+	cmd.Start()
 
 	// PID登録
 	statusUpdate, err := db.Prepare("UPDATE process_table SET pid=? WHERE id=?")
@@ -27,9 +25,7 @@ func Execute(db *sql.DB, id string, targetFile string, envName string) string {
 		panic(err.Error())
 	}
 
-	if err := cmd.Wait(); err != nil {
-		panic(err.Error())
-	}
+	cmd.Wait()
 
 	status := ""
 	signal := cmd.ProcessState.ExitCode()
