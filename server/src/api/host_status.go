@@ -13,8 +13,8 @@ type Status struct {
 	VRAM float64
 }
 
-// GPUStatus GPUの情報を配信
-func GPUStatus(w http.ResponseWriter, r *http.Request) {
+// HostStatus GPUの情報を配信
+func HostStatus(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
