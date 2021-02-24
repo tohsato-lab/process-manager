@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"os/exec"
-	"process-manager-server/modules"
 	"strconv"
 )
 
@@ -35,7 +34,7 @@ func KillHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	// update process
-	modules.UpdateAllProcess(db)
+	// modules.UpdateAllProcess(db)
 
 	// return
 	w.Header().Set("Access-Control-Allow-Origin", "*")

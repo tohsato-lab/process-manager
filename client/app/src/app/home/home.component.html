@@ -70,6 +70,10 @@
           <div style="font-size: smaller">VRAM(MB)</div>
           <label><input type="number" style="width: 80%;" [(ngModel)]="info['vram']"></label>
         </div>
+        <div>
+          <div style="font-size: smaller">実行回数</div>
+          <label><input type="number" style="width: 80%;" [(ngModel)]="info['exec_count']"></label>
+        </div>
       </div>
       <div (click)="onUpload()" *ngIf="fileInfos.length != 0" class="upload-button">upload</div>
     </div>
