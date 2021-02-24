@@ -10,6 +10,7 @@
       <th style="width: 100px;">状態</th>
       <th>開始時間</th>
       <th>終了時間</th>
+      <th>実行回数</th>
       <th style="width: 50px;"></th>
       <th></th>
     </tr>
@@ -20,17 +21,18 @@
       <th (click)="onOpenExplorer(process['ID'])">
         <div [ngClass]="
         process['Status']=='ready'?'table-ready':
-        process['Status']=='working'?'table-working':
+        process['Status']=='running'?'table-running':
         process['Status']=='complete'?'table-complete':
         'table-error'">{{process["Status"]}}</div>
       </th>
       <th>{{process["StartDate"]}}</th>
       <th>{{process["CompleteDate"]}}</th>
+      <th>{{process["ExecCount"]}}</th>
       <th>
-        <div *ngIf="process['Status'] == 'working'" (click)="onKill(process['ID'])" class="kill-button">
+        <div *ngIf="process['Status'] == 'running'" (click)="onKill(process['ID'])" class="kill-button">
           kill
         </div>
-        <div *ngIf="process['Status'] != 'working'" style="border-radius: 10px; background: #8e8e8e; color: white;">
+        <div *ngIf="process['Status'] != 'running'" style="border-radius: 10px; background: #8e8e8e; color: white;">
           kill
         </div>
       </th>
@@ -69,6 +71,10 @@
         <div>
           <div style="font-size: smaller">VRAM(MB)</div>
           <label><input type="number" style="width: 80%;" [(ngModel)]="info['vram']"></label>
+        </div>
+        <div>
+          <div style="font-size: smaller">実行回数</div>
+          <label><input type="number" style="width: 80%;" [(ngModel)]="info['exec_count']"></label>
         </div>
       </div>
       <div (click)="onUpload()" *ngIf="fileInfos.length != 0" class="upload-button">upload</div>
