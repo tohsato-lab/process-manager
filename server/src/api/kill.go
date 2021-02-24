@@ -3,11 +3,12 @@ package api
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os/exec"
 	"strconv"
 
-	"../modules"
+	"process-manager-server/modules"
 )
 
 // KillHandler kill命令実行
@@ -20,13 +21,14 @@ func KillHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	dbStatus := ""
 	err := db.QueryRow("SELECT IFNULL(pid, 0), status FROM process_table WHERE id = ?", id).Scan(&pid, &dbStatus)
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err)
 	}
 
 	status := "killed"
 	if pid != 0 {
-		// 親子共々kill
+		// 親子共々 kill
 		if err := exec.Command("sh", "-c", "kill `ps ho pid --ppid="+strconv.Itoa(pid)+"`").Run(); err != nil {
+			fmt.Println(err)
 			status = "not kill"
 		}
 	} else {
@@ -36,7 +38,7 @@ func KillHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	//何らかの理由でステータスが更新されていなかった場合はkilledに更新
 	if dbStatus == "working" {
 		// DBアップデート
-		modules.ComplateProcess(db, id, "killed")
+		modules.CompleteProcess(db, id, "killed")
 	}
 
 	// return
@@ -47,6 +49,6 @@ func KillHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 	jsonData, _ := json.Marshal(response)
 	if _, err := w.Write(jsonData); err != nil {
-		return
+		fmt.Println(err)
 	}
 }

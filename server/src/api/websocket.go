@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"../modules"
-	"../utils"
 	"github.com/gorilla/websocket"
+	"process-manager-server/modules"
+	"process-manager-server/utils"
 )
 
 // WebSocket サーバーにつなぎにいくクライアント
