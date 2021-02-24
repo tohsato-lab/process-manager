@@ -36,7 +36,7 @@ func KillHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	//何らかの理由でステータスが更新されていなかった場合はkilledに更新
 	if dbStatus == "working" {
 		// DBアップデート
-		modules.ComplateProcess(db, id, "killed")
+		modules.CompleteProcess(db, id, "killed")
 	}
 
 	// return
