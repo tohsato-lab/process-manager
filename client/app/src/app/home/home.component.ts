@@ -108,6 +108,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         formData.append('env', info.env);
         formData.append('target', info.target);
         formData.append('exec_count', info.exec_count);
+        formData.append('comment', 'テスト');
         this.onCloseUpload();
         this.http.post(
             `${config.httpScheme}${location.hostname}:${config.port}/upload`, formData

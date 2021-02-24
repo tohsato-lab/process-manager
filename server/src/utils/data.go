@@ -11,6 +11,7 @@ type Process struct {
 	TargetFile   string
 	EnvName      string
 	ExecCount    int32
+	Comment      string
 }
 
 // BroadcastProcess データベースの情報を格納する

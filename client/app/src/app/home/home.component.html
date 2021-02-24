@@ -16,7 +16,10 @@
     </tr>
     </thead>
     <tr *ngFor="let process of processList" class="table-item">
-      <th (click)="onOpenExplorer(process['ID'])">{{process["Filename"]}}</th>
+      <th (click)="onOpenExplorer(process['ID'])">
+        <div>{{process["Filename"]}}</div>
+        <div>{{process["Comment"]}}</div>
+      </th>
       <th (click)="onOpenExplorer(process['ID'])">{{process["UseVram"]}}</th>
       <th (click)="onOpenExplorer(process['ID'])">
         <div [ngClass]="
