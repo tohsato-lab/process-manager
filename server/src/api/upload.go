@@ -15,8 +15,8 @@ import (
 	"strings"
 	"time"
 
-	"../modules"
-	"../utils"
+	"process-manager-server/modules"
+	"process-manager-server/utils"
 )
 
 type response struct {
@@ -27,52 +27,46 @@ type response struct {
 // UploadHandler ファイルアップロードハンドラー
 func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
-	println("upload handler")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// このハンドラ関数へのアクセスはPOSTメソッドのみ認める
 	if r.Method != "POST" {
-		if _, err := fmt.Fprintln(w, "許可したメソッドとはことなります。"); err != nil {
-			return
-		}
+		_, _ = fmt.Fprintln(w, "許可したメソッドとはことなります。")
 		return
 	}
 	var file multipart.File
 	var saveFile *os.File
 	var fileHeader *multipart.FileHeader
-	var e error
 	var uploadedFileName string
 
 	// get file
-	file, fileHeader, e = r.FormFile("file")
-	if e != nil {
-		if _, err := fmt.Fprintln(w, "ファイルアップロードを確認できませんでした。"); err != nil {
-			return
-		}
+	file, fileHeader, err := r.FormFile("file")
+	if err != nil {
+		_, _ = fmt.Fprintln(w, "ファイルアップロードを確認できませんでした。")
 		return
 	}
 	uploadedFileName = fileHeader.Filename
-	saveFile, e = os.Create("./" + uploadedFileName)
-	if e != nil {
-		if _, err := fmt.Fprintln(w, "サーバ側でファイル確保できませんでした。"); err != nil {
-			return
-		}
+	saveFile, err = os.Create("./" + uploadedFileName)
+	if err != nil {
+		_, _ = fmt.Fprintln(w, "サーバ側でファイル確保できませんでした。")
 		return
 	}
-	defer saveFile.Close()
-	defer file.Close()
-	_, e = io.Copy(saveFile, file)
-	if e != nil {
-		fmt.Println(e)
-		fmt.Println("アップロードしたファイルの書き込みに失敗しました。")
-		os.Exit(1)
+
+	if _, err := io.Copy(saveFile, file); err != nil {
+		_, _ = fmt.Fprintln(w, "アップロードしたファイルの書き込みに失敗しました。")
+		return
+	}
+	if err := saveFile.Close(); err != nil {
+		fmt.Println(err)
+	}
+	if err := file.Close(); err != nil {
+		fmt.Println(err)
 	}
 
 	// get use vram
-	vram, e := strconv.ParseFloat(r.FormValue("vram"), 32)
-	if e != nil {
-		if _, err := fmt.Fprintln(w, "使用VRAM容量を確認出来ませんでした。"); err != nil {
-			return
-		}
+	vram, err := strconv.ParseFloat(r.FormValue("vram"), 32)
+	if err != nil {
+		_, _ = fmt.Fprintln(w, "使用VRAM容量を確認出来ませんでした。")
 		return
 	}
 
@@ -89,17 +83,20 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// unzip
 	targetDIR := "../../data/programs/" + targetFileID + "/"
 	if err := os.Mkdir(targetDIR, 0777); err != nil {
-		panic(err)
+		_, _ = fmt.Fprintln(w, "ディレクトリ生成に失敗しました。"+err.Error())
+		return
 	}
 	if err := os.Rename("./"+uploadedFileName, targetDIR+uploadedFileName); err != nil {
-		panic(err)
+		_, _ = fmt.Fprintln(w, "ファイルコピーに失敗しました。"+err.Error())
+		return
 	}
 	if _, err := exec.Command("sh", "-c", "unzip "+targetDIR+uploadedFileName+" -d "+targetDIR).Output(); err != nil {
-		panic(err)
+		_, _ = fmt.Fprintln(w, "ファイル解凍に失敗しました。"+err.Error())
+		return
 	}
 
-	// regist proceess
-	modules.RegistProcess(db, utils.Process{
+	// register process
+	modules.RegisterProcess(db, utils.Process{
 		ID:         targetFileID,
 		UseVram:    float32(vram),
 		Status:     "ready",
@@ -109,17 +106,16 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	})
 
 	// update process
-	modules.UpdataAllProcess(db)
+	modules.UpdateAllProcess(db)
 	println("アップロード完了")
 
 	// return
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	response := response{
 		Status: "200",
 		Data:   "success",
 	}
 	jsonData, _ := json.Marshal(response)
 	if _, err := w.Write(jsonData); err != nil {
-		return
+		fmt.Println(err)
 	}
 }

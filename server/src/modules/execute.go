@@ -2,6 +2,7 @@ package modules
 
 import (
 	"database/sql"
+	"fmt"
 	"os"
 	"os/exec"
 	"strconv"
@@ -14,21 +15,14 @@ func Execute(db *sql.DB, id string, targetFile string, envName string) string {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {
-		panic(err.Error())
+		return "unknown:" + err.Error()
 	}
 
 	// PID登録
-	statusUpdate, err := db.Prepare("UPDATE process_table SET pid=? WHERE id=?")
-	if err != nil {
-		panic(err.Error())
-	}
-	defer statusUpdate.Close()
-	if _, err := statusUpdate.Exec(strconv.Itoa(cmd.Process.Pid), id); err != nil {
-		panic(err.Error())
-	}
+	RegisterPID(db, id, cmd.Process.Pid)
 
 	if err := cmd.Wait(); err != nil {
-		panic(err.Error())
+		fmt.Println(err)
 	}
 
 	status := ""
@@ -38,7 +32,7 @@ func Execute(db *sql.DB, id string, targetFile string, envName string) string {
 		status = "complete"
 	case 1:
 		status = "error"
-	case 143:
+	case 128 + 15:
 		status = "killed"
 	default:
 		status = "unknown:" + strconv.Itoa(signal)
