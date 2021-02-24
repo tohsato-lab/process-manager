@@ -20,17 +20,17 @@
       <th (click)="onOpenExplorer(process['ID'])">
         <div [ngClass]="
         process['Status']=='ready'?'table-ready':
-        process['Status']=='working'?'table-working':
+        process['Status']=='running'?'table-running':
         process['Status']=='complete'?'table-complete':
         'table-error'">{{process["Status"]}}</div>
       </th>
       <th>{{process["StartDate"]}}</th>
       <th>{{process["CompleteDate"]}}</th>
       <th>
-        <div *ngIf="process['Status'] == 'working'" (click)="onKill(process['ID'])" class="kill-button">
+        <div *ngIf="process['Status'] == 'running'" (click)="onKill(process['ID'])" class="kill-button">
           kill
         </div>
-        <div *ngIf="process['Status'] != 'working'" style="border-radius: 10px; background: #8e8e8e; color: white;">
+        <div *ngIf="process['Status'] != 'running'" style="border-radius: 10px; background: #8e8e8e; color: white;">
           kill
         </div>
       </th>

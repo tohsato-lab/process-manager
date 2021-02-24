@@ -103,6 +103,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		Filename:   strings.Split(uploadedFileName, ".")[0],
 		TargetFile: target,
 		EnvName:    env,
+		ExecCount:  2,
 	})
 
 	// update process
