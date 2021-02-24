@@ -3,6 +3,7 @@ package modules
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
 	"time"
 
 	"process-manager-server/utils"
@@ -97,6 +98,20 @@ func UpdateAllProcess(db *sql.DB) {
 			fmt.Println(err)
 		}
 		StartProcess(db, process.ID, process.TargetFile, process.EnvName)
+	}
+}
+
+// RegisterPID データベースにPID登録
+func RegisterPID(db *sql.DB, id string, pid int) {
+	statusUpdate, err := db.Prepare("UPDATE process_table SET pid=? WHERE id=?")
+	if err != nil {
+		fmt.Println(err)
+	}
+	if _, err := statusUpdate.Exec(strconv.Itoa(pid), id); err != nil {
+		fmt.Println(err)
+	}
+	if err := statusUpdate.Close(); err != nil {
+		fmt.Println(err)
 	}
 }
 
