@@ -72,7 +72,7 @@ table tr:nth-child(odd) {
     color: #ffffff;
 }
 
-.table-working {
+.table-running {
     border-radius: 10px;
     background-color: #0099ff;
     font-weight: lighter;
