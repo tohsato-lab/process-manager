@@ -14,7 +14,7 @@ func GetAllProcess(db *sql.DB) []utils.Process {
 	fmt.Println("### GetAllProcess")
 	var processes []utils.Process
 
-	dbSelect, err := db.Query("SELECT id, use_vram, status, filename, start_date, complete_date, exec_count FROM process_table ORDER BY start_date DESC")
+	dbSelect, err := db.Query("SELECT id, use_vram, status, filename, start_date, complete_date, exec_count, comment FROM process_table ORDER BY start_date DESC")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -24,7 +24,8 @@ func GetAllProcess(db *sql.DB) []utils.Process {
 		var startDate sql.NullTime
 		var completeDate sql.NullTime
 		var execCount sql.NullInt32
-		if err := dbSelect.Scan(&process.ID, &process.UseVram, &process.Status, &process.Filename, &startDate, &completeDate, &execCount); err != nil {
+		var comment sql.NullString
+		if err := dbSelect.Scan(&process.ID, &process.UseVram, &process.Status, &process.Filename, &startDate, &completeDate, &execCount, &comment); err != nil {
 			fmt.Println(err)
 		}
 		jst, _ := time.LoadLocation("Asia/Tokyo")
@@ -37,6 +38,9 @@ func GetAllProcess(db *sql.DB) []utils.Process {
 		if execCount.Valid {
 			process.ExecCount = execCount.Int32
 		}
+		if comment.Valid {
+			process.Comment = comment.String
+		}
 		processes = append(processes, process)
 	}
 	return processes
@@ -45,11 +49,11 @@ func GetAllProcess(db *sql.DB) []utils.Process {
 // RegisterProcess データベースに新規登録
 func RegisterProcess(db *sql.DB, process utils.Process) {
 	fmt.Println("### RegisterProcess")
-	ins, err := db.Prepare("INSERT INTO process_table (id, use_vram, status, filename, targetfile, env_name, exec_count) VALUES (?, ?, ?, ?, ?, ?, ?)")
+	ins, err := db.Prepare("INSERT INTO process_table (id, use_vram, status, filename, targetfile, env_name, exec_count, comment) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		fmt.Println(err)
 	}
-	if _, err := ins.Exec(process.ID, process.UseVram, process.Status, process.Filename, process.TargetFile, process.EnvName, process.ExecCount); err != nil {
+	if _, err := ins.Exec(process.ID, process.UseVram, process.Status, process.Filename, process.TargetFile, process.EnvName, process.ExecCount, process.Comment); err != nil {
 		fmt.Println(err)
 	}
 	utils.BroadcastProcess <- GetAllProcess(db)
