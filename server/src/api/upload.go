@@ -48,7 +48,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	uploadedFileName = fileHeader.Filename
 	saveFile, err = os.Create("./" + uploadedFileName)
 	if err != nil {
-		_, _ = fmt.Fprintln(w, "サーバ側でファイル確保できませんでした。")
+		_, _ = fmt.Fprintln(w, "サーバ側でファイル作成できませんでした。")
 		return
 	}
 

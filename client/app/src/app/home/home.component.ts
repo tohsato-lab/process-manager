@@ -14,7 +14,6 @@ import {SseService} from '../service/sse.service';
 export class HomeComponent implements OnInit, OnDestroy {
 
     public hiddenUploadPage = true;
-    public hiddenAuthPage = true;
     public fileInfos: any = [];
     public processList = [];
     public envList: any;
@@ -115,6 +114,8 @@ export class HomeComponent implements OnInit, OnDestroy {
             console.log(value);
         }, error => {
             console.log(error);
+            console.log(error.error.text);
+            alert(error.error.text)
         });
     }
 }
