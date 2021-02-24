@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"github.com/janberktold/sse"
 	"net/http"
 	"time"
@@ -30,7 +31,8 @@ func HostStatus(w http.ResponseWriter, r *http.Request) {
 			RAM:  0.0,
 			VRAM: vram,
 		}); err != nil {
-			return
+			fmt.Println(err)
+			conn.Close()
 		}
 	}
 }
