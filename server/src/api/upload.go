@@ -39,8 +39,24 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	var fileHeader *multipart.FileHeader
 	var uploadedFileName string
 
+	// get use env
+	env := r.FormValue("env")
+
+	// get use target
+	target := r.FormValue("target")
+
+	// get use target
+	execCount, err := strconv.Atoi(r.FormValue("exec_count"))
+	if err != nil {
+		fmt.Println("Convert Error.")
+	}
+	if execCount <= 0 {
+		_, _ = fmt.Fprintln(w, "実行回数が0です。")
+		return
+	}
+
 	// get file
-	file, fileHeader, err := r.FormFile("file")
+	file, fileHeader, err = r.FormFile("file")
 	if err != nil {
 		_, _ = fmt.Fprintln(w, "ファイルアップロードを確認できませんでした。")
 		return
@@ -70,12 +86,6 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 
-	// get use env
-	env := r.FormValue("env")
-
-	// get use target
-	target := r.FormValue("target")
-
 	// target filename
 	md5Data := md5.Sum([]byte(time.Now().String()))
 	targetFileID := hex.EncodeToString(md5Data[:])
@@ -103,11 +113,9 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		Filename:   strings.Split(uploadedFileName, ".")[0],
 		TargetFile: target,
 		EnvName:    env,
-		ExecCount:  2,
+		ExecCount:  int32(execCount),
 	})
 
-	// update process
-	modules.UpdateAllProcess(db)
 	println("アップロード完了")
 
 	// return

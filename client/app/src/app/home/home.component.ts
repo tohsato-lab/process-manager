@@ -69,7 +69,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     public onSelectFiles(event): void {
         console.log(event);
         for (const file of [...event.addedFiles]) {
-            this.fileInfos.push({file: file, vram: 0.0, env: 'base', target: 'main.py'});
+            this.fileInfos.push({file: file, vram: 0.0, env: 'base', target: 'main.py', exec_count: 1});
         }
     }
 
@@ -107,15 +107,14 @@ export class HomeComponent implements OnInit, OnDestroy {
         formData.append('vram', info.vram);
         formData.append('env', info.env);
         formData.append('target', info.target);
+        formData.append('exec_count', info.exec_count);
         this.onCloseUpload();
         this.http.post(
             `${config.httpScheme}${location.hostname}:${config.port}/upload`, formData
         ).subscribe(value => {
             console.log(value);
         }, error => {
-            console.log(error);
-            console.log(error.error.text);
-            alert(error.error.text)
+            alert(error.error.text);
         });
     }
 }

@@ -11,6 +11,7 @@ import (
 
 // GetAllProcess プロセス一覧取得
 func GetAllProcess(db *sql.DB) []utils.Process {
+	fmt.Println("### GetAllProcess")
 	var processes []utils.Process
 
 	dbSelect, err := db.Query("SELECT id, use_vram, status, filename, start_date, complete_date, exec_count FROM process_table ORDER BY start_date DESC")
@@ -43,6 +44,7 @@ func GetAllProcess(db *sql.DB) []utils.Process {
 
 // RegisterProcess データベースに新規登録
 func RegisterProcess(db *sql.DB, process utils.Process) {
+	fmt.Println("### RegisterProcess")
 	ins, err := db.Prepare("INSERT INTO process_table (id, use_vram, status, filename, targetfile, env_name, exec_count) VALUES (?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		fmt.Println(err)
@@ -51,11 +53,12 @@ func RegisterProcess(db *sql.DB, process utils.Process) {
 		fmt.Println(err)
 	}
 	utils.BroadcastProcess <- GetAllProcess(db)
+	UpdateAllProcess(db)
 }
 
 // UpdateAllProcess プロセスの更新
 func UpdateAllProcess(db *sql.DB) {
-
+	fmt.Println("### UpdateAllProcess")
 	vramTotal := utils.GetTotalVRAM()
 
 	// 0より大きく設定されたプロセスを先に実行
@@ -107,6 +110,8 @@ func UpdateAllProcess(db *sql.DB) {
 
 // RegisterPID データベースにPID登録
 func RegisterPID(db *sql.DB, id string, pid int) {
+	fmt.Println("### RegisterPID")
+
 	statusUpdate, err := db.Prepare("UPDATE process_table SET pid=? WHERE id=?")
 	if err != nil {
 		fmt.Println(err)
@@ -121,6 +126,8 @@ func RegisterPID(db *sql.DB, id string, pid int) {
 
 // StartProcess プロセス実行
 func StartProcess(db *sql.DB, id string, targetFile string, envName string) {
+	fmt.Println("### StartProcess")
+
 	statusUpdate, err := db.Prepare("UPDATE process_table SET status=?, start_date=?, complete_date=NULL WHERE id=?")
 	if err != nil {
 		fmt.Println(err)
@@ -136,11 +143,13 @@ func StartProcess(db *sql.DB, id string, targetFile string, envName string) {
 		CompleteProcess(db, id, status)
 	}()
 	utils.BroadcastProcess <- GetAllProcess(db)
+	UpdateAllProcess(db)
 }
 
 // CompleteProcess プロセス終了時にデータベースを更新
 func CompleteProcess(db *sql.DB, id string, status string) {
-	fmt.Println("CompleteProcess", id)
+	fmt.Println("### CompleteProcess")
+
 	var execCount int
 	if err := db.QueryRow("SELECT exec_count FROM process_table WHERE id = ?", id).Scan(&execCount); err != nil {
 		fmt.Println(err)
@@ -164,6 +173,8 @@ func CompleteProcess(db *sql.DB, id string, status string) {
 
 // DeleteProcess リストからプロセスを削除
 func DeleteProcess(db *sql.DB, id string) {
+	fmt.Println("### DeleteProcess")
+
 	dbDelete, err := db.Prepare("DELETE FROM process_table WHERE id = ?")
 	if err != nil {
 		fmt.Println(err)
@@ -175,4 +186,5 @@ func DeleteProcess(db *sql.DB, id string) {
 		fmt.Println(err)
 	}
 	utils.BroadcastProcess <- GetAllProcess(db)
+	UpdateAllProcess(db)
 }
