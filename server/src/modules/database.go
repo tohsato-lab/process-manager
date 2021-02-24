@@ -121,7 +121,7 @@ func RegisterPID(db *sql.DB, id string, pid int) {
 
 // StartProcess プロセス実行
 func StartProcess(db *sql.DB, id string, targetFile string, envName string) {
-	statusUpdate, err := db.Prepare("UPDATE process_table SET status=?, start_date=? WHERE id=?")
+	statusUpdate, err := db.Prepare("UPDATE process_table SET status=?, start_date=?, complete_date=NULL WHERE id=?")
 	if err != nil {
 		fmt.Println(err)
 	}
