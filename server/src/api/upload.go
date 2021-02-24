@@ -99,7 +99,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	// regist proceess
-	modules.RegistProcess(db, utils.Process{
+	modules.RegisterProcess(db, utils.Process{
 		ID:         targetFileID,
 		UseVram:    float32(vram),
 		Status:     "ready",
@@ -109,7 +109,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	})
 
 	// update process
-	modules.UpdataAllProcess(db)
+	modules.UpdateAllProcess(db)
 	println("アップロード完了")
 
 	// return

@@ -3,7 +3,6 @@ package modules
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"time"
 
 	"process-manager-server/utils"
@@ -15,49 +14,49 @@ func GetAllProcess(db *sql.DB) []utils.Process {
 
 	dbSelect, err := db.Query("SELECT id, use_vram, status, filename, start_date, complete_date FROM process_table ORDER BY start_date DESC")
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err)
 	}
 	defer dbSelect.Close()
 	for dbSelect.Next() {
 		var process utils.Process
-		var startDate time.Time
-		var completeDate time.Time
-		dbSelect.Scan(&process.ID, &process.UseVram, &process.Status, &process.Filename, &startDate, &completeDate)
-		jst, _ := time.LoadLocation("Asia/Tokyo")
-		if !startDate.IsZero() {
-			process.StartDate = startDate.In(jst).Format("2006年01月02日 15時04分05秒")
+		var startDate sql.NullTime
+		var completeDate sql.NullTime
+		if err := dbSelect.Scan(&process.ID, &process.UseVram, &process.Status, &process.Filename, &startDate, &completeDate); err != nil {
+			fmt.Println(err)
 		}
-		if !completeDate.IsZero() {
-			process.CompleteDate = completeDate.In(jst).Format("2006年01月02日 15時04分05秒")
+		jst, _ := time.LoadLocation("Asia/Tokyo")
+		if startDate.Valid {
+			process.StartDate = startDate.Time.In(jst).Format("2006年01月02日 15時04分05秒")
+		}
+		if completeDate.Valid {
+			process.CompleteDate = completeDate.Time.In(jst).Format("2006年01月02日 15時04分05秒")
 		}
 		processes = append(processes, process)
 	}
 	return processes
 }
 
-// RegistProcess データベースに新規登録
-func RegistProcess(db *sql.DB, process utils.Process) {
+// RegisterProcess データベースに新規登録
+func RegisterProcess(db *sql.DB, process utils.Process) {
 	ins, err := db.Prepare("INSERT INTO process_table (id, use_vram, status, filename, targetfile, env_name) VALUES (?, ?, ?, ?, ?, ?)")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
-	ins.Exec(process.ID, process.UseVram, process.Status, process.Filename, process.TargetFile, process.EnvName)
-	if err != nil {
-		log.Fatal(err)
+	if _, err := ins.Exec(process.ID, process.UseVram, process.Status, process.Filename, process.TargetFile, process.EnvName); err != nil {
+		fmt.Println(err)
 	}
 	utils.BroadcastProcess <- GetAllProcess(db)
-
 }
 
-// UpdataAllProcess プロセスの更新
-func UpdataAllProcess(db *sql.DB) {
+// UpdateAllProcess プロセスの更新
+func UpdateAllProcess(db *sql.DB) {
 
 	vramTotal := utils.GetTotalVRAM()
 
 	// 0より大きく設定されたプロセスを先に実行
 	dbReady, err := db.Query("SELECT id, use_vram, targetfile, env_name FROM process_table WHERE use_vram > 0 AND status = ? ORDER BY use_vram", "ready")
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err)
 	}
 	defer dbReady.Close()
 
@@ -65,10 +64,12 @@ func UpdataAllProcess(db *sql.DB) {
 		usedVRAM := 0
 		err := db.QueryRow("SELECT IFNULL(SUM(use_vram), 0) FROM process_table WHERE use_vram > 0 AND status = ?", "working").Scan(&usedVRAM)
 		if err != nil {
-			panic(err.Error())
+			fmt.Println(err)
 		}
 		var process utils.Process
-		dbReady.Scan(&process.ID, &process.UseVram, &process.TargetFile, &process.EnvName)
+		if err := dbReady.Scan(&process.ID, &process.UseVram, &process.TargetFile, &process.EnvName); err != nil {
+			fmt.Println(err)
+		}
 
 		// メモリに空きがある場合
 		fmt.Println(vramTotal - (float32(usedVRAM) + process.UseVram))
@@ -81,72 +82,80 @@ func UpdataAllProcess(db *sql.DB) {
 
 	// vramが0と設定されたプロセスを逐次実行
 	var countReady int
-	err = db.QueryRow("SELECT COUNT(*) FROM process_table WHERE use_vram = 0 AND status = ?", "ready").Scan(&countReady)
-	if err != nil {
-		panic(err.Error())
+	if err := db.QueryRow("SELECT COUNT(*) FROM process_table WHERE use_vram = 0 AND status = ?", "ready").Scan(&countReady); err != nil {
+		fmt.Println(err)
 	}
 	var countWorking int
-	err = db.QueryRow("SELECT COUNT(*) FROM process_table WHERE status = ?", "working").Scan(&countWorking)
-	if err != nil {
-		panic(err.Error())
+	if err := db.QueryRow("SELECT COUNT(*) FROM process_table WHERE status = ?", "working").Scan(&countWorking); err != nil {
+		fmt.Println(err)
 	}
 	if countReady != 0 && countWorking == 0 {
 		var process utils.Process
-		err = db.QueryRow("SELECT id, targetfile, env_name FROM process_table WHERE use_vram = 0 AND status = ?", "ready").Scan(&process.ID, &process.TargetFile, &process.EnvName)
-		if err != nil {
-			panic(err.Error())
+		if err := db.QueryRow(
+			"SELECT id, targetfile, env_name FROM process_table WHERE use_vram = 0 AND status = ?", "ready",
+		).Scan(&process.ID, &process.TargetFile, &process.EnvName); err != nil {
+			fmt.Println(err)
 		}
 		StartProcess(db, process.ID, process.TargetFile, process.EnvName)
 	}
 }
 
 // StartProcess プロセス実行
-func StartProcess(db *sql.DB, id string, targetfile string, envName string) {
+func StartProcess(db *sql.DB, id string, targetFile string, envName string) {
 	statusUpdate, err := db.Prepare("UPDATE process_table SET status=?, start_date=? WHERE id=?")
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err)
 	}
-	defer statusUpdate.Close()
 
-	if statusUpdate.Exec("working", time.Now(), id); err != nil {
-		panic(err.Error())
+	if _, err := statusUpdate.Exec("working", time.Now(), id); err != nil {
+		fmt.Println(err)
+	}
+
+	if err := statusUpdate.Close(); err != nil {
+		fmt.Println(err)
 	}
 
 	go func() {
-		status := Execute(db, id, targetfile, envName)
-		ComplateProcess(db, id, status)
+		status := Execute(db, id, targetFile, envName)
+		CompleteProcess(db, id, status)
 	}()
 
 	utils.BroadcastProcess <- GetAllProcess(db)
 }
 
-// ComplateProcess プロセス終了時にデータベースを更新
-func ComplateProcess(db *sql.DB, id string, status string) {
+// CompleteProcess プロセス終了時にデータベースを更新
+func CompleteProcess(db *sql.DB, id string, status string) {
 	statusUpdate, err := db.Prepare("UPDATE process_table SET status=?, complete_date=? WHERE id=?")
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err)
 	}
-	defer statusUpdate.Close()
 
-	if statusUpdate.Exec(status, time.Now(), id); err != nil {
-		panic(err.Error())
+	if _, err := statusUpdate.Exec(status, time.Now(), id); err != nil {
+		fmt.Println(err)
+	}
+
+	if err := statusUpdate.Close(); err != nil {
+		fmt.Println(err)
 	}
 
 	utils.BroadcastProcess <- GetAllProcess(db)
 
-	UpdataAllProcess(db)
+	UpdateAllProcess(db)
 }
 
 // DeleteProcess リストからプロセスを削除
 func DeleteProcess(db *sql.DB, id string) {
 	dbDelete, err := db.Prepare("DELETE FROM process_table WHERE id = ?")
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err)
 	}
-	defer dbDelete.Close()
 
-	if dbDelete.Exec(id); err != nil {
-		panic(err.Error())
+	if _, err := dbDelete.Exec(id); err != nil {
+		fmt.Println(err)
+	}
+
+	if err := dbDelete.Close(); err != nil {
+		fmt.Println(err)
 	}
 
 	utils.BroadcastProcess <- GetAllProcess(db)
