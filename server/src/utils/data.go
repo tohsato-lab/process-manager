@@ -10,6 +10,7 @@ type Process struct {
 	CompleteDate string
 	TargetFile   string
 	EnvName      string
+	ExecCount    int32
 }
 
 // BroadcastProcess データベースの情報を格納する
