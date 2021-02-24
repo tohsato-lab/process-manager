@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"process-manager-server/modules"
@@ -16,7 +17,7 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	dbStatus := ""
 	err := db.QueryRow("SELECT status FROM process_table WHERE id = ?", id).Scan(&dbStatus)
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err)
 	}
 
 	status := ""
@@ -35,6 +36,6 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 	jsonData, _ := json.Marshal(response)
 	if _, err := w.Write(jsonData); err != nil {
-		return
+		fmt.Println(err)
 	}
 }
