@@ -28,16 +28,15 @@ func main() {
 	http.HandleFunc("/env_info", func(w http.ResponseWriter, r *http.Request) {
 		api.EnvInfoHandler(w, r)
 	})
-	http.HandleFunc("/process_status", func(w http.ResponseWriter, r *http.Request) {
-		api.WebSocketHandle(w, r, db)
-	})
 	http.HandleFunc("/host_status", func(w http.ResponseWriter, r *http.Request) {
 		api.HostStatus(w, r)
+	})
+	http.HandleFunc("/process_status", func(w http.ResponseWriter, r *http.Request) {
+		api.ProcessStatus(w, r, db)
 	})
 	http.HandleFunc("/programs/", func(w http.ResponseWriter, r *http.Request) {
 		api.Explorer(w, r, db)
 	})
-	go api.WebSocketKernel()
 
 	fmt.Println("server start")
 	log.Fatal(http.ListenAndServe(":5983", nil))
