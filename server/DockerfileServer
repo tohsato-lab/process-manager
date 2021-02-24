@@ -53,9 +53,6 @@ RUN . /root/.bashrc && \
     conda config --set auto_activate_base false && \
     for package in `ls anaconda_packages`; do conda env create -f="anaconda_packages/$package"; done
 
-RUN go get github.com/go-sql-driver/mysql && \
-    go get github.com/gorilla/websocket
-
 WORKDIR /process-manager/server/src
 
 ENV PATH $PATH:/opt/anaconda3/bin
