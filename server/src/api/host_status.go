@@ -23,12 +23,17 @@ func HostStatus(w http.ResponseWriter, r *http.Request) {
 	for {
 		time.Sleep(1 * time.Second)
 		totalVRAM := utils.GetTotalVRAM()
+		totalRAM := utils.GetTotalRAM()
 		var vram = 0.0
+		var ram = 0.0
 		if totalVRAM != 0 {
 			vram = float64(utils.GetUsedVRAM() / totalVRAM)
 		}
+		if totalRAM != 0 {
+			ram = float64(utils.GetUsedRAM() / totalRAM)
+		}
 		if err := conn.WriteJson(&Status{
-			RAM:  0.0,
+			RAM:  ram,
 			VRAM: vram,
 		}); err != nil {
 			fmt.Println(err)
