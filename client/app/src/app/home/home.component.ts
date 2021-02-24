@@ -1,9 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {webSocket} from 'rxjs/webSocket';
 import config from '../../../config';
 import {Subscription} from 'rxjs';
 import {CommonService} from '../service/commom.service';
+import {SseService} from '../service/sse.service';
 
 
 @Component({
@@ -18,7 +18,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     public fileInfos: any = [];
     public processList = [];
     public envList: any;
-    public processCtrlData: any = null;
 
     private subscription: Subscription;
     private headerTitle = 'プロセス一覧';
@@ -26,25 +25,20 @@ export class HomeComponent implements OnInit, OnDestroy {
     constructor(
         private http: HttpClient,
         private commonService: CommonService,
+        private sseService: SseService,
     ) {
     }
 
     ngOnInit(): void {
-        webSocket(`${config.websocketScheme}${location.hostname}:${config.port}/process_status`).subscribe(
-            (message: any) => {
-                this.processList = message;
-                for (const process of this.processList) {
-                    process.Selected = false;
-                }
-                console.log(this.processList);
-            },
-            err => {
-                console.log(err);
-                console.log(`${config.httpScheme}${location.hostname}:${config.port}`);
-                this.hiddenAuthPage = false;
-            },
-            () => console.log('complete')
-        );
+        this.sseService.getServerSentEvent(
+            `${config.httpScheme}${location.hostname}:${config.port}/process_status`
+        ).subscribe((processData: any) => {
+            this.processList = JSON.parse(processData.data);
+            for (const process of this.processList) {
+                process.Selected = false;
+            }
+            console.log(this.processList);
+        });
         this.commonService.onNotifySharedDataChanged(this.headerTitle);
     }
 
