@@ -46,6 +46,9 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	target := r.FormValue("target")
 
 	// get use target
+	comment := r.FormValue("comment")
+
+	// get use target
 	execCount, err := strconv.Atoi(r.FormValue("exec_count"))
 	if err != nil {
 		fmt.Println("Convert Error.")
@@ -92,7 +95,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	// unzip
 	targetDIR := "../../data/programs/" + targetFileID + "/"
-	if err := os.Mkdir(targetDIR, 0777); err != nil {
+	if err := os.MkdirAll(targetDIR, 0777); err != nil {
 		_, _ = fmt.Fprintln(w, "ディレクトリ生成に失敗しました。"+err.Error())
 		return
 	}
@@ -114,6 +117,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		TargetFile: target,
 		EnvName:    env,
 		ExecCount:  int32(execCount),
+		Comment:    comment,
 	})
 
 	println("アップロード完了")

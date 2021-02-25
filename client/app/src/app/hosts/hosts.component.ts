@@ -60,11 +60,15 @@ export class HostsComponent implements OnInit, OnDestroy {
                 ];
             });
         }
+        window.onbeforeunload = () => this.ngOnDestroy();
     }
 
     ngOnDestroy(): void {
         //  リソースリーク防止のため CommonService から subcribe したオブジェクトを破棄する
-        this.subscription.unsubscribe();
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
+        this.sseService.closeServerSentEvent();
     }
 
 }

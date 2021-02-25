@@ -17,7 +17,7 @@ export class AppComponent implements OnInit {
     private subscription: Subscription;
 
     title = 'process manager';
-    isHandset$: Observable<boolean> = this.breakpointObserver.observe('(max-width: 1100px)')
+    isHandset$: Observable<boolean> = this.breakpointObserver.observe('(max-width: 1200px)')
         .pipe(
             map(result => result.matches),
             shareReplay()

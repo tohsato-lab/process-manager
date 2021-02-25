@@ -14,7 +14,7 @@ type Status struct {
 	VRAM float64
 }
 
-// HostStatus GPUの情報を配信
+// HostStatus ホストの情報を配信
 func HostStatus(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -38,6 +38,7 @@ func HostStatus(w http.ResponseWriter, r *http.Request) {
 		}); err != nil {
 			fmt.Println(err)
 			conn.Close()
+			return
 		}
 	}
 }

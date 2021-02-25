@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"process-manager-server/modules"
 	"process-manager-server/utils"
+	"time"
 )
 
 // ProcessStatus プロセスの状態を配信
@@ -18,14 +19,23 @@ func ProcessStatus(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if err := conn.WriteJson(modules.GetAllProcess(db)); err != nil {
 		fmt.Println(err)
 		conn.Close()
+		return
 	}
 
 	for {
-		// メッセージ受け取り
-		process := <-utils.BroadcastProcess
-		if err := conn.WriteJson(process); err != nil {
-			fmt.Println(err)
-			conn.Close()
+		select {
+		case process := <-utils.BroadcastProcess:
+			if err := conn.WriteJson(process); err != nil {
+				fmt.Println(err)
+				conn.Close()
+				return
+			}
+		case <-time.After(10 * time.Second):
+			if err := conn.WriteJson(modules.GetAllProcess(db)); err != nil {
+				fmt.Println(err)
+				conn.Close()
+				return
+			}
 		}
 	}
 }
