@@ -95,7 +95,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	// unzip
 	targetDIR := "../../data/programs/" + targetFileID + "/"
-	if err := os.Mkdir(targetDIR, 0777); err != nil {
+	if err := os.MkdirAll(targetDIR, 0777); err != nil {
 		_, _ = fmt.Fprintln(w, "ディレクトリ生成に失敗しました。"+err.Error())
 		return
 	}
