@@ -39,11 +39,15 @@ export class HomeComponent implements OnInit, OnDestroy {
             console.log(this.processList);
         });
         this.commonService.onNotifySharedDataChanged(this.headerTitle);
+        window.onbeforeunload = () => this.ngOnDestroy();
     }
 
     ngOnDestroy(): void {
         //  リソースリーク防止のため CommonService から subcribe したオブジェクトを破棄する
-        this.subscription.unsubscribe();
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
+        this.sseService.closeServerSentEvent();
     }
 
     public onOpenExplorer(id) {

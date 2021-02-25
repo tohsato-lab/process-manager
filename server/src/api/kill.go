@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os/exec"
+	"process-manager-server/modules"
 	"strconv"
 )
 
@@ -33,8 +34,11 @@ func KillHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		status = "not kill"
 	}
 
-	// update process
-	// modules.UpdateAllProcess(db)
+	//何らかの理由でステータスが更新されていなかった場合はkilledに更新
+	if dbStatus == "running" && status == "not kill" {
+		// DBアップデート
+		modules.CompleteProcess(db, id, "killed")
+	}
 
 	// return
 	w.Header().Set("Access-Control-Allow-Origin", "*")
