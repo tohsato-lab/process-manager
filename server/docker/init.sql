@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `process_table` (
   `complete_date` datetime DEFAULT NULL COMMENT "実行完了日時",
   `pid` int DEFAULT NULL COMMENT "PID",
   `exec_count` int DEFAULT NULL COMMENT "実行回数",
-  `comment` varChar(10922) DEFAULT NULL COMMENT "コメント",
+  `comment` VARCHAR(10922) DEFAULT NULL COMMENT "コメント"
 ) DEFAULT CHARACTER SET=utf8;
 
 CREATE user 'golang'@'%' IDENTIFIED BY 'process_manager';
