@@ -37,7 +37,7 @@ func HostStatus(w http.ResponseWriter, r *http.Request) {
 			VRAM: vram,
 		}); err != nil {
 			fmt.Println(err)
-			// conn.Close()
+			conn.Close()
 			return
 		}
 	}
