@@ -32,9 +32,11 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.sseService.getServerSentEvent(
             `${config.httpScheme}${location.hostname}:${config.port}/process_status`
         ).subscribe((processData: any) => {
-            this.processList = JSON.parse(processData.data);
-            for (const process of this.processList) {
-                process.Selected = false;
+            if (processData.data != 'null') {
+                this.processList = JSON.parse(processData.data);
+                for (const process of this.processList) {
+                    process.Selected = false;
+                }
             }
             console.log(this.processList);
         });
