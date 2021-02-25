@@ -5,7 +5,7 @@
   <table style="min-width: 840px;">
     <thead>
     <tr>
-      <th>ファイル名</th>
+      <th style="min-width: 200px;">ファイル名</th>
       <th>VRAM設定値</th>
       <th style="width: 100px;">状態</th>
       <th>開始時間</th>
@@ -18,7 +18,7 @@
     <tr *ngFor="let process of processList" class="table-item">
       <th (click)="onOpenExplorer(process['ID'])">
         <div>{{process["Filename"]}}</div>
-        <div>{{process["Comment"]}}</div>
+        <div class="comment-text">{{process["Comment"]}}</div>
       </th>
       <th (click)="onOpenExplorer(process['ID'])">{{process["UseVram"]}}</th>
       <th (click)="onOpenExplorer(process['ID'])">

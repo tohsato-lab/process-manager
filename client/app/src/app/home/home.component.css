@@ -61,6 +61,11 @@ table tr:nth-child(odd) {
     background-color: #eee
 }
 
+.comment-text {
+    font-weight: 100;
+    font-size: smaller;
+}
+
 .table-item {
     height: 6vh;
 }
@@ -159,29 +164,35 @@ table tr:nth-child(odd) {
     border-bottom: solid 1px gray;
     color: black;
     font-size: large;
+    min-height: 50px;
 }
 
 .upload-content {
     display: flex;
     align-items: center;
     flex-direction: column;
+    max-height: 50vh;
+    overflow-y: scroll;
 }
 
 .upload-drop-zone {
     margin: 10%;
+    padding: 20px;
     width: 70%;
+    min-height: 200px;
 }
 
 .upload-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-around;
     border-radius: 10px;
     width: 80%;
     padding: 2%;
     margin-bottom: 2%;
     background-color: #666666;
     color: white;
+    flex-wrap: wrap;
 }
 
 .upload-button {
