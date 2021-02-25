@@ -99,7 +99,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		_, _ = fmt.Fprintln(w, "ディレクトリ生成に失敗しました。"+err.Error())
 		return
 	}
-	if err := os.Rename("./"+uploadedFileName, targetDIR+uploadedFileName); err != nil {
+	if _, err := exec.Command("sh", "-c", "mv "+targetDIR+" "+targetDIR+uploadedFileName).Output(); err != nil {
 		_, _ = fmt.Fprintln(w, "ファイルコピーに失敗しました。"+err.Error())
 		return
 	}
