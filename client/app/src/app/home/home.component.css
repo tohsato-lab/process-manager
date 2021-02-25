@@ -1,5 +1,6 @@
 .home-base {
     width: 100vw;
+    min-width: 940px;
     display: table-cell;
     vertical-align: middle;
 }
