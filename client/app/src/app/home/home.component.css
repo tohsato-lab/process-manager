@@ -65,6 +65,7 @@ table tr:nth-child(odd) {
 .comment-text {
     font-weight: 100;
     font-size: smaller;
+    padding: 5px 10px;
 }
 
 .table-item {
