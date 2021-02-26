@@ -56,7 +56,6 @@ func RegisterProcess(db *sql.DB, process utils.Process) {
 	if _, err := ins.Exec(process.ID, process.UseVram, process.Status, process.Filename, process.TargetFile, process.EnvName, process.ExecCount, process.Comment); err != nil {
 		fmt.Println(err)
 	}
-	utils.BroadcastProcess <- GetAllProcess(db)
 	UpdateAllProcess(db)
 }
 
@@ -109,7 +108,12 @@ func UpdateAllProcess(db *sql.DB) {
 		}
 		StartProcess(db, process.ID, process.TargetFile, process.EnvName)
 	}
-	utils.BroadcastProcess <- GetAllProcess(db)
+	go func() {
+		select {
+		case utils.BroadcastProcess <- GetAllProcess(db):
+		case <-time.After(10 * time.Second): // 100秒に変更
+		}
+	}()
 }
 
 // RegisterPID データベースにPID登録
@@ -146,7 +150,6 @@ func StartProcess(db *sql.DB, id string, targetFile string, envName string) {
 		status := Execute(db, id, targetFile, envName)
 		CompleteProcess(db, id, status)
 	}()
-	utils.BroadcastProcess <- GetAllProcess(db)
 	UpdateAllProcess(db)
 }
 
@@ -171,7 +174,6 @@ func CompleteProcess(db *sql.DB, id string, status string) {
 	if err := statusUpdate.Close(); err != nil {
 		fmt.Println(err)
 	}
-	utils.BroadcastProcess <- GetAllProcess(db)
 	UpdateAllProcess(db)
 }
 
@@ -189,6 +191,5 @@ func DeleteProcess(db *sql.DB, id string) {
 	if err := dbDelete.Close(); err != nil {
 		fmt.Println(err)
 	}
-	utils.BroadcastProcess <- GetAllProcess(db)
 	UpdateAllProcess(db)
 }
