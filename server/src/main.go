@@ -37,6 +37,7 @@ func main() {
 	http.HandleFunc("/programs/", func(w http.ResponseWriter, r *http.Request) {
 		api.Explorer(w, r, db)
 	})
+	go api.ProcessStatusKernel()
 
 	fmt.Println("server start")
 	log.Fatal(http.ListenAndServe(":5983", nil))

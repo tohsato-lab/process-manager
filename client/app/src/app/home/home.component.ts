@@ -4,6 +4,7 @@ import config from '../../../config';
 import {Subscription} from 'rxjs';
 import {CommonService} from '../service/commom.service';
 import {SseService} from '../service/sse.service';
+import {webSocket} from 'rxjs/webSocket';
 
 
 @Component({
@@ -29,17 +30,21 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.sseService.getServerSentEvent(
-            `${config.httpScheme}${location.hostname}:${config.port}/process_status`
-        ).subscribe((processData: any) => {
-            if (processData.data != 'null') {
-                this.processList = JSON.parse(processData.data);
+        webSocket(`${config.websocketScheme}${location.hostname}:${config.port}/process_status`).subscribe(
+            (message: any) => {
+                console.log(message)
+                this.processList = message;
                 for (const process of this.processList) {
                     process.Selected = false;
                 }
-            }
-            console.log(this.processList);
-        });
+                console.log(this.processList);
+            },
+            err => {
+                console.log(err);
+                console.log(`${config.httpScheme}${location.hostname}:${config.port}`);
+            },
+            () => console.log('complete')
+        );
         this.commonService.onNotifySharedDataChanged(this.headerTitle);
         window.onbeforeunload = () => this.ngOnDestroy();
     }
