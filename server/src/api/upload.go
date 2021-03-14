@@ -89,36 +89,42 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 
-	// target filename
-	md5Data := md5.Sum([]byte(time.Now().String()))
-	targetFileID := hex.EncodeToString(md5Data[:])
+	for i := 0; i < execCount; i++ {
+		// target filename
+		md5Data := md5.Sum([]byte(time.Now().String()))
+		targetFileID := hex.EncodeToString(md5Data[:])
 
-	// unzip
-	targetDIR := "../../data/programs/" + targetFileID + "/"
-	if err := os.MkdirAll(targetDIR, 0777); err != nil {
-		_, _ = fmt.Fprintln(w, "ディレクトリ生成に失敗しました。"+err.Error())
-		return
-	}
-	if _, err := exec.Command("sh", "-c", "mv "+uploadedFileName+" "+targetDIR+uploadedFileName).Output(); err != nil {
-		_, _ = fmt.Fprintln(w, "ファイルコピーに失敗しました。"+err.Error())
-		return
-	}
-	if _, err := exec.Command("sh", "-c", "unzip "+targetDIR+uploadedFileName+" -d "+targetDIR).Output(); err != nil {
-		_, _ = fmt.Fprintln(w, "ファイル解凍に失敗しました。"+err.Error())
-		return
+		// unzip
+		targetDIR := "../../data/programs/" + targetFileID + "/"
+		if err := os.MkdirAll(targetDIR, 0777); err != nil {
+			_, _ = fmt.Fprintln(w, "ディレクトリ生成に失敗しました。"+err.Error())
+			return
+		}
+		if _, err := exec.Command("sh", "-c", "cp "+uploadedFileName+" "+targetDIR+uploadedFileName).Output(); err != nil {
+			_, _ = fmt.Fprintln(w, "ファイルコピーに失敗しました。"+err.Error())
+			return
+		}
+		if _, err := exec.Command("sh", "-c", "unzip "+targetDIR+uploadedFileName+" -d "+targetDIR).Output(); err != nil {
+			_, _ = fmt.Fprintln(w, "ファイル解凍に失敗しました。"+err.Error())
+			return
+		}
+
+		// register process
+		modules.RegisterProcess(db, utils.Process{
+			ID:         targetFileID,
+			UseVram:    float32(vram),
+			Status:     "ready",
+			Filename:   strings.Split(uploadedFileName, ".")[0],
+			TargetFile: target,
+			EnvName:    env,
+			ExecCount:  1,
+			Comment:    comment,
+		})
 	}
 
-	// register process
-	modules.RegisterProcess(db, utils.Process{
-		ID:         targetFileID,
-		UseVram:    float32(vram),
-		Status:     "ready",
-		Filename:   strings.Split(uploadedFileName, ".")[0],
-		TargetFile: target,
-		EnvName:    env,
-		ExecCount:  int32(execCount),
-		Comment:    comment,
-	})
+	if err := os.Remove(uploadedFileName); err != nil {
+		fmt.Println(err)
+	}
 
 	println("アップロード完了")
 

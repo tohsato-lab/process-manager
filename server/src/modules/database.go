@@ -108,12 +108,7 @@ func UpdateAllProcess(db *sql.DB) {
 		}
 		StartProcess(db, process.ID, process.TargetFile, process.EnvName)
 	}
-	go func() {
-		select {
-		case utils.BroadcastProcess <- GetAllProcess(db):
-		case <-time.After(10 * time.Second): // 100秒に変更
-		}
-	}()
+	utils.BroadcastProcess <- GetAllProcess(db)
 }
 
 // RegisterPID データベースにPID登録
