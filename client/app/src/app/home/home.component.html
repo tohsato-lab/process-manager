@@ -10,7 +10,6 @@
       <th style="width: 100px;">状態</th>
       <th>開始時間</th>
       <th>終了時間</th>
-      <th>実行回数</th>
       <th style="width: 50px;"></th>
       <th></th>
     </tr>
@@ -30,7 +29,6 @@
       </th>
       <th>{{process["StartDate"]}}</th>
       <th>{{process["CompleteDate"]}}</th>
-      <th>{{process["ExecCount"]}}</th>
       <th>
         <div *ngIf="process['Status'] == 'running'" (click)="onKill(process['ID'])" class="kill-button">
           kill
