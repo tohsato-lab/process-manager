@@ -14,7 +14,7 @@ func Explorer(w http.ResponseWriter, r *http.Request, _ *sql.DB) {
 	var info []utils.DirectoryInfo
 	files, err := ioutil.ReadDir("../../data/" + r.URL.Path[1:])
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 	for _, file := range files {
 		fmt.Println(file.Name())
