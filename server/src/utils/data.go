@@ -14,5 +14,10 @@ type Process struct {
 	Comment      string
 }
 
+type DirectoryInfo struct {
+	Name  string
+	IsDir bool
+}
+
 // BroadcastProcess データベースの情報を格納する
 var BroadcastProcess = make(chan []Process)

@@ -32,8 +32,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         webSocket(`${config.websocketScheme}${location.hostname}:${config.port}/process_status`).subscribe(
             (message: any) => {
-                console.log(message)
-                this.processList = message;
+                console.log(message);
+                this.processList = message !== null ? message : [];
                 for (const process of this.processList) {
                     process.Selected = false;
                 }

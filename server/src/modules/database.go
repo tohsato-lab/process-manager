@@ -65,7 +65,7 @@ func UpdateAllProcess(db *sql.DB) {
 	vramTotal := utils.GetTotalVRAM()
 
 	// 0より大きく設定されたプロセスを先に実行
-	dbReady, err := db.Query("SELECT id, use_vram, targetfile, env_name FROM process_table WHERE use_vram > 0 AND exec_count > 0 AND status = ? ORDER BY use_vram", "ready")
+	dbReady, err := db.Query("SELECT id, use_vram, targetfile, env_name FROM process_table WHERE use_vram > 0 AND status = ? ORDER BY use_vram", "ready")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -73,12 +73,12 @@ func UpdateAllProcess(db *sql.DB) {
 
 	for dbReady.Next() {
 		usedVRAM := 0
-		err := db.QueryRow("SELECT IFNULL(SUM(use_vram), 0) FROM process_table WHERE use_vram > 0 AND exec_count > 0 AND status = ?", "running").Scan(&usedVRAM)
+		err := db.QueryRow("SELECT IFNULL(SUM(use_vram), 0) FROM process_table WHERE use_vram > 0 AND status = ?", "running").Scan(&usedVRAM)
 		if err != nil {
 			fmt.Println(err)
 		}
 		var process utils.Process
-		if err := dbReady.Scan(&process.ID, &process.UseVram, &process.TargetFile, &process.EnvName, &process.ExecCount); err != nil {
+		if err := dbReady.Scan(&process.ID, &process.UseVram, &process.TargetFile, &process.EnvName); err != nil {
 			fmt.Println(err)
 		}
 		// メモリに空きがある場合
@@ -92,7 +92,7 @@ func UpdateAllProcess(db *sql.DB) {
 
 	// vramが0と設定されたプロセスを逐次実行
 	var countReady int
-	if err := db.QueryRow("SELECT COUNT(*) FROM process_table WHERE use_vram = 0 AND exec_count > 0 AND status = ?", "ready").Scan(&countReady); err != nil {
+	if err := db.QueryRow("SELECT COUNT(*) FROM process_table WHERE use_vram = 0 AND status = ?", "ready").Scan(&countReady); err != nil {
 		fmt.Println(err)
 	}
 	var countWorking int
@@ -108,12 +108,7 @@ func UpdateAllProcess(db *sql.DB) {
 		}
 		StartProcess(db, process.ID, process.TargetFile, process.EnvName)
 	}
-	go func() {
-		select {
-		case utils.BroadcastProcess <- GetAllProcess(db):
-		case <-time.After(10 * time.Second): // 100秒に変更
-		}
-	}()
+	utils.BroadcastProcess <- GetAllProcess(db)
 }
 
 // RegisterPID データベースにPID登録
@@ -157,18 +152,11 @@ func StartProcess(db *sql.DB, id string, targetFile string, envName string) {
 func CompleteProcess(db *sql.DB, id string, status string) {
 	fmt.Println("### CompleteProcess")
 
-	var execCount int
-	if err := db.QueryRow("SELECT exec_count FROM process_table WHERE id = ?", id).Scan(&execCount); err != nil {
-		fmt.Println(err)
-	}
-	statusUpdate, err := db.Prepare("UPDATE process_table SET status=?, complete_date=?, exec_count=? WHERE id=?")
+	statusUpdate, err := db.Prepare("UPDATE process_table SET status=?, complete_date=? WHERE id=?")
 	if err != nil {
 		fmt.Println(err)
 	}
-	if execCount-1 > 0 {
-		status = "ready"
-	}
-	if _, err := statusUpdate.Exec(status, time.Now(), execCount-1, id); err != nil {
+	if _, err := statusUpdate.Exec(status, time.Now(), id); err != nil {
 		fmt.Println(err)
 	}
 	if err := statusUpdate.Close(); err != nil {
