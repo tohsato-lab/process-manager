@@ -9,14 +9,14 @@ import (
 	"process-manager-server/utils"
 )
 
-// GetAllProcess プロセス一覧取得
-func GetAllProcess(db *sql.DB) []utils.Process {
-	fmt.Println("### GetAllProcess")
+// GetProcesses プロセス一覧取得
+func GetProcesses(db *sql.DB) []utils.Process {
+	fmt.Println("### GetProcesses")
 
 	var processes []utils.Process
 
 	dbSelect, err := db.Query(
-		"SELECT id, status, filename, env_name, target_file, start_date, complete_date, comment FROM main_processes ORDER BY upload_date DESC",
+		"SELECT id, status, filename, env_name, target_file, start_date, complete_date, comment FROM main_processes WHERE !in_trash ORDER BY upload_date DESC",
 	)
 	if err != nil {
 		fmt.Println(err)
@@ -98,7 +98,7 @@ func UpdateAllProcess(db *sql.DB) {
 		}
 		StartProcess(db, process.ID, process.TargetFile, process.EnvName)
 	}
-	utils.BroadcastProcess <- GetAllProcess(db)
+	utils.BroadcastProcesses <- GetProcesses(db)
 }
 
 // RegisterPID データベースにPID登録
@@ -167,6 +167,68 @@ func DeleteProcess(db *sql.DB, id string) {
 		fmt.Println(err)
 	}
 	if _, err := dbDelete.Exec(id); err != nil {
+		fmt.Println(err)
+	}
+	if err := dbDelete.Close(); err != nil {
+		fmt.Println(err)
+	}
+	UpdateAllProcess(db)
+}
+
+// GetTrashProcesses ゴミ箱プロセス一覧取得
+func GetTrashProcesses(db *sql.DB) []utils.Process {
+	fmt.Println("### GetTrashProcesses")
+
+	var processes []utils.Process
+
+	dbSelect, err := db.Query(
+		"SELECT id, status, filename, env_name, target_file, start_date, complete_date, comment FROM main_processes WHERE in_trash ORDER BY upload_date DESC",
+	)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer dbSelect.Close()
+	for dbSelect.Next() {
+		var process utils.Process
+		var startDate sql.NullTime
+		var completeDate sql.NullTime
+		var comment sql.NullString
+		if err := dbSelect.Scan(
+			&process.ID, &process.Status, &process.Filename, &process.EnvName, &process.TargetFile, &startDate, &completeDate, &comment,
+		); err != nil {
+			fmt.Println(err)
+		}
+		jst, _ := time.LoadLocation("Asia/Tokyo")
+		if startDate.Valid {
+			process.StartDate = startDate.Time.In(jst).Format("2006年01月02日 15時04分05秒")
+		}
+		if completeDate.Valid {
+			process.CompleteDate = completeDate.Time.In(jst).Format("2006年01月02日 15時04分05秒")
+		}
+		if comment.Valid {
+			process.Comment = comment.String
+		}
+		processes = append(processes, process)
+	}
+	return processes
+}
+
+// TrashProcess ゴミ箱
+func TrashProcess(db *sql.DB, id string) {
+	fmt.Println("### TrashProcess")
+
+	var trashStatus bool
+
+	if err := db.QueryRow(
+		"SELECT in_trash FROM main_processes WHERE id=?", id,
+	).Scan(&trashStatus); err != nil {
+		fmt.Println(err)
+	}
+	dbDelete, err := db.Prepare("UPDATE main_processes SET in_trash=? WHERE id=?")
+	if err != nil {
+		fmt.Println(err)
+	}
+	if _, err := dbDelete.Exec(!trashStatus, id); err != nil {
 		fmt.Println(err)
 	}
 	if err := dbDelete.Close(); err != nil {
