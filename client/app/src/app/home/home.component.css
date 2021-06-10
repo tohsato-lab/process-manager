@@ -100,6 +100,10 @@ table tr:nth-child(odd) {
     color: white;
 }
 
+.table-env-name {
+    width: 50px;
+}
+
 .kill-button {
     border-radius: 10px;
     background: red;

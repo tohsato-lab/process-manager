@@ -82,13 +82,6 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		fmt.Println(err)
 	}
 
-	// get use vram
-	vram, err := strconv.ParseFloat(r.FormValue("vram"), 32)
-	if err != nil {
-		_, _ = fmt.Fprintln(w, "使用VRAM容量を確認出来ませんでした。")
-		return
-	}
-
 	for i := 0; i < execCount; i++ {
 		// target filename
 		md5Data := md5.Sum([]byte(time.Now().String()))
@@ -112,13 +105,12 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		// register process
 		modules.RegisterProcess(db, utils.Process{
 			ID:         targetFileID,
-			UseVram:    float32(vram),
 			Status:     "ready",
 			Filename:   strings.Split(uploadedFileName, ".")[0],
 			TargetFile: target,
 			EnvName:    env,
-			ExecCount:  1,
 			Comment:    comment,
+			InTrash:    false,
 		})
 	}
 
