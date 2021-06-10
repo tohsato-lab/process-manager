@@ -18,5 +18,5 @@ type DirectoryInfo struct {
 	IsDir bool
 }
 
-// BroadcastProcess データベースの情報を格納する
-var BroadcastProcess = make(chan []Process)
+// BroadcastProcesses データベースの情報を格納する
+var BroadcastProcesses = make(chan []Process)

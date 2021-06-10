@@ -32,14 +32,14 @@ func ProcessStatus(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		log.Fatal("error upgrading GET request to a websocket::", err)
 	}
 	clients[socket] = true
-	utils.BroadcastProcess <- modules.GetAllProcess(db)
+	utils.BroadcastProcesses <- modules.GetProcesses(db)
 }
 
 // ProcessStatusKernel WebSocketで情報を投げる
 func ProcessStatusKernel() {
 	for {
 		// メッセージ受け取り
-		process := <-utils.BroadcastProcess
+		process := <-utils.BroadcastProcesses
 		// クライアントの数だけループ
 		for client := range clients {
 			//　書き込む

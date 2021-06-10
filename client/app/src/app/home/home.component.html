@@ -37,7 +37,7 @@
           kill
         </div>
       </th>
-      <th><img (click)="onDelete(process['ID'])" src="../../assets/icon/trash.svg" alt="delete"></th>
+      <th><img (click)="onTrash(process['ID'])" src="../../assets/icon/trash.svg" alt="delete"></th>
     </tr>
   </table>
   <div *ngIf="processList.length == 0" class="none-process">

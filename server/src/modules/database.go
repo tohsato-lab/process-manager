@@ -9,14 +9,14 @@ import (
 	"process-manager-server/utils"
 )
 
-// GetAllProcess プロセス一覧取得
-func GetAllProcess(db *sql.DB) []utils.Process {
-	fmt.Println("### GetAllProcess")
+// GetProcesses プロセス一覧取得
+func GetProcesses(db *sql.DB) []utils.Process {
+	fmt.Println("### GetProcesses")
 
 	var processes []utils.Process
 
 	dbSelect, err := db.Query(
-		"SELECT id, status, filename, env_name, target_file, start_date, complete_date, comment FROM main_processes ORDER BY upload_date DESC",
+		"SELECT id, status, filename, env_name, target_file, start_date, complete_date, comment FROM main_processes WHERE !in_trash ORDER BY upload_date DESC",
 	)
 	if err != nil {
 		fmt.Println(err)
@@ -98,7 +98,7 @@ func UpdateAllProcess(db *sql.DB) {
 		}
 		StartProcess(db, process.ID, process.TargetFile, process.EnvName)
 	}
-	utils.BroadcastProcess <- GetAllProcess(db)
+	utils.BroadcastProcesses <- GetProcesses(db)
 }
 
 // RegisterPID データベースにPID登録
@@ -167,6 +167,30 @@ func DeleteProcess(db *sql.DB, id string) {
 		fmt.Println(err)
 	}
 	if _, err := dbDelete.Exec(id); err != nil {
+		fmt.Println(err)
+	}
+	if err := dbDelete.Close(); err != nil {
+		fmt.Println(err)
+	}
+	UpdateAllProcess(db)
+}
+
+// TrashProcess ゴミ箱
+func TrashProcess(db *sql.DB, id string) {
+	fmt.Println("### TrashProcess")
+
+	var trashStatus bool
+
+	if err := db.QueryRow(
+		"SELECT in_trash FROM main_processes WHERE id=?", id,
+	).Scan(&trashStatus); err != nil {
+		fmt.Println(err)
+	}
+	dbDelete, err := db.Prepare("UPDATE main_processes SET in_trash=? WHERE id=?")
+	if err != nil {
+		fmt.Println(err)
+	}
+	if _, err := dbDelete.Exec(!trashStatus, id); err != nil {
 		fmt.Println(err)
 	}
 	if err := dbDelete.Close(); err != nil {
