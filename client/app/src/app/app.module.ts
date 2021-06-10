@@ -18,12 +18,14 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
 import {HostsComponent} from './hosts/hosts.component';
 import {ChartsModule} from 'ng2-charts';
+import {TrashComponent} from './trash/trash.component';
 
 const routes: Routes = [
     {path: '', component: HomeComponent},
     {path: 'home', component: HomeComponent},
     {path: 'dataset', component: DatasetComponent},
     {path: 'hosts', component: HostsComponent},
+    {path: 'trash', component: TrashComponent},
 ];
 
 @NgModule({
@@ -33,6 +35,7 @@ const routes: Routes = [
         HistoryComponent,
         DatasetComponent,
         HostsComponent,
+        TrashComponent,
     ],
 
     imports: [
