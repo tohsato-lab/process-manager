@@ -2,6 +2,13 @@
 
 プログラムを予めアップロードしておけば、自動で実行してくれるWebアプリケーション。  
 
+# Dvelop
+RENAME TABLE process_table TO main_processes;
+ALTER TABLE main_processes ADD COLUMN upload_date datetime;
+ALTER TABLE main_processes DROP COLUMN use_vram;
+ALTER TABLE main_processes DROP COLUMN exec_count;
+ALTER TABLE main_processes CHANGE COLUMN targetfile target_file VARCHAR(200) NOT NULL;
+
 # DEMO
 
 ![image](https://user-images.githubusercontent.com/33301907/88943540-926a0280-d2c6-11ea-8418-4411e00177bc.png)
