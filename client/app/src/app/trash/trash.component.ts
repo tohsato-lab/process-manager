@@ -24,15 +24,20 @@ export class TrashComponent implements OnInit, OnDestroy {
     ) {
     }
 
-    ngOnInit(): void {
-        this.commonService.onNotifySharedDataChanged(this.headerTitle);
+    private getTrashProcesses() {
         this.http.get(
             `${config.httpScheme}${location.hostname}:${config.port}/trash`
-        ).subscribe(value => {
-            console.log(value);
+        ).subscribe((value: any) => {
+            console.log(value)
+            this.processList = value == null ? [] : value;
         }, error => {
             console.log(error);
         });
+    }
+
+    ngOnInit(): void {
+        this.commonService.onNotifySharedDataChanged(this.headerTitle);
+        this.getTrashProcesses();
     }
 
     ngOnDestroy(): void {
@@ -45,6 +50,17 @@ export class TrashComponent implements OnInit, OnDestroy {
 
     public onOpenExplorer(id) {
         window.location.href = `${config.httpScheme}${location.hostname}:${config.port}/programs/${id}`;
+    }
+
+    public onRecover(id): void {
+        this.http.get(
+            `${config.httpScheme}${location.hostname}:${config.port}/trash?id=${id}`
+        ).subscribe(value => {
+            console.log(value);
+            this.getTrashProcesses();
+        }, error => {
+            console.log(error);
+        });
     }
 
     public onDelete(id): void {

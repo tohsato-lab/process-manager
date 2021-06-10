@@ -7,7 +7,7 @@
       <th style="width: 100px;">状態</th>
       <th>開始時間</th>
       <th>終了時間</th>
-      <th style="width: 50px;"></th>
+      <th style="width: 150px;"></th>
       <th></th>
     </tr>
     </thead>
@@ -22,8 +22,14 @@
       </th>
       <th>{{process["StartDate"]}}</th>
       <th>{{process["CompleteDate"]}}</th>
-      <th><img (click)="onDelete(process['ID'])" src="../../assets/icon/trash.svg" alt="delete"></th>
-      <th><img (click)="onDelete(process['ID'])" src="../../assets/icon/trash.svg" alt="delete"></th>
+      <th style="padding: 15px;">
+        <img (click)="onRecover(process['ID'])" src="../../assets/icon/undo.svg" alt="undo">
+        <div>戻す</div>
+      </th>
+      <th style="padding: 15px;">
+        <img (click)="onDelete(process['ID'])" src="../../assets/icon/delete.svg" alt="delete">
+        <div>削除</div>
+      </th>
     </tr>
   </table>
   <div *ngIf="processList.length == 0" class="none-process">
