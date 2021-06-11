@@ -3,12 +3,18 @@
 プログラムを予めアップロードしておけば、自動で実行してくれるWebアプリケーション。  
 
 # Dvelop
+```
 RENAME TABLE process_table TO main_processes;
 ALTER TABLE main_processes ADD COLUMN upload_date datetime;
 ALTER TABLE main_processes ADD COLUMN in_trash bool DEFAULT false;
 ALTER TABLE main_processes DROP COLUMN use_vram;
 ALTER TABLE main_processes DROP COLUMN exec_count;
 ALTER TABLE main_processes CHANGE COLUMN targetfile target_file VARCHAR(200) NOT NULL;
+
+CREATE TABLE main_processes_bak SELECT * FROM main_processes;
+UPDATE main_processes set upload_date = complete_date;
+
+```
 
 # DEMO
 
