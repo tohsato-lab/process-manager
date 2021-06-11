@@ -1,6 +1,7 @@
 # Process Manager
 
 プログラムを予めアップロードしておけば、自動で実行してくれるWebアプリケーション。  
+Webアプリなのでスマホなどでも閲覧可能。
 
 # Dvelop
 ```
@@ -18,13 +19,11 @@ UPDATE main_processes set upload_date = complete_date;
 
 # DEMO
 
-![image](https://user-images.githubusercontent.com/33301907/88943540-926a0280-d2c6-11ea-8418-4411e00177bc.png)
+![image](https://user-images.githubusercontent.com/33301907/121660471-41c65700-cade-11eb-9a58-2ee5776beaac.png)
 
 # Features
 
 特に機械学習の研究目的で作成しており、Pytorch、Keras用のプログラムも自動で実行できる。
-
-なお、予めGPUメモリの使用容量を設定すれば、容量オーバーしない複数のプログラムを同時に実行する。
 
 # Requirement
 
