@@ -10,7 +10,7 @@ services:
       - "5983:5983"
     command: bash -c "service mysql start && go build && ./process-manager-server"
     volumes:
-      - "/home/migly/LAB/data:/home/migly/LAB/data:ro"
+      - "/media/migly/datasets:/media/migly/datasets:ro"
       - "./data/programs:/process-manager/data/programs"
       - "./server/src:/process-manager/server/src"
       - "mysql_data:/var/lib/mysql"

@@ -5,6 +5,7 @@
 # Dvelop
 RENAME TABLE process_table TO main_processes;
 ALTER TABLE main_processes ADD COLUMN upload_date datetime;
+ALTER TABLE main_processes ADD COLUMN in_trash bool DEFAULT false;
 ALTER TABLE main_processes DROP COLUMN use_vram;
 ALTER TABLE main_processes DROP COLUMN exec_count;
 ALTER TABLE main_processes CHANGE COLUMN targetfile target_file VARCHAR(200) NOT NULL;
