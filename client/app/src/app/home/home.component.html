@@ -5,9 +5,9 @@
   <table style="min-width: 840px;">
     <thead>
     <tr>
-      <th style="width: 200px;">ファイル名</th>
-      <th>VRAM設定値</th>
-      <th style="width: 100px;">状態</th>
+      <th>ファイル名</th>
+      <th>状態</th>
+      <th>環境</th>
       <th>開始時間</th>
       <th>終了時間</th>
       <th style="width: 50px;"></th>
@@ -19,14 +19,14 @@
         <div>{{process["Filename"]}}</div>
         <div class="comment-text">{{process["Comment"]}}</div>
       </th>
-      <th (click)="onOpenExplorer(process['ID'])">{{process["UseVram"]}}</th>
-      <th (click)="onOpenExplorer(process['ID'])">
+      <th (click)="onOpenExplorer(process['ID'])" style="padding: 20px;">
         <div [ngClass]="
         process['Status']=='ready'?'table-ready':
         process['Status']=='running'?'table-running':
         process['Status']=='complete'?'table-complete':
         'table-error'">{{process["Status"]}}</div>
       </th>
+      <th (click)="onOpenExplorer(process['ID'])">{{process["EnvName"]}}</th>
       <th>{{process["StartDate"]}}</th>
       <th>{{process["CompleteDate"]}}</th>
       <th>
@@ -37,7 +37,7 @@
           kill
         </div>
       </th>
-      <th><img (click)="onDelete(process['ID'])" src="../../assets/icon/trash.svg" alt="delete"></th>
+      <th><img (click)="onTrash(process['ID'])" src="../../assets/icon/trash.svg" alt="delete"></th>
     </tr>
   </table>
   <div *ngIf="processList.length == 0" class="none-process">
@@ -56,7 +56,7 @@
         <ngx-dropzone-label>ここにファイルをドロップしてください</ngx-dropzone-label>
       </ngx-dropzone>
       <div *ngFor="let info of fileInfos" class="upload-item">
-        <div>{{info.file.name}}</div>
+        <div style="margin: 0 2%;">{{info.file.name}}</div>
         <div>
           <div>
             <div class="upload-form-text">起動ファイル名</div>
@@ -72,10 +72,6 @@
           </div>
         </div>
         <div>
-          <div>
-            <div class="upload-form-text">VRAM(MB)</div>
-            <label><input class="upload-input-form" type="number" [(ngModel)]="info['vram']"></label>
-          </div>
           <div>
             <div class="upload-form-text">実行回数</div>
             <label><input class="upload-input-form" type="number" [(ngModel)]="info['exec_count']"></label>

@@ -94,9 +94,9 @@ export class HomeComponent implements OnInit, OnDestroy {
         });
     }
 
-    public onDelete(id): void {
+    public onTrash(id): void {
         this.http.get(
-            `${config.httpScheme}${location.hostname}:${config.port}/delete?id=${id}`
+            `${config.httpScheme}${location.hostname}:${config.port}/trash?id=${id}`
         ).subscribe(value => {
             console.log(value);
         }, error => {

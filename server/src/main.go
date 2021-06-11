@@ -25,6 +25,9 @@ func main() {
 	http.HandleFunc("/delete", func(w http.ResponseWriter, r *http.Request) {
 		api.DeleteHandler(w, r, db)
 	})
+	http.HandleFunc("/trash", func(w http.ResponseWriter, r *http.Request) {
+		api.TrashHandler(w, r, db)
+	})
 	http.HandleFunc("/env_info", func(w http.ResponseWriter, r *http.Request) {
 		api.EnvInfoHandler(w, r)
 	})

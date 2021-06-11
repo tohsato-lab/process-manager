@@ -18,7 +18,7 @@ func KillHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// pid取得
 	pid := 0
 	dbStatus := ""
-	err := db.QueryRow("SELECT IFNULL(pid, 0), status FROM process_table WHERE id = ?", id).Scan(&pid, &dbStatus)
+	err := db.QueryRow("SELECT IFNULL(pid, 0), status FROM main_processes WHERE id = ?", id).Scan(&pid, &dbStatus)
 	if err != nil {
 		fmt.Println(err)
 	}

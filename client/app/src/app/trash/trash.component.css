@@ -1,18 +1,18 @@
-.home-base {
+.trash-base {
     width: 100vw;
     min-width: 940px;
     display: table-cell;
     vertical-align: middle;
 }
 
-.home-header {
+.trash-header {
     padding: 5%;
     font-size: xx-large;
     background-color: #929292;
     color: white;
 }
 
-.home-add-button {
+.trash-add-button {
     width: 80px;
     height: 80px;
     position: fixed;
@@ -29,7 +29,7 @@
 }
 
 @media (max-width: 600px) {
-    .home-add-button {
+    .trash-add-button {
         display: none;
     }
 }
@@ -72,36 +72,11 @@ table tr:nth-child(odd) {
     height: 6vh;
 }
 
-.table-ready {
+.table-deleted {
     border-radius: 10px;
-    background-color: #4c4c4c;
+    background-color: #444444;
     font-weight: lighter;
     color: #ffffff;
-}
-
-.table-running {
-    border-radius: 10px;
-    background-color: #0099ff;
-    font-weight: lighter;
-    color: #ffffff;
-}
-
-.table-complete {
-    border-radius: 10px;
-    background-color: #41c515;
-    font-weight: lighter;
-    color: #ffffff;
-}
-
-.table-error {
-    border-radius: 10px;
-    background-color: #ef2020;
-    font-weight: lighter;
-    color: white;
-}
-
-.table-env-name {
-    width: 50px;
 }
 
 .kill-button {
@@ -153,85 +128,3 @@ table tr:nth-child(odd) {
     font-weight: bold;
 }
 
-
-.upload-base {
-    display: flex;
-    flex-direction: column;
-    background-color: white;
-    border-radius: 10px;
-    width: 50%;
-}
-
-.upload-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 2% 5% 2% 5%;
-    border-bottom: solid 1px gray;
-    color: black;
-    font-size: large;
-    min-height: 50px;
-}
-
-.upload-content {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    max-height: 50vh;
-    overflow-y: scroll;
-}
-
-.upload-drop-zone {
-    margin: 10%;
-    padding: 20px;
-    width: 70%;
-    min-height: 200px;
-}
-
-.upload-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    border-radius: 10px;
-    width: 80%;
-    padding: 2%;
-    margin-bottom: 2%;
-    background-color: #666666;
-    color: white;
-    flex-wrap: wrap;
-}
-
-.upload-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 5%;
-    padding: 2%;
-    font-size: larger;
-    width: 20%;
-    border-radius: 5px;
-    color: white;
-    background-color: #20bdf9;
-}
-
-.upload-input-form {
-    background: white;
-    color: gray;
-    border: solid 1px white;
-    border-radius: 10px;
-    resize: none;
-    outline: none;
-    margin-bottom: 10px;
-    padding: 5px;
-    width: 80%;
-}
-
-.upload-comment-text-input {
-    height: 100px;
-}
-
-
-.upload-form-text {
-    margin-bottom: 5px;
-    font-weight: 100;
-}
