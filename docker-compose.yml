@@ -8,7 +8,6 @@ services:
     ports:
       - "3305:3306"
       - "5983:5983"
-    command: bash -c "service mysql start && go build && ./process-manager-server"
     volumes:
       - "/media/migly/datasets:/media/migly/datasets:ro"
       - "./data/programs:/home/docker/process-manager/data/programs"
