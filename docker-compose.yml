@@ -8,11 +8,10 @@ services:
     ports:
       - "3305:3306"
       - "5983:5983"
-    command: bash -c "service mysql start && go build && ./process-manager-server"
     volumes:
       - "/media/migly/datasets:/media/migly/datasets:ro"
-      - "./data/programs:/process-manager/data/programs"
-      - "./server/src:/process-manager/server/src"
+      - "./data/programs:/home/docker/process-manager/data/programs"
+      - "./server/src:/home/docker/process-manager/server/src"
       - "mysql_data:/var/lib/mysql"
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
