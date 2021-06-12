@@ -8,6 +8,9 @@ services:
     ports:
       - "3305:3306"
       - "5983:5983"
+      - "8022:22"
+    devices:
+      - "/dev/fuse:/dev/fuse"
     volumes:
       - "/media/migly/datasets:/media/migly/datasets:ro"
       - "./data/programs:/home/docker/process-manager/data/programs"

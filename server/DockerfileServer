@@ -11,7 +11,8 @@ RUN apt-get update && \
     apt-get install -y build-essential gcc clang zlib1g-dev libeigen3-dev cmake libgl1-mesa-dev && \
     apt-get install -y python3 python3-dev python3-pip python3-venv python3-setuptools && \
     apt-get install -y mysql-server golang-go && \
-    touch /root/.bashrc
+    apt-get install -y openssh-server && \
+    apt-get install -y sshfs
 
 # 日本語設定
 RUN locale-gen ja_JP.UTF-8
@@ -19,14 +20,15 @@ ENV LANG ja_JP.UTF-8
 ENV LANGUAGE ja_JP:ja
 ENV LC_ALL ja_JP.UTF-8
 
+# SSH設定
+RUN sed -i.bak 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
 # install anaconda
 RUN wget -P /opt https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh && \
     bash /opt/Anaconda3-2020.02-Linux-x86_64.sh -b -p /opt/anaconda3 && \
     rm /opt/Anaconda3-2020.02-Linux-x86_64.sh && \
-    echo "export PATH=/opt/anaconda3/bin:$PATH" >> /root/.bashrc && \
-    . /root/.bashrc && \
-    conda init && \
-    conda update -n base -c defaults conda
+    /opt/anaconda3/bin/conda init && \
+    /opt/anaconda3/bin/conda update -n base -c defaults conda
 
 # socketエラーの対策
 RUN mkdir -p /var/run/mysqld/ && \
@@ -52,12 +54,11 @@ RUN service mysql start && \
     service mysql stop
 
 # install Anaconda's package
-RUN . /root/.bashrc && \
-    conda config --set auto_activate_base false && \
-    for package in `ls anaconda_packages`; do conda env create -f="anaconda_packages/$package"; done
+RUN /opt/anaconda3/bin/conda config --set auto_activate_base false && \
+    for package in `ls anaconda_packages`; do /opt/anaconda3/bin/conda env create -f="anaconda_packages/$package"; done
     
 WORKDIR /home/docker/process-manager/server/src
 
 ENV PATH $PATH:/opt/anaconda3/bin
 
-CMD service mysql start && su docker -c "go build; ./process-manager-server"
+CMD service mysql start && /etc/init.d/ssh start && su docker -c "export PATH="$PATH:/opt/anaconda3/bin"; go build; ./process-manager-server"
