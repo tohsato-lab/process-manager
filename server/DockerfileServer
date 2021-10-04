@@ -55,4 +55,9 @@ RUN . /root/.bashrc && \
 
 WORKDIR /process-manager/server/src
 
+# socketエラーの対策
+RUN mkdir -p /var/run/mysqld/ && \
+    chmod 777 /var/run/mysqld/
+
+
 ENV PATH $PATH:/opt/anaconda3/bin
