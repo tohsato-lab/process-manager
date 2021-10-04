@@ -1,5 +1,5 @@
 CREATE DATABASE IF NOT EXISTS process_manager_db;
-CONNECT process_manager_db;
+USE process_manager_db;
 
 CREATE TABLE IF NOT EXISTS `main_processes` (
   `id` VARCHAR(100) NOT NULL PRIMARY KEY COMMENT 'ID',
@@ -15,5 +15,5 @@ CREATE TABLE IF NOT EXISTS `main_processes` (
   `in_trash` Bool DEFAULT NULL COMMENT 'ゴミ箱'
 ) DEFAULT CHARACTER SET=utf8;
 
-CREATE user 'golang'@'%' IDENTIFIED BY 'process_manager';
+CREATE USER IF NOT EXISTS 'golang'@'%' IDENTIFIED BY 'process_manager';
 GRANT ALL PRIVILEGES ON process_manager_db.* to 'golang'@'%';
