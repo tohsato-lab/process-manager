@@ -3,7 +3,7 @@
 プログラムを予めアップロードしておけば、自動で実行してくれるWebアプリケーション。  
 Webアプリなのでスマホなどでも閲覧可能。
 
-# Dvelop
+# Develop
 ```
 RENAME TABLE process_table TO main_processes;
 ALTER TABLE main_processes ADD COLUMN upload_date datetime;
@@ -22,7 +22,6 @@ UPDATE main_processes set upload_date = complete_date;
 ![image](https://user-images.githubusercontent.com/33301907/121660471-41c65700-cade-11eb-9a58-2ee5776beaac.png)
 
 # Features
-
 特に機械学習の研究目的で作成しており、Pytorch、Keras用のプログラムも自動で実行できる。
 
 # Requirement
@@ -34,16 +33,19 @@ UPDATE main_processes set upload_date = complete_date;
 # Installation
 
 ```bash
-cd ./setup
+cd process-manager/setup
 bash docker-install.sh
-cd ../
+sudo reboot #必ず！！
 ```
 
 # Usage
 
 ```bash
+cd process-manager
 docker-compose up -d
 ```
+ブラウザで http://localhost:8080 にアクセス
+
 # Update
 ```bash
 docker-compose down
