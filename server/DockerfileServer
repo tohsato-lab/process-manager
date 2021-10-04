@@ -37,12 +37,15 @@ RUN apt-get clean && \
     apt-get autoclean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY ./docker /process-manager/server/docker
+RUN useradd -m docker && \
+    echo "docker:docker" | chpasswd
+
+COPY ./docker /home/docker/process-manager/server/docker
 
 # 世界時間情報
 ADD ./docker/zoneinfo.tar.gz /
 
-WORKDIR /process-manager/server/docker
+WORKDIR /home/docker/process-manager/server/docker
 
 RUN service mysql start && \
     mysql -u root < ./init.sql && \
@@ -52,8 +55,8 @@ RUN service mysql start && \
 RUN . /root/.bashrc && \
     conda config --set auto_activate_base false && \
     for package in `ls anaconda_packages`; do conda env create -f="anaconda_packages/$package"; done
-
-WORKDIR /process-manager/server/src
+    
+WORKDIR /home/docker/process-manager/server/src
 
 # socketエラーの対策
 RUN mkdir -p /var/run/mysqld/ && \
@@ -61,3 +64,5 @@ RUN mkdir -p /var/run/mysqld/ && \
 
 
 ENV PATH $PATH:/opt/anaconda3/bin
+
+CMD service mysql start && su docker -c "go build; ./process-manager-server"
