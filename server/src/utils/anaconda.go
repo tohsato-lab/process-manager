@@ -8,7 +8,7 @@ import (
 
 // GetCondaEnv Anacondaのenv一覧を取得
 func GetCondaEnv() []string {
-	cmdStr := "conda info -e | grep 'conda' | grep -v '#' | awk '{print $1}'"
+	cmdStr := "/opt/anaconda3/bin/conda info -e | grep 'conda' | grep -v '#' | awk '{print $1}'"
 	out, err := exec.Command("sh", "-c", cmdStr).Output()
 	if err != nil {
 		fmt.Println("Command Exec Error.")

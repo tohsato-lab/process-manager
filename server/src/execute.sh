@@ -1,3 +1,4 @@
+whoami
 cd "$1" || exit
 TARGET=$2
 CONDA_ENV=$3

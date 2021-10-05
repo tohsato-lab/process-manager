@@ -63,3 +63,5 @@ programs/
 server/src/process-manager-server
 
 data/
+
+!sample/sample.zip
