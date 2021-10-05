@@ -9,7 +9,7 @@ services:
       - "3305:3306"
       - "5983:5983"
     volumes:
-      - "/media/migly/datasets:/media/migly/datasets:ro"
+      - "/media:/media:ro"
       - "./data/programs:/home/docker/process-manager/data/programs"
       - "./server/src:/home/docker/process-manager/server/src"
       - "mysql_data:/var/lib/mysql"
