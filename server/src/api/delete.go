@@ -15,15 +15,14 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	id := r.FormValue("id")
 
-	dbStatus := ""
 	var inTrash bool
-	err := db.QueryRow("SELECT status, in_trash FROM main_processes WHERE id = ?", id).Scan(&dbStatus, &inTrash)
+	err := db.QueryRow("SELECT in_trash FROM main_processes WHERE id = ?", id).Scan(&inTrash)
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	status := ""
-	if dbStatus != "running" && inTrash {
+	if inTrash {
 		targetDIR := "../../data/programs/" + id + "/"
 		if _, err := exec.Command("sh", "-c", "rm -rf "+targetDIR).Output(); err != nil {
 			_, _ = fmt.Fprintln(w, "ファイル削除に失敗しました。"+err.Error())
