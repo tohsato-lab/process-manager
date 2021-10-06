@@ -17,7 +17,7 @@ cd $(dirname "${DIR[0]}") || exit
 
 source /opt/anaconda3/etc/profile.d/conda.sh
 conda activate "$CONDA_ENV"
-python "$TARGET" 2>&1 | tee "$ROOT/history.log"
+python -u "$TARGET" >> "$ROOT/history.log" 2>&1
 
 # 0番目のコマンドのシグナルをキャッチ
 signal=${PIPESTATUS[0]}
