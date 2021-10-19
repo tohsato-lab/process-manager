@@ -13,12 +13,12 @@ interface hostStatus {
 
 @Component({
     selector: 'app-hosts',
-    templateUrl: './hosts.component.html',
-    styleUrls: ['./hosts.component.css']
+    templateUrl: './servers.component.html',
+    styleUrls: ['./servers.component.css']
 })
 
 
-export class HostsComponent implements OnInit, OnDestroy {
+export class ServersComponent implements OnInit, OnDestroy {
 
 
     public chartLabels: Label[] = ['used', 'free'];
@@ -35,7 +35,7 @@ export class HostsComponent implements OnInit, OnDestroy {
     public hostStatuses: { [ip: string]: MultiDataSet } = {};
 
     private IPList: string[] = [location.hostname];
-    private headerTitle = 'ホスト一覧';
+    private headerTitle = 'サーバーリスト';
     private subscription: Subscription;
 
     constructor(

@@ -16,7 +16,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatIconModule} from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
-import {HostsComponent} from './hosts/hosts.component';
+import {ServersComponent} from './servers/servers.component';
 import {ChartsModule} from 'ng2-charts';
 import {TrashComponent} from './trash/trash.component';
 
@@ -24,7 +24,7 @@ const routes: Routes = [
     {path: '', component: HomeComponent},
     {path: 'home', component: HomeComponent},
     {path: 'dataset', component: DatasetComponent},
-    {path: 'hosts', component: HostsComponent},
+    {path: 'servers', component: ServersComponent},
     {path: 'trash', component: TrashComponent},
 ];
 
@@ -34,7 +34,7 @@ const routes: Routes = [
         HomeComponent,
         HistoryComponent,
         DatasetComponent,
-        HostsComponent,
+        ServersComponent,
         TrashComponent,
     ],
 
