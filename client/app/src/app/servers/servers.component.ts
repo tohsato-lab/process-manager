@@ -5,6 +5,7 @@ import {CommonService} from '../service/commom.service';
 import {Subscription} from 'rxjs';
 import {MultiDataSet, Label, Colors} from 'ng2-charts';
 import {ChartType} from 'chart.js';
+import {HttpClient} from '@angular/common/http';
 
 interface hostStatus {
     RAM: number;
@@ -20,7 +21,6 @@ interface hostStatus {
 
 export class ServersComponent implements OnInit, OnDestroy {
 
-
     public chartLabels: Label[] = ['used', 'free'];
     public chartColors: Colors[] = [{
         backgroundColor: ['#89c148', '#8d8d8d']
@@ -34,6 +34,8 @@ export class ServersComponent implements OnInit, OnDestroy {
     public chartType: ChartType = 'doughnut';
     public serverStatuses: { [ip: string]: MultiDataSet } = {};
     public hiddenRegisterServer = true;
+    public inputIPAdder = '';
+    public inputPort = -1;
 
     private IPList: string[] = [location.hostname];
     private headerTitle = 'サーバーリスト';
@@ -42,6 +44,7 @@ export class ServersComponent implements OnInit, OnDestroy {
     constructor(
         private sseService: SseService,
         private commonService: CommonService,
+        private http: HttpClient,
     ) {
     }
 
@@ -74,6 +77,24 @@ export class ServersComponent implements OnInit, OnDestroy {
 
     public onRegisterCtrl(): void {
         this.hiddenRegisterServer = !this.hiddenRegisterServer;
+    }
+
+    public onRegisterServer(): void {
+        if (this.inputIPAdder.match(/^\d{1,3}(\.\d{1,3}){3}$/) && this.inputPort != -1) {
+            console.log(`${config.httpScheme}${this.inputIPAdder}:${this.inputPort}`);
+            this.http.get(
+                `${config.httpScheme}${this.inputIPAdder}:${this.inputPort}`
+            ).subscribe(value => {
+                console.log(value);
+            }, error => {
+                console.log(error);
+            });
+            //ipアドレス
+            console.log('ipアドレスです');
+        } else {
+            //ipアドレス以外
+            console.log('ipアドレスではありません');
+        }
     }
 
 }

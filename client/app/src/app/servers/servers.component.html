@@ -41,14 +41,14 @@
       <div class="register-item">
         <div>
           <div class="register-form-text">IPアドレス</div>
-          <label><input class="register-input-form" ></label>
+          <label><input class="register-input-form" [(ngModel)]="inputIPAdder"></label>
         </div>
         <div>
           <div class="register-form-text">ポート</div>
-          <label><input class="register-input-form" type="number"></label>
+          <label><input class="register-input-form" type="number" [(ngModel)]="inputPort"></label>
         </div>
       </div>
-      <div class="register-button">register</div>
+      <div class="register-button" (click)="onRegisterServer()">register</div>
     </div>
   </div>
 </div>
