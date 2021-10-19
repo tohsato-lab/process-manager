@@ -79,7 +79,7 @@ func UpdateAllProcess(db *sql.DB) {
 	var countRunning int
 
 	if err := db.QueryRow(
-		"SELECT COUNT(*) FROM main_processes WHERE status = ?", "ready",
+		"SELECT COUNT(*) FROM main_processes WHERE status = ? AND in_trash = false", "ready",
 	).Scan(&countReady); err != nil {
 		fmt.Println(err)
 	}
@@ -92,7 +92,7 @@ func UpdateAllProcess(db *sql.DB) {
 	if countReady != 0 && countRunning == 0 {
 		var process utils.Process
 		if err := db.QueryRow(
-			"SELECT id, target_file, env_name FROM main_processes WHERE status = ? ORDER BY upload_date", "ready",
+			"SELECT id, target_file, env_name FROM main_processes WHERE status = ? AND in_trash = false ORDER BY upload_date", "ready",
 		).Scan(&process.ID, &process.TargetFile, &process.EnvName); err != nil {
 			fmt.Println(err)
 		}
