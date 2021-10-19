@@ -1,32 +1,54 @@
 <div class="grid-bse">
-  <div *ngFor="let ip of getKeys(hostStatuses)" class="host-card-base">
+  <div *ngFor="let ip of getKeys(serverStatuses)" class="host-card-base">
     <canvas baseChart class="top-graph "
-            [data]="hostStatuses[ip][0]"
+            [data]="serverStatuses[ip][0]"
             [labels]="chartLabels"
             [chartType]="chartType"
             [colors]="chartColors"
             [options]="options"
             [legend]="false">
     </canvas>
-    <div class="top-graph-text graph-data-text">{{hostStatuses[ip][0][0] * 100 | number:'1.2-2'}}%</div>
+    <div class="top-graph-text graph-data-text">{{serverStatuses[ip][0][0] * 100 | number:'1.2-2'}}%</div>
     <canvas baseChart class="bottom-graph"
-            [data]="hostStatuses[ip][1]"
+            [data]="serverStatuses[ip][1]"
             [labels]="chartLabels"
             [chartType]="chartType"
             [colors]="chartColors"
             [options]="options"
             [legend]="false">
     </canvas>
-    <div class="bottom-graph-text graph-data-text">{{hostStatuses[ip][1][0] * 100 | number:'1.2-2'}}%</div>
+    <div class="bottom-graph-text graph-data-text">{{serverStatuses[ip][1][0] * 100 | number:'1.2-2'}}%</div>
     <div class="graph-label-text top-graph-label-text">vram</div>
     <div class="graph-label-text bottom-graph-label-text">ram</div>
     <div class="host-name-text">{{ip}}</div>
   </div>
-  <div class="host-card-base add-card">
+  <div class="host-card-base add-card" (click)="onRegisterCtrl()">
     <svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Add</title>
       <path fill='none' stroke='gray' stroke-linecap='round' stroke-linejoin='round' stroke-width='10'
             d='M256 112v288M400 256H112'/>
     </svg>
     <div>サーバーを追加する</div>
+  </div>
+</div>
+
+<div *ngIf="!hiddenRegisterServer" class="float-page-background">
+  <div class="register-base">
+    <header class="register-header">
+      <div>サーバー追加</div>
+      <div (click)="onRegisterCtrl()" style="font-size: xx-large;">×</div>
+    </header>
+    <div class="register-content">
+      <div class="register-item">
+        <div>
+          <div class="register-form-text">IPアドレス</div>
+          <label><input class="register-input-form" ></label>
+        </div>
+        <div>
+          <div class="register-form-text">ポート</div>
+          <label><input class="register-input-form" type="number"></label>
+        </div>
+      </div>
+      <div class="register-button">register</div>
+    </div>
   </div>
 </div>

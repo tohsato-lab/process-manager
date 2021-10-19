@@ -32,7 +32,8 @@ export class ServersComponent implements OnInit, OnDestroy {
         hover: {mode: null},
     };
     public chartType: ChartType = 'doughnut';
-    public hostStatuses: { [ip: string]: MultiDataSet } = {};
+    public serverStatuses: { [ip: string]: MultiDataSet } = {};
+    public hiddenRegisterServer = true;
 
     private IPList: string[] = [location.hostname];
     private headerTitle = 'サーバーリスト';
@@ -54,7 +55,7 @@ export class ServersComponent implements OnInit, OnDestroy {
             this.sseService.getServerSentEvent(`${config.httpScheme}${ip}:${config.port}/host_status`).subscribe((hostData: any) => {
                 // this.hostStatuses[ip] = JSON.parse(hostData.data);
                 const data: hostStatus = JSON.parse(hostData.data);
-                this.hostStatuses[ip] = [
+                this.serverStatuses[ip] = [
                     [data.VRAM, 1 - data.VRAM],
                     [data.RAM, 1 - data.RAM],
                 ];
@@ -69,6 +70,10 @@ export class ServersComponent implements OnInit, OnDestroy {
             this.subscription.unsubscribe();
         }
         this.sseService.closeServerSentEvent();
+    }
+
+    public onRegisterCtrl(): void {
+        this.hiddenRegisterServer = !this.hiddenRegisterServer;
     }
 
 }
