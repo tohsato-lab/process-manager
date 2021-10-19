@@ -59,6 +59,11 @@ RUN /opt/anaconda3/bin/conda config --set auto_activate_base false && \
     
 WORKDIR /home/docker/process-manager/server/src
 
+# socketエラーの対策
+RUN mkdir -p /var/run/mysqld/ && \
+    chmod 777 /var/run/mysqld/
+
+
 ENV PATH $PATH:/opt/anaconda3/bin
 
 CMD service mysql start && /etc/init.d/ssh start && su docker -c "export PATH="$PATH:/opt/anaconda3/bin"; go build; ./process-manager-server"
