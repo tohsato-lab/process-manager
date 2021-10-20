@@ -42,6 +42,11 @@ func main() {
 	})
 	go api.ProcessStatusKernel()
 
+	// サーバー
+	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+		api.ServerRegister(w, r, db)
+	})
+
 	fmt.Println("server start")
 	log.Fatal(http.ListenAndServe(":5983", nil))
 }
