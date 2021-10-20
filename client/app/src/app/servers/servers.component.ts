@@ -83,7 +83,7 @@ export class ServersComponent implements OnInit, OnDestroy {
         if (this.inputIPAdder.match(/^\d{1,3}(\.\d{1,3}){3}$/) && this.inputPort != -1) {
             console.log(`${config.httpScheme}${this.inputIPAdder}:${this.inputPort}`);
             this.http.get(
-                `${config.httpScheme}${this.inputIPAdder}:${this.inputPort}`
+                `${config.httpScheme}${this.inputIPAdder}:${this.inputPort}/register`
             ).subscribe(value => {
                 console.log(value);
             }, error => {

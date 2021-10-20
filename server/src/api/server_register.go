@@ -31,7 +31,7 @@ func ServerRegister(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	command := "echo docker | sshfs -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no docker@" +
-		ip + ":../../data/programs " + mountPoint + " -o workaround=rename -o password_stdin -p 8022"
+		ip + ":process-manager/data " + mountPoint + " -o workaround=rename -o password_stdin -o follow_symlinks -p 8022"
 	if _, err := exec.Command("sh", "-c", command).Output(); err != nil {
 		_, _ = fmt.Fprintln(w, "マウントに失敗しました。"+err.Error())
 		return
