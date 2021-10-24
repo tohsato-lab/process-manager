@@ -23,8 +23,13 @@ services:
   backend:
     build: ./backend
     container_name: backend
+    ports:
+      - "5983:5983"
     networks:
       - backend-net
+    volumes:
+      - "./data/programs:/home/docker/process-manager/data/programs"
+      - "./backend/src:/home/docker/process-manager/backend/src"
     runtime: nvidia
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
