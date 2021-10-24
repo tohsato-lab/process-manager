@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN echo n | npm install -g --silent @angular/cli
 
 WORKDIR /app
-COPY ./app/ /app/
+COPY ./app /app/
 
 RUN npm install
 
@@ -26,4 +26,4 @@ FROM nginx:latest
 COPY --from=build-stage /app/dist/out/ /usr/share/nginx/html
 
 # Nginx の設定ファイルを Docker 上の Nginx にコピー
-COPY ./docker/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf

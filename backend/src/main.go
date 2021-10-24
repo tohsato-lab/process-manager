@@ -47,6 +47,6 @@ func main() {
 		api.ServerRegister(w, r, db)
 	})
 
-	fmt.Println("server start")
+	fmt.Println("backend start")
 	log.Fatal(http.ListenAndServe(":5983", nil))
 }

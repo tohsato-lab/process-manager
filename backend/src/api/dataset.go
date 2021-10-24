@@ -60,7 +60,7 @@ type ResponseWriter interface {
 	// needed request body data before writing the response. Once the
 	// headers have been flushed (due to either an explicit Flusher.Flush
 	// call or writing enough data to trigger a flush), the request body
-	// may be unavailable. For HTTP/2 requests, the Go HTTP server permits
+	// may be unavailable. For HTTP/2 requests, the Go HTTP backend permits
 	// handlers to continue to read the request body while concurrently
 	// writing the response. However, such behavior may not be supported
 	// by all HTTP/2 clients. Handlers should read before writing if
@@ -83,10 +83,10 @@ type ResponseWriter interface {
 	WriteHeader(statusCode int)
 }
 
-// A Request represents an HTTP request received by a server
+// A Request represents an HTTP request received by a backend
 // or to be sent by a client.
 //
-// The field semantics differ slightly between client and server
+// The field semantics differ slightly between client and backend
 // usage. In addition to the notes on the fields below, see the
 // documentation for Request.Write and RoundTripper.
 type Request struct {
@@ -98,21 +98,21 @@ type Request struct {
 	// details.
 	Method string
 
-	// URL specifies either the URI being requested (for server
+	// URL specifies either the URI being requested (for backend
 	// requests) or the URL to access (for client requests).
 	//
-	// For server requests, the URL is parsed from the URI
+	// For backend requests, the URL is parsed from the URI
 	// supplied on the Request-Line as stored in RequestURI.  For
 	// most requests, fields other than Path and RawQuery will be
 	// empty. (See RFC 7230, Section 5.3)
 	//
-	// For client requests, the URL's Host specifies the server to
+	// For client requests, the URL's Host specifies the backend to
 	// connect to, while the Request's Host field optionally
 	// specifies the Host header value to send in the HTTP
 	// request.
 	URL *url.URL
 
-	// The protocol version for incoming server requests.
+	// The protocol version for incoming backend requests.
 	//
 	// For client requests, these fields are ignored. The HTTP
 	// client code always uses either HTTP/1.1 or HTTP/2.
@@ -122,9 +122,9 @@ type Request struct {
 	ProtoMinor int    // 0
 
 	// Header contains the request header fields either received
-	// by the server or to be sent by the client.
+	// by the backend or to be sent by the client.
 	//
-	// If a server received a request with header lines,
+	// If a backend received a request with header lines,
 	//
 	//	Host: example.com
 	//	accept-encoding: gzip, deflate
@@ -160,7 +160,7 @@ type Request struct {
 	// body, such as a GET request. The HTTP Client's Transport
 	// is responsible for calling the Close method.
 	//
-	// For server requests, the Request Body is always non-nil
+	// For backend requests, the Request Body is always non-nil
 	// but will return EOF immediately when no body is present.
 	// The Server will close the request body. The ServeHTTP
 	// Handler does not need to.
@@ -171,7 +171,7 @@ type Request struct {
 	// reading the body more than once. Use of GetBody still
 	// requires setting Body.
 	//
-	// For server requests, it is unused.
+	// For backend requests, it is unused.
 	GetBody func() (io.ReadCloser, error)
 
 	// ContentLength records the length of the associated content.
@@ -194,7 +194,7 @@ type Request struct {
 	// replying to this request (for servers) or after sending this
 	// request and reading its response (for clients).
 	//
-	// For server requests, the HTTP server handles this automatically
+	// For backend requests, the HTTP backend handles this automatically
 	// and this field is not needed by Handlers.
 	//
 	// For client requests, setting this field prevents re-use of
@@ -202,7 +202,7 @@ type Request struct {
 	// Transport.DisableKeepAlives were set.
 	Close bool
 
-	// For server requests, Host specifies the host on which the
+	// For backend requests, Host specifies the host on which the
 	// URL is sought. For HTTP/1 (per RFC 7230, section 5.4), this
 	// is either the value of the "Host" header or the host name
 	// given in the URL itself. For HTTP/2, it is the value of the
@@ -211,7 +211,7 @@ type Request struct {
 	// names, Host may be in Punycode or Unicode form. Use
 	// golang.org/x/net/idna to convert it to either format if
 	// needed.
-	// To prevent DNS rebinding attacks, server Handlers should
+	// To prevent DNS rebinding attacks, backend Handlers should
 	// validate that the Host header has a value for which the
 	// Handler considers itself authoritative. The included
 	// ServeMux supports patterns registered to particular host
@@ -244,7 +244,7 @@ type Request struct {
 	// Trailer specifies additional headers that are sent after the request
 	// body.
 	//
-	// For server requests, the Trailer map initially contains only the
+	// For backend requests, the Trailer map initially contains only the
 	// trailer keys, with nil values. (The client declares which trailers it
 	// will later send.)  While the handler is reading from Body, it must
 	// not reference Trailer. After reading from Body returns EOF, Trailer
@@ -264,7 +264,7 @@ type Request struct {
 	// RemoteAddr allows HTTP servers and other software to record
 	// the network address that sent the request, usually for
 	// logging. This field is not filled in by ReadRequest and
-	// has no defined format. The HTTP server in this package
+	// has no defined format. The HTTP backend in this package
 	// sets RemoteAddr to an "IP:port" address before invoking a
 	// handler.
 	// This field is ignored by the HTTP client.
@@ -272,14 +272,14 @@ type Request struct {
 
 	// RequestURI is the unmodified request-target of the
 	// Request-Line (RFC 7230, Section 3.1.1) as sent by the client
-	// to a server. Usually the URL field should be used instead.
+	// to a backend. Usually the URL field should be used instead.
 	// It is an error to set this field in an HTTP client request.
 	RequestURI string
 
 	// TLS allows HTTP servers and other software to record
 	// information about the TLS connection on which the request
 	// was received. This field is not filled in by ReadRequest.
-	// The HTTP server in this package sets the field for
+	// The HTTP backend in this package sets the field for
 	// TLS-enabled connections before invoking a handler;
 	// otherwise it leaves the field nil.
 	// This field is ignored by the HTTP client.
@@ -289,7 +289,7 @@ type Request struct {
 	// request should be regarded as canceled. Not all implementations of
 	// RoundTripper may support Cancel.
 	//
-	// For server requests, this field is not applicable.
+	// For backend requests, this field is not applicable.
 	//
 	// Deprecated: Set the Request's context with NewRequestWithContext
 	// instead. If a Request's Cancel field and context are both
@@ -301,7 +301,7 @@ type Request struct {
 	// redirects.
 	Response *Response
 
-	// ctx is either the client or server context. It should only
+	// ctx is either the client or backend context. It should only
 	// be modified via copying the whole Request using WithContext.
 	// It is unexported to prevent people from using Context wrong
 	// and mutating the contexts held by callers of the same request.
@@ -334,7 +334,7 @@ type Response struct {
 	// Body represents the response body.
 	//
 	// The response body is streamed on demand as the Body field
-	// is read. If the network connection fails or the server
+	// is read. If the network connection fails or the backend
 	// terminates the response, Body.Read calls return an error.
 	//
 	// The http Client and Transport guarantee that Body is always
@@ -344,7 +344,7 @@ type Response struct {
 	// reuse HTTP/1.x "keep-alive" TCP connections if the Body is
 	// not read to completion and closed.
 	//
-	// The Body is automatically dechunked if the server replied
+	// The Body is automatically dechunked if the backend replied
 	// with a "chunked" Transfer-Encoding.
 	//
 	// As of Go 1.12, the Body will also implement io.Writer
@@ -370,24 +370,24 @@ type Response struct {
 	// Uncompressed reports whether the response was sent compressed but
 	// was decompressed by the http package. When true, reading from
 	// Body yields the uncompressed content instead of the compressed
-	// content actually set from the server, ContentLength is set to -1,
+	// content actually set from the backend, ContentLength is set to -1,
 	// and the "Content-Length" and "Content-Encoding" fields are deleted
 	// from the responseHeader. To get the original response from
-	// the server, set Transport.DisableCompression to true.
+	// the backend, set Transport.DisableCompression to true.
 	Uncompressed bool
 
 	// Trailer maps trailer keys to values in the same
 	// format as Header.
 	//
 	// The Trailer initially contains only nil values, one for
-	// each key specified in the server's "Trailer" header
+	// each key specified in the backend's "Trailer" header
 	// value. Those values are not added to Header.
 	//
 	// Trailer must not be accessed concurrently with Read calls
 	// on the Body.
 	//
 	// After Body.Read has returned io.EOF, Trailer will contain
-	// any trailer values sent by the server.
+	// any trailer values sent by the backend.
 	Trailer Header
 
 	// Request is the request that was sent to obtain this Response.
