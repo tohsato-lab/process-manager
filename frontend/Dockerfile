@@ -1,29 +1,29 @@
-FROM node:14.15.0 as build-stage
-
-ENV DEBIAN_FRONTEND=noninteractive
+### ベースステージ ###
+FROM node:14.15.0 as base
 
 # install angular
-RUN echo n | npm install -g --silent @angular/cli
+RUN npm install -g @angular/cli
 
 WORKDIR /app
+
+COPY ./app/package*.json /app/
+
+RUN rm -rf node_modules && npm install
+
+### ビルドステージ ###
+FROM base as build
+
+# 全てのソースファイルをコピー
 COPY ./app /app/
 
-RUN npm install
+# 本番用ビルド
+RUN ng build --prod --output-path=./dist/build-by-docker
 
-# 警告の解決
-# RUN npm cache --force clean && npm install --force node-sass
+### プロダクションステージ ###
+FROM nginx:latest as prod
 
-# Angular アプリをビルドする
-ARG configuration=production
-RUN npm run build -- --output-path=./dist/out --configuration $configuration
+# ビルドステージで生成されたファイルをnginxの公開用ディレクトリにコピー
+COPY --from=build /app/dist/build-by-docker /usr/share/nginx/html
 
-# -----------------------------------------------------
-# Nginx の Docker 環境を構築する
-# -----------------------------------------------------
-FROM nginx:latest
-
-# ビルドした成果物を Docker 上の Nginx のドキュメントとして扱うためにコピー(デプロイ)
-COPY --from=build-stage /app/dist/out/ /usr/share/nginx/html
-
-# Nginx の設定ファイルを Docker 上の Nginx にコピー
-COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
+# nginx.confをコピー
+COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
