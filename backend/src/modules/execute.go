@@ -11,7 +11,7 @@ import (
 // Execute 起動スクリプト実行
 func Execute(db *sql.DB, id string, targetFile string, envName string) string {
 	//実行
-	cmd := exec.Command("bash", "execute.sh", "../../data/programs/"+id, targetFile, envName)
+	cmd := exec.Command("bash", "scripts/execute.sh", "../../data/programs/"+id, targetFile, envName)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {

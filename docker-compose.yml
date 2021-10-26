@@ -13,8 +13,7 @@ services:
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes:
       - mysql-db:/var/lib/mysql
-      - ./backend/docker/mysql/my.conf:/etc/mysql/conf.d/my.conf
-      - ./backend/docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backend/docker/mysql/:/etc/mysql/conf.d/
     ports:
       - "3305:3306"
     networks:
@@ -28,8 +27,9 @@ services:
     networks:
       - backend-net
     volumes:
-      - "./data/programs:/home/docker/process-manager/data/programs"
-      - "./backend/src:/home/docker/process-manager/backend/src"
+      - type: bind
+        source: ./data/programs
+        target: /home/docker/process-manager/data/programs
     runtime: nvidia
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
