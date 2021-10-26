@@ -1,4 +1,4 @@
-FROM golang:latest as builder
+FROM golang:1.17.2 as builder
 
 WORKDIR /go/src
 
@@ -14,10 +14,18 @@ RUN go build \
     -o /go/bin/main \
     -ldflags '-s -w'
 
-FROM continuumio/anaconda3
+FROM continuumio/anaconda3:latest as backend-base
+
+COPY docker/conda_packages/ /conda_packages/
+
+RUN for package in `ls /conda_packages`; do conda env create -f="/conda_packages/$package"; done
 
 RUN apt update && \
-    apt install unzip
+    apt install unzip && \
+    apt clean &&  \
+    rm -rf /var/lib/apt/lists/*
+
+FROM backend-base
 
 ARG UID=1000
 ARG USERNAME=docker
