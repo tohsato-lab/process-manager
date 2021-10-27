@@ -1,35 +1,51 @@
 version: "2.4"
 services:
-  process_manager_server:
-    build:
-      context: ./server
-      dockerfile: DockerfileServer
-    runtime: nvidia
+  # MySQL
+  db:
+    image: mysql:5.7
+    container_name: mysql_host
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: process_manager_db
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: docker
+      TZ: 'Asia/Tokyo'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-db:/var/lib/mysql
+      - ./backend/docker/mysql/:/etc/mysql/conf.d/
     ports:
       - "3305:3306"
+    networks:
+      - backend-net
+
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
       - "5983:5983"
-      - "8022:22"
-    devices:
-      - "/dev/fuse:/dev/fuse"
+    networks:
+      - backend-net
     volumes:
-      - "/media:/media:ro"
-      - "./data:/home/docker/process-manager/data"
-      - "./server/src:/home/docker/process-manager/server/src"
-      - "mysql_data:/var/lib/mysql"
+      - type: bind
+        source: ./data/programs
+        target: /home/docker/process-manager/data/programs
+    runtime: nvidia
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
-    container_name: server
-    privileged: true
     tty: true
 
-  process_manager_app:
-    build:
-      context: ./client
-      dockerfile: DockerfileApp
+  frontend:
+    build: ./frontend
+    container_name: frontend
     ports:
       - "8080:8080"
-    container_name: app
     tty: true
 
+networks:
+  backend-net:
+    driver: bridge
+
 volumes:
-  mysql_data:
+  mysql-db:
+    driver: local

@@ -14,7 +14,7 @@ if [ ${#DIR[@]} -ne 1 ]; then
 fi
 cd $(dirname "${DIR[0]}") || exit
 
-source /opt/anaconda3/etc/profile.d/conda.sh
+source /opt/conda/etc/profile.d/conda.sh
 conda activate "$CONDA_ENV"
 python -u "$TARGET" >> "$ROOT/history.log" 2>&1
 

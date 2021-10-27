@@ -9,8 +9,15 @@ import (
 	"process-manager-server/api"
 )
 
+const (
+	// DriverName ドライバ名(mysql固定)
+	DriverName = "mysql"
+	// DataSourceName user:password@tcp(container-name:port)/dbname
+	DataSourceName = "docker:docker@tcp(mysql_host:3306)/process_manager_db?parseTime=true"
+)
+
 func main() {
-	db, err := sql.Open("mysql", "golang:process_manager@/process_manager_db?parseTime=true")
+	db, err := sql.Open(DriverName, DataSourceName)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -47,6 +54,6 @@ func main() {
 		api.ServerRegister(w, r, db)
 	})
 
-	fmt.Println("server start")
+	fmt.Println("backend start")
 	log.Fatal(http.ListenAndServe(":5983", nil))
 }
