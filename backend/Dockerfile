@@ -4,9 +4,9 @@ COPY docker/conda_packages/ /conda_packages/
 
 RUN for package in `ls /conda_packages`; do conda env create -f="/conda_packages/$package"; done
 
-RUN apt update && \
-    apt install unzip && \
-    apt clean &&  \
+RUN apt-get update -y && \
+    apt-get install -y unzip ssh rsync && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 FROM golang:1.17.2 as builder

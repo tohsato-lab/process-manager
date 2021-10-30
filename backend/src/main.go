@@ -6,6 +6,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"
+	"os"
 	"process-manager-server/api"
 )
 
@@ -17,6 +18,12 @@ const (
 )
 
 func main() {
+	hostname, err := os.Hostname()
+	if err != nil {
+		return
+	}
+	fmt.Println(hostname)
+
 	db, err := sql.Open(DriverName, DataSourceName)
 	if err != nil {
 		panic(err.Error())
