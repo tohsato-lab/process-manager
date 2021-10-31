@@ -5,7 +5,7 @@ COPY docker/conda_packages/ /conda_packages/
 RUN for package in `ls /conda_packages`; do conda env create -f="/conda_packages/$package"; done
 
 RUN apt-get update -y && \
-    apt-get install -y unzip ssh rsync && \
+    apt-get install -y unzip ssh rsync sshpass && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
