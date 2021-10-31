@@ -1,6 +1,5 @@
 version: "2.4"
 services:
-  # MySQL
   db:
     image: mysql:5.7
     container_name: mysql_host
@@ -34,6 +33,22 @@ services:
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     tty: true
+
+  rsync:
+    build: ./rsync
+    container_name: rsync
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Tokyo
+      - SUDO_ACCESS=false #optional
+      - PASSWORD_ACCESS=true #optional
+      - USER_PASSWORD=docker #optional
+      - USER_NAME=docker #optional
+    volumes_from:
+      - backend:rw
+    ports:
+      - "8022:2222"
 
   frontend:
     build: ./frontend
