@@ -82,18 +82,21 @@ export class ServersComponent implements OnInit, OnDestroy {
     public onRegisterServer(): void {
         if (this.inputIPAdder.match(/^\d{1,3}(\.\d{1,3}){3}$/) && this.inputPort != -1) {
             console.log(`${config.httpScheme}${this.inputIPAdder}:${this.inputPort}`);
-            this.http.get(
-                `${config.httpScheme}${this.inputIPAdder}:${this.inputPort}/register`
+            // const headers = {'Access-Control-Allow-Origin': '*'};
+            const formData = new FormData();
+            formData.append('ip', String(this.inputIPAdder));
+            formData.append('port', String(this.inputPort));
+            // const body = {ip: this.inputPort, port: this.inputPort};
+            this.http.post(
+                `${config.httpScheme}${this.inputIPAdder}:${this.inputPort}/register`, formData
             ).subscribe(value => {
                 console.log(value);
             }, error => {
                 console.log(error);
             });
-            //ipアドレス
-            console.log('ipアドレスです');
         } else {
             //ipアドレス以外
-            console.log('ipアドレスではありません');
+            alert('ipアドレスではありません');
         }
     }
 

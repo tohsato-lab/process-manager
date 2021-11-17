@@ -236,3 +236,16 @@ func TrashProcess(db *sql.DB, id string) {
 	}
 	UpdateAllProcess(db)
 }
+
+// RegisterServer サーバー登録
+func RegisterServer(db *sql.DB, ip string, port string) {
+	ins, err := db.Prepare(
+		"INSERT INTO servers (ip, port, status) VALUES (?, ?, ?)",
+	)
+	if err != nil {
+		fmt.Println(err)
+	}
+	if _, err := ins.Exec(ip, port, "arrive"); err != nil {
+		fmt.Println(err)
+	}
+}

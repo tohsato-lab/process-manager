@@ -48,6 +48,9 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// get use target
 	comment := r.FormValue("comment")
 
+	// get use env
+	// homeIP := r.FormValue("home_ip")
+
 	// get use target
 	execCount, err := strconv.Atoi(r.FormValue("exec_count"))
 	if err != nil {
