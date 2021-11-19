@@ -57,8 +57,8 @@ func main() {
 	go api.ProcessStatusKernel()
 
 	// サーバー
-	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
-		api.ServerRegister(w, r, db)
+	http.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		api.Servers(w, r, db)
 	})
 
 	fmt.Println("backend start")

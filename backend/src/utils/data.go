@@ -4,13 +4,18 @@ package utils
 type Process struct {
 	ID           string
 	Status       string
-	Filename     string
 	StartDate    string
 	CompleteDate string
 	TargetFile   string
 	EnvName      string
 	Comment      string
 	InTrash      bool
+}
+
+type Servers struct {
+	IP     string
+	Port   string
+	Status string
 }
 
 type DirectoryInfo struct {

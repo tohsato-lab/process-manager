@@ -16,7 +16,7 @@ func GetProcesses(db *sql.DB) []utils.Process {
 	var processes []utils.Process
 
 	dbSelect, err := db.Query(
-		"SELECT id, status, filename, env_name, target_file, start_date, complete_date, comment FROM main_processes WHERE !in_trash ORDER BY upload_date DESC",
+		"SELECT id, status, env_name, target_file, start_date, complete_date, comment FROM main_processes WHERE !in_trash ORDER BY upload_date DESC",
 	)
 	if err != nil {
 		fmt.Println(err)
@@ -28,7 +28,7 @@ func GetProcesses(db *sql.DB) []utils.Process {
 		var completeDate sql.NullTime
 		var comment sql.NullString
 		if err := dbSelect.Scan(
-			&process.ID, &process.Status, &process.Filename, &process.EnvName, &process.TargetFile, &startDate, &completeDate, &comment,
+			&process.ID, &process.Status, &process.EnvName, &process.TargetFile, &startDate, &completeDate, &comment,
 		); err != nil {
 			fmt.Println(err)
 		}
@@ -51,7 +51,7 @@ func GetProcesses(db *sql.DB) []utils.Process {
 func RegisterProcess(db *sql.DB, process utils.Process) {
 	fmt.Println("### RegisterProcess")
 	ins, err := db.Prepare(
-		"INSERT INTO main_processes (id, status, filename, target_file, env_name, comment, upload_date, in_trash) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+		"INSERT INTO main_processes (id, status, target_file, env_name, comment, upload_date, in_trash) VALUES (?, ?, ?, ?, ?, ?, ?)",
 	)
 	if err != nil {
 		fmt.Println(err)
@@ -59,7 +59,6 @@ func RegisterProcess(db *sql.DB, process utils.Process) {
 	if _, err := ins.Exec(
 		process.ID,
 		process.Status,
-		process.Filename,
 		process.TargetFile,
 		process.EnvName,
 		process.Comment,
@@ -182,7 +181,7 @@ func GetTrashProcesses(db *sql.DB) []utils.Process {
 	var processes []utils.Process
 
 	dbSelect, err := db.Query(
-		"SELECT id, status, filename, env_name, target_file, start_date, complete_date, comment FROM main_processes WHERE in_trash ORDER BY upload_date DESC",
+		"SELECT id, status, env_name, target_file, start_date, complete_date, comment FROM main_processes WHERE in_trash ORDER BY upload_date DESC",
 	)
 	if err != nil {
 		fmt.Println(err)
@@ -194,7 +193,7 @@ func GetTrashProcesses(db *sql.DB) []utils.Process {
 		var completeDate sql.NullTime
 		var comment sql.NullString
 		if err := dbSelect.Scan(
-			&process.ID, &process.Status, &process.Filename, &process.EnvName, &process.TargetFile, &startDate, &completeDate, &comment,
+			&process.ID, &process.Status, &process.EnvName, &process.TargetFile, &startDate, &completeDate, &comment,
 		); err != nil {
 			fmt.Println(err)
 		}
@@ -237,6 +236,28 @@ func TrashProcess(db *sql.DB, id string) {
 	UpdateAllProcess(db)
 }
 
+// GetServers サーバーリスト取得
+func GetServers(db *sql.DB) []utils.Servers {
+	dbSelect, err := db.Query(
+		"SELECT ip, port, status FROM servers",
+	)
+	if err != nil {
+		fmt.Println(err)
+	}
+	var servers []utils.Servers
+	defer dbSelect.Close()
+	for dbSelect.Next() {
+		var server utils.Servers
+		if err := dbSelect.Scan(
+			&server.IP, &server.Port, &server.Status,
+		); err != nil {
+			fmt.Println(err)
+		}
+		servers = append(servers, server)
+	}
+	return servers
+}
+
 // RegisterServer サーバー登録
 func RegisterServer(db *sql.DB, ip string, port string) {
 	ins, err := db.Prepare(
@@ -246,6 +267,19 @@ func RegisterServer(db *sql.DB, ip string, port string) {
 		fmt.Println(err)
 	}
 	if _, err := ins.Exec(ip, port, "arrive"); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func DeleteServer(db *sql.DB, ip string){
+	dbDelete, err := db.Prepare("DELETE FROM servers WHERE ip = ?")
+	if err != nil {
+		fmt.Println(err)
+	}
+	if _, err := dbDelete.Exec(ip); err != nil {
+		fmt.Println(err)
+	}
+	if err := dbDelete.Close(); err != nil {
 		fmt.Println(err)
 	}
 }

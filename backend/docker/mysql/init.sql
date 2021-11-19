@@ -7,13 +7,14 @@ CREATE TABLE IF NOT EXISTS `main_processes`
     `status`        VARCHAR(100) NOT NULL COMMENT '状態',
     `target_file`   VARCHAR(200) NOT NULL COMMENT '起動ファイル名',
     `env_name`      VARCHAR(200) NOT NULL COMMENT '環境名',
-    `home_ip`       VARCHAR(15)  NOT NULL COMMENT 'プロセス投稿元IPアドレス',
     `start_date`    datetime       DEFAULT NULL COMMENT '実行開始日時',
     `complete_date` datetime       DEFAULT NULL COMMENT '実行完了日時',
     `pid`           int            DEFAULT NULL COMMENT 'PID',
     `comment`       VARCHAR(10922) DEFAULT NULL COMMENT 'コメント',
     `upload_date`   datetime       DEFAULT NULL COMMENT '投稿日時',
-    `in_trash`      Bool           DEFAULT NULL COMMENT 'ゴミ箱'
+    `in_trash`      Bool           DEFAULT FALSE COMMENT 'ゴミ箱',
+    `is_home`       BOOL           DEFAULT FALSE COMMENT '外部からのプロセスか',
+    `server_ip`     VARCHAR(15)    DEFAULT NULL COMMENT 'プロセス実行IP'
 ) DEFAULT CHARACTER SET = utf8;
 
 CREATE TABLE IF NOT EXISTS `servers`

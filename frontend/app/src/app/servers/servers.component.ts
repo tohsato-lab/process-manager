@@ -34,10 +34,11 @@ export class ServersComponent implements OnInit, OnDestroy {
     public chartType: ChartType = 'doughnut';
     public serverStatuses: { [ip: string]: MultiDataSet } = {};
     public hiddenRegisterServer = true;
+    public localhostName = location.hostname;
     public inputIPAdder = '';
-    public inputPort = -1;
+    public inputPort = 5983;
 
-    private IPList: string[] = [location.hostname];
+    private serverList = [];
     private headerTitle = 'サーバーリスト';
     private subscription: Subscription;
 
@@ -54,16 +55,24 @@ export class ServersComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.commonService.onNotifySharedDataChanged(this.headerTitle);
-        for (let ip of this.IPList) {
-            this.sseService.getServerSentEvent(`${config.httpScheme}${ip}:${config.port}/host_status`).subscribe((hostData: any) => {
-                // this.hostStatuses[ip] = JSON.parse(hostData.data);
-                const data: hostStatus = JSON.parse(hostData.data);
-                this.serverStatuses[ip] = [
-                    [data.VRAM, 1 - data.VRAM],
-                    [data.RAM, 1 - data.RAM],
-                ];
-            });
-        }
+        this.http.get(`${config.httpScheme}${location.hostname}:${config.port}/servers`).subscribe(
+            (data: any) => {
+                if (data == null) this.serverList = []
+                this.serverList.push({IP: location.hostname, Port: config.port})
+                for (let server of this.serverList) {
+                    this.sseService.getServerSentEvent(
+                        `${config.httpScheme}${server['IP']}:${server['Port']}/host_status`
+                    ).subscribe((hostData: any) => {
+                        const data: hostStatus = JSON.parse(hostData.data);
+                        this.serverStatuses[server['IP']] = [
+                            [data.VRAM, 1 - data.VRAM],
+                            [data.RAM, 1 - data.RAM],
+                        ];
+                    }, error => {
+                        console.log(error)
+                    })
+                }
+            })
         window.onbeforeunload = () => this.ngOnDestroy();
     }
 
@@ -82,22 +91,33 @@ export class ServersComponent implements OnInit, OnDestroy {
     public onRegisterServer(): void {
         if (this.inputIPAdder.match(/^\d{1,3}(\.\d{1,3}){3}$/) && this.inputPort != -1) {
             console.log(`${config.httpScheme}${this.inputIPAdder}:${this.inputPort}`);
-            // const headers = {'Access-Control-Allow-Origin': '*'};
             const formData = new FormData();
+            formData.append('mode', 'add');
             formData.append('ip', String(this.inputIPAdder));
             formData.append('port', String(this.inputPort));
-            // const body = {ip: this.inputPort, port: this.inputPort};
-            this.http.post(
-                `${config.httpScheme}${this.inputIPAdder}:${this.inputPort}/register`, formData
-            ).subscribe(value => {
-                console.log(value);
-            }, error => {
-                console.log(error);
-            });
+            this.http.post(`${config.httpScheme}${location.hostname}:${config.port}/servers`, formData).subscribe(
+                () => {
+                    window.location.reload();
+                }, error => {
+                    console.log(error);
+                });
         } else {
             //ipアドレス以外
             alert('ipアドレスではありません');
         }
+    }
+
+    public onDeleteServer(ip: string): void {
+        const formData = new FormData();
+        formData.append('mode', 'delete');
+        formData.append('ip', ip);
+        this.http.post(`${config.httpScheme}${location.hostname}:${config.port}/servers`, formData).subscribe(
+            () => {
+                window.location.reload();
+            }, error => {
+                console.log(error);
+            }
+        );
     }
 
 }

@@ -1,5 +1,8 @@
 <div class="grid-bse">
   <div *ngFor="let ip of getKeys(serverStatuses)" class="host-card-base">
+    <div *ngIf="this.localhostName!=ip" (click)="onDeleteServer(ip)" style="font-size: xx-large; text-align: right">
+      ×
+    </div>
     <canvas baseChart class="top-graph "
             [data]="serverStatuses[ip][0]"
             [labels]="chartLabels"

@@ -12,7 +12,6 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
-	"strings"
 	"time"
 
 	"process-manager-server/modules"
@@ -109,7 +108,6 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		modules.RegisterProcess(db, utils.Process{
 			ID:         targetFileID,
 			Status:     "ready",
-			Filename:   strings.Split(uploadedFileName, ".")[0],
 			TargetFile: target,
 			EnvName:    env,
 			Comment:    comment,
