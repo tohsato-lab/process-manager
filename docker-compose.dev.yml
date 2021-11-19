@@ -1,0 +1,72 @@
+version: "2.4"
+services:
+  db:
+    image: mysql:5.7
+    container_name: mysql_host
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: process_manager_db
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: docker
+      TZ: 'Asia/Tokyo'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-db:/var/lib/mysql
+      - ./backend/docker/mysql/my.conf:/etc/mysql/conf.d/my.conf
+      - ./backend/docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3305:3306"
+    networks:
+      - backend-net
+
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "5983:5983"
+    networks:
+      - backend-net
+    volumes:
+      - type: bind
+        source: ./data/programs
+        target: /home/docker/process-manager/data/programs
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    tty: true
+
+  rsync:
+    build: ./rsync
+    container_name: rsync
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Tokyo
+      - SUDO_ACCESS=false #optional
+      - PASSWORD_ACCESS=true #optional
+      - USER_PASSWORD=docker #optional
+      - USER_NAME=docker #optional
+    volumes_from:
+      - backend:rw
+    ports:
+      - "8022:2222"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./dev/Dockerfile
+    container_name: frontend-dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./frontend/app/:/app
+      - /usr/src/app/node_modules
+    command: npx ng serve --aot --host=0.0.0.0 --port 8080
+
+networks:
+  backend-net:
+    driver: bridge
+
+volumes:
+  mysql-db:
+    driver: local
