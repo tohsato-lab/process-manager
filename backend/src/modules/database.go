@@ -87,32 +87,54 @@ func RegisterProcess(db *sql.DB, process utils.Process) {
 func UpdateAllProcess(db *sql.DB) {
 	fmt.Println("### UpdateAllProcess")
 
-	var countReady int
+	// is_home process
+	fmt.Println("check home process")
 	var countRunning int
-
-	if err := db.QueryRow(
-		`SELECT COUNT(*) FROM main_processes WHERE status = 'ready' AND in_trash = false AND is_home = true`,
-	).Scan(&countReady); err != nil {
-		fmt.Println(err)
-	}
 	if err := db.QueryRow(
 		`SELECT COUNT(*) FROM main_processes WHERE status = 'running' AND is_home = true`,
 	).Scan(&countRunning); err != nil {
 		fmt.Println(err)
 	}
-
-	if countReady != 0 && countRunning == 0 {
-		var process utils.Process
-		if err := db.QueryRow(
+	if countRunning == 0 {
+		dbSelect, err := db.Query(
 			`SELECT id, target_file, env_name 
 				   FROM main_processes 
 				   WHERE status = 'ready' AND in_trash = false AND is_home = true 
-				   ORDER BY upload_date`,
-		).Scan(&process.ID, &process.TargetFile, &process.EnvName); err != nil {
+				   ORDER BY upload_date LIMIT 1`,
+		)
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer dbSelect.Close()
+		for dbSelect.Next() {
+			var process utils.Process
+			if err := dbSelect.Scan(&process.ID, &process.TargetFile, &process.EnvName); err != nil {
+				fmt.Println(err)
+			}
+			StartProcess(db, process.ID, process.TargetFile, process.EnvName)
+		}
+	}
+
+	// 外部からのプロセス
+	fmt.Println("check not home process")
+	dbSelect, err := db.Query(
+		`SELECT id, target_file, env_name 
+			   FROM main_processes 
+			   WHERE status = 'ready' AND in_trash = false AND is_home = false 
+			   ORDER BY upload_date`,
+	)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer dbSelect.Close()
+	for dbSelect.Next() {
+		var process utils.Process
+		if err := dbSelect.Scan(&process.ID, &process.TargetFile, &process.EnvName); err != nil {
 			fmt.Println(err)
 		}
 		StartProcess(db, process.ID, process.TargetFile, process.EnvName)
 	}
+
 	utils.BroadcastProcesses <- GetProcesses(db)
 }
 
