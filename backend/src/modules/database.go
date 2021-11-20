@@ -16,7 +16,8 @@ func GetProcesses(db *sql.DB) []utils.Process {
 	var processes []utils.Process
 
 	dbSelect, err := db.Query(
-		"SELECT id, status, env_name, target_file, start_date, complete_date, comment FROM main_processes WHERE !in_trash ORDER BY upload_date DESC",
+		`SELECT id, process_name, status, env_name, target_file, start_date, complete_date, comment 
+			   FROM main_processes WHERE !in_trash ORDER BY upload_date DESC`,
 	)
 	if err != nil {
 		fmt.Println(err)
@@ -28,7 +29,14 @@ func GetProcesses(db *sql.DB) []utils.Process {
 		var completeDate sql.NullTime
 		var comment sql.NullString
 		if err := dbSelect.Scan(
-			&process.ID, &process.Status, &process.EnvName, &process.TargetFile, &startDate, &completeDate, &comment,
+			&process.ID,
+			&process.ProcessName,
+			&process.Status,
+			&process.EnvName,
+			&process.TargetFile,
+			&startDate,
+			&completeDate,
+			&comment,
 		); err != nil {
 			fmt.Println(err)
 		}
@@ -51,19 +59,24 @@ func GetProcesses(db *sql.DB) []utils.Process {
 func RegisterProcess(db *sql.DB, process utils.Process) {
 	fmt.Println("### RegisterProcess")
 	ins, err := db.Prepare(
-		"INSERT INTO main_processes (id, status, target_file, env_name, comment, upload_date, in_trash) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		`INSERT INTO main_processes
+               (id, process_name, status, target_file, env_name, comment, upload_date, in_trash, is_home, server_ip) 
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 	)
 	if err != nil {
 		fmt.Println(err)
 	}
 	if _, err := ins.Exec(
 		process.ID,
+		process.ProcessName,
 		process.Status,
 		process.TargetFile,
 		process.EnvName,
 		process.Comment,
 		time.Now(),
 		process.InTrash,
+		process.IsHome,
+		process.ServerIP,
 	); err != nil {
 		fmt.Println(err)
 	}
@@ -78,12 +91,12 @@ func UpdateAllProcess(db *sql.DB) {
 	var countRunning int
 
 	if err := db.QueryRow(
-		"SELECT COUNT(*) FROM main_processes WHERE status = ? AND in_trash = false", "ready",
+		`SELECT COUNT(*) FROM main_processes WHERE status = 'ready' AND in_trash = false AND is_home = true`,
 	).Scan(&countReady); err != nil {
 		fmt.Println(err)
 	}
 	if err := db.QueryRow(
-		"SELECT COUNT(*) FROM main_processes WHERE status = ?", "running",
+		`SELECT COUNT(*) FROM main_processes WHERE status = 'running' AND is_home = true`,
 	).Scan(&countRunning); err != nil {
 		fmt.Println(err)
 	}
@@ -91,7 +104,10 @@ func UpdateAllProcess(db *sql.DB) {
 	if countReady != 0 && countRunning == 0 {
 		var process utils.Process
 		if err := db.QueryRow(
-			"SELECT id, target_file, env_name FROM main_processes WHERE status = ? AND in_trash = false ORDER BY upload_date", "ready",
+			`SELECT id, target_file, env_name 
+				   FROM main_processes 
+				   WHERE status = 'ready' AND in_trash = false AND is_home = true 
+				   ORDER BY upload_date`,
 		).Scan(&process.ID, &process.TargetFile, &process.EnvName); err != nil {
 			fmt.Println(err)
 		}
@@ -104,7 +120,7 @@ func UpdateAllProcess(db *sql.DB) {
 func RegisterPID(db *sql.DB, id string, pid int) {
 	fmt.Println("### RegisterPID")
 
-	statusUpdate, err := db.Prepare("UPDATE main_processes SET pid=? WHERE id=?")
+	statusUpdate, err := db.Prepare(`UPDATE main_processes SET pid=? WHERE id=?`)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -121,7 +137,7 @@ func StartProcess(db *sql.DB, id string, targetFile string, envName string) {
 	fmt.Println("### StartProcess")
 
 	statusUpdate, err := db.Prepare(
-		"UPDATE main_processes SET status=?, start_date=?, complete_date=NULL WHERE id=?",
+		`UPDATE main_processes SET status=?, start_date=?, complete_date=NULL WHERE id=?`,
 	)
 	if err != nil {
 		fmt.Println(err)
@@ -144,7 +160,7 @@ func StartProcess(db *sql.DB, id string, targetFile string, envName string) {
 func CompleteProcess(db *sql.DB, id string, status string) {
 	fmt.Println("### CompleteProcess")
 
-	statusUpdate, err := db.Prepare("UPDATE main_processes SET status=?, complete_date=? WHERE id=?")
+	statusUpdate, err := db.Prepare(`UPDATE main_processes SET status=?, complete_date=? WHERE id=?`)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -161,7 +177,7 @@ func CompleteProcess(db *sql.DB, id string, status string) {
 func DeleteProcess(db *sql.DB, id string) {
 	fmt.Println("### DeleteProcess")
 
-	dbDelete, err := db.Prepare("DELETE FROM main_processes WHERE id = ?")
+	dbDelete, err := db.Prepare(`DELETE FROM main_processes WHERE id = ?`)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -181,7 +197,9 @@ func GetTrashProcesses(db *sql.DB) []utils.Process {
 	var processes []utils.Process
 
 	dbSelect, err := db.Query(
-		"SELECT id, status, env_name, target_file, start_date, complete_date, comment FROM main_processes WHERE in_trash ORDER BY upload_date DESC",
+		`SELECT id, status, env_name, target_file, start_date, complete_date, comment 
+			   FROM main_processes WHERE in_trash 
+			   ORDER BY upload_date DESC`,
 	)
 	if err != nil {
 		fmt.Println(err)
@@ -219,11 +237,11 @@ func TrashProcess(db *sql.DB, id string) {
 	var trashStatus bool
 
 	if err := db.QueryRow(
-		"SELECT in_trash FROM main_processes WHERE id=?", id,
+		`SELECT in_trash FROM main_processes WHERE id=?`, id,
 	).Scan(&trashStatus); err != nil {
 		fmt.Println(err)
 	}
-	dbDelete, err := db.Prepare("UPDATE main_processes SET in_trash=? WHERE id=?")
+	dbDelete, err := db.Prepare(`UPDATE main_processes SET in_trash=? WHERE id=?`)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -238,9 +256,7 @@ func TrashProcess(db *sql.DB, id string) {
 
 // GetServers サーバーリスト取得
 func GetServers(db *sql.DB) []utils.Servers {
-	dbSelect, err := db.Query(
-		"SELECT ip, port, status FROM servers",
-	)
+	dbSelect, err := db.Query(`SELECT ip, port, status FROM servers`)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -260,9 +276,7 @@ func GetServers(db *sql.DB) []utils.Servers {
 
 // RegisterServer サーバー登録
 func RegisterServer(db *sql.DB, ip string, port string) {
-	ins, err := db.Prepare(
-		"INSERT INTO servers (ip, port, status) VALUES (?, ?, ?)",
-	)
+	ins, err := db.Prepare(`INSERT INTO servers (ip, port, status) VALUES (?, ?, ?)`)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -271,8 +285,8 @@ func RegisterServer(db *sql.DB, ip string, port string) {
 	}
 }
 
-func DeleteServer(db *sql.DB, ip string){
-	dbDelete, err := db.Prepare("DELETE FROM servers WHERE ip = ?")
+func DeleteServer(db *sql.DB, ip string) {
+	dbDelete, err := db.Prepare(`DELETE FROM servers WHERE ip = ?`)
 	if err != nil {
 		fmt.Println(err)
 	}

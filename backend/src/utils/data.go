@@ -3,6 +3,7 @@ package utils
 //Process is struct
 type Process struct {
 	ID           string
+	ProcessName  string
 	Status       string
 	StartDate    string
 	CompleteDate string
@@ -10,6 +11,8 @@ type Process struct {
 	EnvName      string
 	Comment      string
 	InTrash      bool
+	IsHome       bool
+	ServerIP     string
 }
 
 type Servers struct {

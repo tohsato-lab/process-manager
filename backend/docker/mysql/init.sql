@@ -4,6 +4,7 @@ USE process_manager_db;
 CREATE TABLE IF NOT EXISTS `main_processes`
 (
     `id`            VARCHAR(100) NOT NULL PRIMARY KEY COMMENT 'ID',
+    `process_name`  VARCHAR(100) NOT NULL COMMENT 'ファイル名',
     `status`        VARCHAR(100) NOT NULL COMMENT '状態',
     `target_file`   VARCHAR(200) NOT NULL COMMENT '起動ファイル名',
     `env_name`      VARCHAR(200) NOT NULL COMMENT '環境名',
