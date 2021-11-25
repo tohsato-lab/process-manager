@@ -20,7 +20,19 @@
   - return success
 - done
 
-## サーバ登録解除
+## サーバ非アクティブ化
+- 接続を一旦停止するipをbackendへGET
+  - ipをもとにcondaへGET
+    - channelを経由してwebsocketでdisconnectシグナルを送信
+  - disconnectシグナルだった場合は関数脱出
+  - return success
+- done
+
+## サーバ削除
+- ipをbackendにGET
+  - conda_server_tableからipをDROP
+  - return success
+- done
 
 ## プログラム登録
 - zipファイルを登録
@@ -38,7 +50,7 @@
     - return success
   - プログラムをprocess_tableへ登録
   - channel経由でwebsocketにprocess_tableの一覧を流す
-  - 非同期でプロセス更新（プロセス実行へ）
+  - プロセス実行
   - return success
 - done
 
@@ -48,11 +60,10 @@
     - calc_process_tableの情報をもとに非同期で実行
     - calc_process_tableのstatusをrunningに更新
     - プログラムが終了した場合、channel経由でwebsocketにid情報を流す
-    - // 正常に送信完了した場合calc_process_tableの情報をDROP（ディレクトリ削除する？）
     - return success
   - process_tableのstatusをrunningに更新
-  - rsyncで同期
   - channel経由でwebsocketにprocess_tableの一覧を流す
+  - プログラムが終了した時にrsyncで同期、他に実行できるプロセスがあれば更新
   - done
 
 ## プロセスkill
@@ -61,11 +72,24 @@
   - condaへidをGET
     - calc_process_tableの情報をもとにPIDでkill
     - channel経由でwebsocketにkillしたプロセスのid情報を流す
-    - // calc_process_tableの情報をDROP（ディレクトリ削除する？）
     - return success
+  - process_tableのstatusをsyncに更新
+  - rsyncで同期
   - process_tableのstatusをkilledに更新
   - channel経由でwebsocketにprocess_tableの一覧を流す
   - return success
 - done
 
 ## プロセス削除
+- プロセスリストからdeleteボタンをクリック
+- backendへidをGET
+  - condaへidをGET
+    - idをもとにディレクトリ削除
+    - calc_process_tableのidをDROP
+    - channel経由でwebsocketにdeleteしたプロセスのid情報を流す
+    - return success
+  - process_tableのidをDROP
+  - idをもとにディレクトリがあれば削除
+  - channel経由でwebsocketにprocess_tableの一覧を流す
+  - return success
+- done
