@@ -24,20 +24,11 @@ services:
     container_name: backend
     ports:
       - "5983:5983"
+      - "8022:2222"
     networks:
       - backend-net
-    volumes:
-      - type: bind
-        source: ./data/programs
-        target: /home/docker/process-manager/data/programs
-    runtime: nvidia
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
-    tty: true
-
-  rsync:
-    build: ./rsync
-    container_name: rsync
+    volumes_from:
+      - conda:rw
     environment:
       - PUID=1000
       - PGID=1000
@@ -46,10 +37,22 @@ services:
       - PASSWORD_ACCESS=true #optional
       - USER_PASSWORD=docker #optional
       - USER_NAME=docker #optional
-    volumes_from:
-      - backend:rw
+
+  conda:
+    build: ./conda
+    container_name: conda
     ports:
-      - "8022:2222"
+      - "5984:5984"
+    networks:
+      - backend-net
+    volumes:
+      - type: bind
+        source: ./data
+        target: /process-manager/data
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    tty: true
 
   frontend:
     build: ./frontend

@@ -17,6 +17,10 @@ func connect(w http.ResponseWriter, r *http.Request) {
 		log.Print("upgrade:", err)
 		return
 	}
+	if c.WriteMessage(websocket.TextMessage, []byte("hi.")) != nil {
+		log.Print("upgrade:", err)
+		return
+	}
 	ticker := time.NewTicker(1 * time.Second)
 	defer func() {
 		ticker.Stop()

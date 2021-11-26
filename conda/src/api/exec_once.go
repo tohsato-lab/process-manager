@@ -8,11 +8,12 @@ import (
 	"process-manager-server/utils"
 )
 
-// RemoteProcessRegister プロセスをリモートから登録
-func RemoteProcessRegister(w http.ResponseWriter, r *http.Request, db *sql.DB) {
-	// このハンドラ関数へのアクセスはPOSTメソッドのみ認める
-	if r.Method != "GET" {
-		_, _ = fmt.Fprintln(w, "許可したメソッドとはことなります。")
+// ExecOnce プロセスを登録し実行
+func ExecOnce(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+
+	if r.Method != http.MethodPost {
+		fmt.Println("unknow method")
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
