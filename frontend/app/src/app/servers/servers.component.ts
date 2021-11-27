@@ -35,8 +35,8 @@ export class ServersComponent implements OnInit, OnDestroy {
     public serverStatuses: { [ip: string]: MultiDataSet } = {};
     public hiddenRegisterServer = true;
     public localhostName = location.hostname;
-    public inputIPAdder = '';
-    public inputPort = 5983;
+    public inputIPAdder = '192.168.10.109';
+    public inputPort = 5984;
 
     private serverList = [];
     private headerTitle = 'サーバーリスト';
@@ -57,6 +57,7 @@ export class ServersComponent implements OnInit, OnDestroy {
         this.commonService.onNotifySharedDataChanged(this.headerTitle);
         this.http.get(`${config.httpScheme}${location.hostname}:${config.port}/join_server`).subscribe(
             (data: any) => {
+                console.log(data)
                 if (data == null) this.serverList = []
                 this.serverList.push({IP: location.hostname, Port: config.port})
                 for (let server of this.serverList) {
