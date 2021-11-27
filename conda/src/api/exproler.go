@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"process-manager-server/utils"
+	"conda/utils"
 )
 
 // Explorer ディレクトリの閲覧

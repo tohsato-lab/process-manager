@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os/exec"
-	"process-manager-server/modules"
+	"conda/modules"
 	"strconv"
 )
 

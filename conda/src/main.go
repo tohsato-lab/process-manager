@@ -1,13 +1,13 @@
 package main
 
 import (
+	"conda/api"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"
 	"os"
-	"process-manager-server/api"
 )
 
 const (
@@ -29,6 +29,10 @@ func main() {
 		panic(err.Error())
 	}
 	defer db.Close()
+
+	http.HandleFunc("/connect", func(w http.ResponseWriter, r *http.Request) {
+		api.Connect(w, r, db)
+	})
 
 	http.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
 		api.UploadHandler(w, r, db)
@@ -64,6 +68,6 @@ func main() {
 		api.ExecOnce(w, r, db)
 	})
 
-	fmt.Println("backend start")
-	log.Fatal(http.ListenAndServe(":5983", nil))
+	log.Println("conda start")
+	log.Fatal(http.ListenAndServe(":5984", nil))
 }

@@ -15,8 +15,8 @@ import (
 	"strings"
 	"time"
 
-	"process-manager-server/modules"
-	"process-manager-server/utils"
+	"conda/modules"
+	"conda/utils"
 )
 
 type response struct {

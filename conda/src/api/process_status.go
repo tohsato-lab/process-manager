@@ -6,8 +6,8 @@ import (
 	"log"
 
 	"net/http"
-	"process-manager-server/modules"
-	"process-manager-server/utils"
+	"conda/modules"
+	"conda/utils"
 )
 
 // WebSocket サーバーにつなぎにいくクライアント

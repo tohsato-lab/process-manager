@@ -1,11 +1,11 @@
 package api
 
 import (
+	"conda/modules"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"process-manager-server/modules"
 )
 
 // Servers サーバーをDBに登録

@@ -55,7 +55,7 @@ export class ServersComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.commonService.onNotifySharedDataChanged(this.headerTitle);
-        this.http.get(`${config.httpScheme}${location.hostname}:${config.port}/servers`).subscribe(
+        this.http.get(`${config.httpScheme}${location.hostname}:${config.port}/join_server`).subscribe(
             (data: any) => {
                 if (data == null) this.serverList = []
                 this.serverList.push({IP: location.hostname, Port: config.port})
@@ -95,7 +95,7 @@ export class ServersComponent implements OnInit, OnDestroy {
             formData.append('mode', 'add');
             formData.append('ip', String(this.inputIPAdder));
             formData.append('port', String(this.inputPort));
-            this.http.post(`${config.httpScheme}${location.hostname}:${config.port}/servers`, formData).subscribe(
+            this.http.post(`${config.httpScheme}${location.hostname}:${config.port}/join_server`, formData).subscribe(
                 () => {
                     window.location.reload();
                 }, error => {

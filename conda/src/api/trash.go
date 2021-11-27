@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"process-manager-server/modules"
+	"conda/modules"
 )
 
 // TrashHandler ゴミ箱に移動

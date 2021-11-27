@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"process-manager-server/utils"
+	"conda/utils"
 )
 
 type Status struct {

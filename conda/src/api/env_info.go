@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"process-manager-server/utils"
+	"conda/utils"
 )
 
 // EnvInfoHandler Env一覧取得

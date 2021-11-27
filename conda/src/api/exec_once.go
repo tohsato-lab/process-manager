@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
-	"process-manager-server/modules"
-	"process-manager-server/utils"
+	"conda/modules"
+	"conda/utils"
 )
 
 // ExecOnce プロセスを登録し実行

@@ -7,14 +7,14 @@ import (
 	"net/url"
 )
 
-
 func register(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		u := url.URL{Scheme: "ws", Host: ":8100", Path: "/connect", RawQuery: "value=test"}
 		log.Printf("connecting to %s", u.String())
 		c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 		if err != nil {
-			log.Fatal("dial:", err)
+			http.Error(w, err.Error(), http.StatusForbidden)
+			return
 		}
 		defer func(c *websocket.Conn) {
 			if c.Close() != nil {

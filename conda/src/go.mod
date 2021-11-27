@@ -1,4 +1,4 @@
-module process-manager-server
+module conda
 
 go 1.16
 

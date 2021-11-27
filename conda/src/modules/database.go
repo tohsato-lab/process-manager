@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"process-manager-server/utils"
+	"conda/utils"
 )
 
 // GetProcesses プロセス一覧取得
