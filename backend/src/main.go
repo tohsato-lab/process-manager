@@ -1,13 +1,14 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gorilla/mux"
+	"github.com/jmoiron/sqlx"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
 
-	"backend/api"
+	"backend/controllers"
 )
 
 const (
@@ -18,33 +19,37 @@ const (
 )
 
 func main() {
-	db, err := sql.Open(DriverName, DataSourceName)
+	db, err := sqlx.Open(DriverName, DataSourceName)
 	if err != nil {
-		panic(err.Error())
+		log.Fatal(err)
 	}
-	defer func(db *sql.DB) {
-		err := db.Close()
-		if db.Close() != nil {
-			fmt.Println(err)
+	defer func(db *sqlx.DB) {
+		if err := db.Close(); err != nil {
+			log.Fatal(err)
 		}
 	}(db)
 
-	http.HandleFunc("/join_server", func(w http.ResponseWriter, r *http.Request) {
-		api.JoinServer(w, r, db)
+	r := mux.NewRouter()
+	r.Methods(http.MethodGet).Path("/calculator").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		controllers.ServerStatus(w, r, db)
+	})
+	r.Methods(http.MethodPost).Path("/calculator").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		controllers.JoinServer(w, r, db)
+	})
+	r.Methods(http.MethodDelete).Path("/calculator").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		controllers.DeleteServer(w, r, db)
 	})
 
-	/*
-		http.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
-				api.UploadHandler(w, r, db)
-		})
-		http.HandleFunc("/process_status", func(w http.ResponseWriter, r *http.Request) {
-			api.ProcessStatus(w, r, db)
-		})
-		http.HandleFunc("/programs/", func(w http.ResponseWriter, r *http.Request) {
-			api.Explorer(w, r, db)
-		})
-	*/
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodDelete,
+			http.MethodOptions,
+		},
+	})
 
 	log.Println("backend start")
-	log.Fatal(http.ListenAndServe(":5983", nil))
+	log.Fatal(http.ListenAndServe(":5983", c.Handler(r)))
 }

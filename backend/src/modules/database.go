@@ -6,15 +6,15 @@ import (
 	"fmt"
 )
 
-func GetServers(db *sql.DB) []utils.Servers {
+func GetServers(db *sql.DB) []utils.CalcServers {
 	dbSelect, err := db.Query(`SELECT ip, port, status FROM servers`)
 	if err != nil {
 		fmt.Println(err)
 	}
-	var servers []utils.Servers
+	var servers []utils.CalcServers
 	defer dbSelect.Close()
 	for dbSelect.Next() {
-		var server utils.Servers
+		var server utils.CalcServers
 		if err := dbSelect.Scan(
 			&server.IP, &server.Port, &server.Status,
 		); err != nil {

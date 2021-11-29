@@ -55,11 +55,14 @@ export class ServersComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.commonService.onNotifySharedDataChanged(this.headerTitle);
-        this.http.get(`${config.httpScheme}${location.hostname}:${config.port}/join_server`).subscribe(
+        this.http.get(`${config.httpScheme}${location.hostname}:${config.port}/calculator`).subscribe(
             (data: any) => {
                 console.log(data)
-                if (data == null) this.serverList = []
-                this.serverList.push({IP: location.hostname, Port: config.port})
+                if (data == null) {
+                    this.serverList = []
+                } else {
+                    this.serverList = data
+                }
                 for (let server of this.serverList) {
                     this.sseService.getServerSentEvent(
                         `${config.httpScheme}${server['IP']}:${server['Port']}/host_status`
@@ -96,7 +99,7 @@ export class ServersComponent implements OnInit, OnDestroy {
             formData.append('mode', 'add');
             formData.append('ip', String(this.inputIPAdder));
             formData.append('port', String(this.inputPort));
-            this.http.post(`${config.httpScheme}${location.hostname}:${config.port}/join_server`, formData).subscribe(
+            this.http.post(`${config.httpScheme}${location.hostname}:${config.port}/calculator`, formData).subscribe(
                 () => {
                     window.location.reload();
                 }, error => {
@@ -109,16 +112,12 @@ export class ServersComponent implements OnInit, OnDestroy {
     }
 
     public onDeleteServer(ip: string): void {
-        const formData = new FormData();
-        formData.append('mode', 'delete');
-        formData.append('ip', ip);
-        this.http.post(`${config.httpScheme}${location.hostname}:${config.port}/servers`, formData).subscribe(
-            () => {
+        this.http.delete(`${config.httpScheme}${location.hostname}:${config.port}/calculator?ip=${ip}`).subscribe(
+            (data: any) => {
+                console.log(data);
                 window.location.reload();
-            }, error => {
-                console.log(error);
             }
-        );
+        )
     }
 
 }

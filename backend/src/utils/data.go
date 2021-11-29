@@ -1,7 +1,7 @@
 package utils
 
-type Servers struct {
-	IP     string
-	Port   string
-	Status string
+type CalcServers struct {
+	IP     string `db:"ip"`
+	Port   string `db:"port"`
+	Status string `db:"status"`
 }
