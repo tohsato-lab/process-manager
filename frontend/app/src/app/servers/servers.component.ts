@@ -96,14 +96,18 @@ export class ServersComponent implements OnInit, OnDestroy {
         if (this.inputIPAdder.match(/^\d{1,3}(\.\d{1,3}){3}$/) && this.inputPort != -1) {
             console.log(`${config.httpScheme}${this.inputIPAdder}:${this.inputPort}`);
             const formData = new FormData();
-            formData.append('mode', 'add');
+            formData.append('mode', 'join');
             formData.append('ip', String(this.inputIPAdder));
             formData.append('port', String(this.inputPort));
             this.http.post(`${config.httpScheme}${location.hostname}:${config.port}/calculator`, formData).subscribe(
                 () => {
                     window.location.reload();
                 }, error => {
-                    console.log(error);
+                    if (String(error.error).indexOf('1062') != -1) {
+                        alert('既に登録されています。')
+                    } else {
+                        alert(error.error);
+                    }
                 });
         } else {
             //ipアドレス以外

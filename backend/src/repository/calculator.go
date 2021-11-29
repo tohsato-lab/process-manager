@@ -33,6 +33,16 @@ func SetCalcServer(db *sqlx.DB, ip string, port string) error {
 	return nil
 }
 
+func UpdateCalcServerStatus(db *sqlx.DB, ip string, status string) error {
+	_, err := db.NamedExec(`UPDATE servers SET status=:status WHERE ip=:ip`,
+		map[string]interface{}{"ip": ip, "status": status},
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func DeleteCalcServer(db *sqlx.DB, ip string) error {
 	_, err := db.NamedExec(`DELETE FROM servers WHERE ip=:ip`, map[string]interface{}{"ip": ip})
 	if err != nil {

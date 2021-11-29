@@ -1,24 +1,32 @@
 package controllers
 
 import (
+	"backend/modules"
 	"backend/repository"
 	"backend/utils"
 	"github.com/jmoiron/sqlx"
 	"net/http"
-
-	"backend/modules"
 )
 
 func JoinServer(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
-	ip := r.FormValue("ip")
-	port := r.FormValue("port")
-	if err := modules.Connection(ip, port); err != nil {
-		http.Error(w, err.Error(), http.StatusBadGateway)
-		return
-	}
-	if err := repository.SetCalcServer(db, ip, port); err != nil {
-		http.Error(w, err.Error(), http.StatusBadGateway)
-		return
+	if r.FormValue("mode") == "join" {
+		ip := r.FormValue("ip")
+		port := r.FormValue("port")
+		if err := modules.Connection(ip, port); err != nil {
+			http.Error(w, err.Error(), http.StatusBadGateway)
+			return
+		}
+		if err := repository.SetCalcServer(db, ip, port); err != nil {
+			http.Error(w, err.Error(), http.StatusBadGateway)
+			return
+		}
+	} else {
+		ip := r.FormValue("ip")
+		status := r.FormValue("mode")
+		if err := repository.UpdateCalcServerStatus(db, ip, status); err != nil {
+			http.Error(w, err.Error(), http.StatusBadGateway)
+			return
+		}
 	}
 	utils.RespondByte(w, http.StatusOK, []byte(`{"status":"ok"}`))
 }
