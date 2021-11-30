@@ -1,13 +1,14 @@
 package main
 
 import (
-	"conda/api"
-	"database/sql"
-	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gorilla/mux"
+	"github.com/jmoiron/sqlx"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
-	"os"
+
+	"conda/controllers"
 )
 
 const (
@@ -18,56 +19,79 @@ const (
 )
 
 func main() {
-	hostname, err := os.Hostname()
+	db, err := sqlx.Open(DriverName, DataSourceName)
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
-	fmt.Println(hostname)
+	defer func(db *sqlx.DB) {
+		if err := db.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}(db)
 
-	db, err := sql.Open(DriverName, DataSourceName)
-	if err != nil {
-		panic(err.Error())
-	}
-	defer db.Close()
-
-	http.HandleFunc("/connect", func(w http.ResponseWriter, r *http.Request) {
-		api.Connect(w, r, db)
+	r := mux.NewRouter()
+	r.Methods(http.MethodGet).Path("/health").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		controllers.Health(w, r)
+	})
+	r.Methods(http.MethodGet).Path("/connect").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		controllers.Connect(w, r)
+	})
+	r.Methods(http.MethodDelete).Path("/connect").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		controllers.Disconnect(w, r)
 	})
 
-	http.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
-		api.UploadHandler(w, r, db)
-	})
-	http.HandleFunc("/kill", func(w http.ResponseWriter, r *http.Request) {
-		api.KillHandler(w, r, db)
-	})
-	http.HandleFunc("/delete", func(w http.ResponseWriter, r *http.Request) {
-		api.DeleteHandler(w, r, db)
-	})
-	http.HandleFunc("/trash", func(w http.ResponseWriter, r *http.Request) {
-		api.TrashHandler(w, r, db)
-	})
-	http.HandleFunc("/env_info", func(w http.ResponseWriter, r *http.Request) {
-		api.EnvInfoHandler(w, r)
-	})
-	http.HandleFunc("/host_status", func(w http.ResponseWriter, r *http.Request) {
-		api.HostStatus(w, r)
-	})
-	http.HandleFunc("/process_status", func(w http.ResponseWriter, r *http.Request) {
-		api.ProcessStatus(w, r, db)
-	})
-	http.HandleFunc("/programs/", func(w http.ResponseWriter, r *http.Request) {
-		api.Explorer(w, r, db)
-	})
-	go api.ProcessStatusKernel()
-
-	// サーバー
-	http.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
-		api.Servers(w, r, db)
-	})
-	http.HandleFunc("/exec_once", func(w http.ResponseWriter, r *http.Request) {
-		api.ExecOnce(w, r, db)
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodDelete,
+			http.MethodOptions,
+		},
 	})
 
 	log.Println("conda start")
-	log.Fatal(http.ListenAndServe(":5984", nil))
+	log.Fatal(http.ListenAndServe(":5984", c.Handler(r)))
+	/*
+		http.HandleFunc("/connect", func(w http.ResponseWriter, r *http.Request) {
+				api.Connect(w, r, db)
+			})
+
+			http.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
+				api.UploadHandler(w, r, db)
+			})
+			http.HandleFunc("/kill", func(w http.ResponseWriter, r *http.Request) {
+				api.KillHandler(w, r, db)
+			})
+			http.HandleFunc("/delete", func(w http.ResponseWriter, r *http.Request) {
+				api.DeleteHandler(w, r, db)
+			})
+			http.HandleFunc("/trash", func(w http.ResponseWriter, r *http.Request) {
+				api.TrashHandler(w, r, db)
+			})
+			http.HandleFunc("/env_info", func(w http.ResponseWriter, r *http.Request) {
+				api.EnvInfoHandler(w, r)
+			})
+			http.HandleFunc("/host_status", func(w http.ResponseWriter, r *http.Request) {
+				api.HostStatus(w, r)
+			})
+			http.HandleFunc("/process_status", func(w http.ResponseWriter, r *http.Request) {
+				api.ProcessStatus(w, r, db)
+			})
+			http.HandleFunc("/programs/", func(w http.ResponseWriter, r *http.Request) {
+				api.Explorer(w, r, db)
+			})
+			go api.ProcessStatusKernel()
+
+			// サーバー
+			http.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+				api.Servers(w, r, db)
+			})
+			http.HandleFunc("/exec_once", func(w http.ResponseWriter, r *http.Request) {
+				api.ExecOnce(w, r, db)
+			})
+
+			log.Println("conda start")
+			log.Fatal(http.ListenAndServe(":5984", nil))
+	*/
 }

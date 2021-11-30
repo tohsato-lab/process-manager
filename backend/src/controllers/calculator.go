@@ -1,11 +1,14 @@
 package controllers
 
 import (
+	"github.com/jmoiron/sqlx"
+	"log"
+	"net/http"
+	"time"
+
 	"backend/modules"
 	"backend/repository"
 	"backend/utils"
-	"github.com/jmoiron/sqlx"
-	"net/http"
 )
 
 func JoinServer(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
@@ -23,12 +26,19 @@ func JoinServer(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	} else {
 		ip := r.FormValue("ip")
 		status := r.FormValue("mode")
+		port := r.FormValue("port")
 		if status == "active" {
-			port := r.FormValue("port")
 			if err := modules.Connection(ip, port); err != nil {
 				http.Error(w, err.Error(), http.StatusBadGateway)
 				return
 			}
+		} else {
+			response, err := utils.RequestHTTP("DELETE", "http://"+ip+":"+port+"/connect", 5*time.Second)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadGateway)
+				return
+			}
+			log.Println(string(response))
 		}
 		if err := repository.UpdateCalcServerStatus(db, ip, status); err != nil {
 			http.Error(w, err.Error(), http.StatusBadGateway)

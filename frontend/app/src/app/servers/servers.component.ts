@@ -65,7 +65,7 @@ export class ServersComponent implements OnInit, OnDestroy {
                 }
                 for (let server of this.serverList) {
                     this.sseService.getServerSentEvent(
-                        `${config.httpScheme}${server['IP']}:${server['Port']}/host_status`
+                        `${config.httpScheme}${server['IP']}:${server['Port']}/health`
                     ).subscribe((hostData: any) => {
                         const data: hostStatus = JSON.parse(hostData.data);
                         this.serverStatuses[server['IP']] = [
@@ -117,10 +117,11 @@ export class ServersComponent implements OnInit, OnDestroy {
         }
     }
 
-    public onStopServer(ip: string): void {
+    public onStopServer(ip: string, port: string): void {
         const formData = new FormData();
         formData.append('mode', 'stop');
-        formData.append('ip', String(ip));
+        formData.append('ip', ip);
+        formData.append('port', port);
         this.http.post(`${config.httpScheme}${location.hostname}:${config.port}/calculator`, formData).subscribe(
             (data: any) => {
                 console.log(data);
@@ -129,7 +130,7 @@ export class ServersComponent implements OnInit, OnDestroy {
         )
     }
 
-    public onResumeServer(ip: string, port:string): void {
+    public onResumeServer(ip: string, port: string): void {
         const formData = new FormData();
         formData.append('mode', 'active');
         formData.append('ip', ip);
@@ -138,6 +139,8 @@ export class ServersComponent implements OnInit, OnDestroy {
             (data: any) => {
                 console.log(data);
                 window.location.reload();
+            }, error => {
+                alert(`接続に失敗しました: ${error.error}`)
             }
         )
     }
