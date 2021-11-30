@@ -23,6 +23,13 @@ func JoinServer(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	} else {
 		ip := r.FormValue("ip")
 		status := r.FormValue("mode")
+		if status == "active" {
+			port := r.FormValue("port")
+			if err := modules.Connection(ip, port); err != nil {
+				http.Error(w, err.Error(), http.StatusBadGateway)
+				return
+			}
+		}
 		if err := repository.UpdateCalcServerStatus(db, ip, status); err != nil {
 			http.Error(w, err.Error(), http.StatusBadGateway)
 			return

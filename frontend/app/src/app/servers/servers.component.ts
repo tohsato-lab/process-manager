@@ -71,6 +71,7 @@ export class ServersComponent implements OnInit, OnDestroy {
                         this.serverStatuses[server['IP']] = [
                             [data.VRAM, 1 - data.VRAM],
                             [data.RAM, 1 - data.RAM],
+                            server['Port'],
                             server['Status'],
                         ];
                     }, error => {
@@ -128,10 +129,11 @@ export class ServersComponent implements OnInit, OnDestroy {
         )
     }
 
-    public onResumeServer(ip: string): void {
+    public onResumeServer(ip: string, port:string): void {
         const formData = new FormData();
         formData.append('mode', 'active');
-        formData.append('ip', String(ip));
+        formData.append('ip', ip);
+        formData.append('port', port);
         this.http.post(`${config.httpScheme}${location.hostname}:${config.port}/calculator`, formData).subscribe(
             (data: any) => {
                 console.log(data);
