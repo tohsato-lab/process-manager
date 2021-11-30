@@ -1,29 +1,44 @@
 <div class="grid-bse">
   <div *ngFor="let ip of getKeys(serverStatuses)" class="host-card-base">
-    <div *ngIf="this.localhostName!=ip" (click)="onDeleteServer(ip)" style="font-size: xx-large; text-align: right">
-      ×
+    <div *ngIf="serverStatuses[ip][2]=='active'">
+      <div *ngIf="this.localhostName!=ip" (click)="onStopServer(ip)" style="font-size: xx-large; text-align: right">
+        ×
+      </div>
+      <canvas baseChart class="top-graph"
+              [data]="serverStatuses[ip][0]"
+              [labels]="chartLabels"
+              [chartType]="chartType"
+              [colors]="chartColors"
+              [options]="options"
+              [legend]="false">
+      </canvas>
+      <div class="top-graph-text graph-data-text">{{serverStatuses[ip][0][0] * 100 | number:'1.2-2'}}%</div>
+      <canvas baseChart class="bottom-graph"
+              [data]="serverStatuses[ip][1]"
+              [labels]="chartLabels"
+              [chartType]="chartType"
+              [colors]="chartColors"
+              [options]="options"
+              [legend]="false">
+      </canvas>
+      <div class="bottom-graph-text graph-data-text">{{serverStatuses[ip][1][0] * 100 | number:'1.2-2'}}%</div>
+      <div class="graph-label-text top-graph-label-text">vram</div>
+      <div class="graph-label-text bottom-graph-label-text">ram</div>
+      <div class="host-name-text">{{ip}}</div>
     </div>
-    <canvas baseChart class="top-graph "
-            [data]="serverStatuses[ip][0]"
-            [labels]="chartLabels"
-            [chartType]="chartType"
-            [colors]="chartColors"
-            [options]="options"
-            [legend]="false">
-    </canvas>
-    <div class="top-graph-text graph-data-text">{{serverStatuses[ip][0][0] * 100 | number:'1.2-2'}}%</div>
-    <canvas baseChart class="bottom-graph"
-            [data]="serverStatuses[ip][1]"
-            [labels]="chartLabels"
-            [chartType]="chartType"
-            [colors]="chartColors"
-            [options]="options"
-            [legend]="false">
-    </canvas>
-    <div class="bottom-graph-text graph-data-text">{{serverStatuses[ip][1][0] * 100 | number:'1.2-2'}}%</div>
-    <div class="graph-label-text top-graph-label-text">vram</div>
-    <div class="graph-label-text bottom-graph-label-text">ram</div>
-    <div class="host-name-text">{{ip}}</div>
+    <div *ngIf="serverStatuses[ip][2]!='active'">
+      <div class="no-active-title">No Active</div>
+      <div (click)="onResumeServer(ip)" class="no-active-icon-base" style="left: 15%; bottom: 35%;">
+        <img src="../../assets/icon/play.svg" alt="reconnect">
+        <div>reconnect</div>
+      </div>
+      <div (click)="onDeleteServer(ip)" class="no-active-icon-base" style="right: 15%; bottom: 35%;">
+        <img src="../../assets/icon/cut.svg" alt="delete">
+        <div>delete</div>
+      </div>
+      <div class="host-name-text" style="right: 28%; bottom: 15%; font-size: large;">- {{ip}} -</div>
+    </div>
+
   </div>
   <div class="host-card-base add-card" (click)="onRegisterCtrl()">
     <svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Add</title>

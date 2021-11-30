@@ -71,6 +71,7 @@ export class ServersComponent implements OnInit, OnDestroy {
                         this.serverStatuses[server['IP']] = [
                             [data.VRAM, 1 - data.VRAM],
                             [data.RAM, 1 - data.RAM],
+                            server['Status'],
                         ];
                     }, error => {
                         console.log(error)
@@ -113,6 +114,30 @@ export class ServersComponent implements OnInit, OnDestroy {
             //ipアドレス以外
             alert('ipアドレスではありません');
         }
+    }
+
+    public onStopServer(ip: string): void {
+        const formData = new FormData();
+        formData.append('mode', 'stop');
+        formData.append('ip', String(ip));
+        this.http.post(`${config.httpScheme}${location.hostname}:${config.port}/calculator`, formData).subscribe(
+            (data: any) => {
+                console.log(data);
+                window.location.reload();
+            }
+        )
+    }
+
+    public onResumeServer(ip: string): void {
+        const formData = new FormData();
+        formData.append('mode', 'active');
+        formData.append('ip', String(ip));
+        this.http.post(`${config.httpScheme}${location.hostname}:${config.port}/calculator`, formData).subscribe(
+            (data: any) => {
+                console.log(data);
+                window.location.reload();
+            }
+        )
     }
 
     public onDeleteServer(ip: string): void {

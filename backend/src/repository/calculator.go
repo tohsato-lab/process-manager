@@ -24,7 +24,7 @@ func SetCalcServer(db *sqlx.DB, ip string, port string) error {
 		map[string]interface{}{
 			"ip":     ip,
 			"port":   port,
-			"status": "arrive",
+			"status": "active",
 		},
 	)
 	if err != nil {
