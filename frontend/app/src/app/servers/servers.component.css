@@ -10,6 +10,7 @@
     border-radius: 10px;
     border: solid #cccccc 2px;
     position: relative;
+    height: 330px;
 }
 
 .chart {
@@ -83,14 +84,27 @@
     font-weight: 100;
 }
 
+.no-active-base {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: space-around;
+}
+
 .no-active-title {
     text-align: center;
     font-size: x-large;
-    margin-top: 15%;
     border-bottom: solid 1px;
     width: 50%;
-    margin-left: 25%;
     padding-bottom: 10px;
+}
+
+.no-active-icons-base {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-evenly;
 }
 
 .no-active-icon-base {
@@ -100,7 +114,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    position: absolute;
     font-size: large;
 }
 

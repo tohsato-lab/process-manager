@@ -26,17 +26,19 @@
       <div class="graph-label-text bottom-graph-label-text">ram</div>
       <div class="host-name-text">{{ip}}</div>
     </div>
-    <div *ngIf="serverStatuses[ip][2]!='active'">
+    <div *ngIf="serverStatuses[ip][2]!='active'" class="no-active-base">
       <div class="no-active-title">No Active</div>
-      <div (click)="onResumeServer(ip)" class="no-active-icon-base" style="left: 15%; bottom: 35%;">
-        <img src="../../assets/icon/play.svg" alt="reconnect">
-        <div>reconnect</div>
+      <div class="no-active-icons-base">
+        <div (click)="onResumeServer(ip)" class="no-active-icon-base" style="left: 15%; bottom: 35%;">
+          <img src="../../assets/icon/play.svg" alt="reconnect">
+          <div>reconnect</div>
+        </div>
+        <div (click)="onDeleteServer(ip)" class="no-active-icon-base" style="right: 15%; bottom: 35%;">
+          <img src="../../assets/icon/cut.svg" alt="delete">
+          <div>delete</div>
+        </div>
       </div>
-      <div (click)="onDeleteServer(ip)" class="no-active-icon-base" style="right: 15%; bottom: 35%;">
-        <img src="../../assets/icon/cut.svg" alt="delete">
-        <div>delete</div>
-      </div>
-      <div class="host-name-text" style="right: 28%; bottom: 15%; font-size: large;">- {{ip}} -</div>
+      <div class="host-name-text" style="position: relative; font-size: large; right: 0; bottom: 0;">- {{ip}} -</div>
     </div>
 
   </div>
