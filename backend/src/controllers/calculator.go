@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"github.com/jmoiron/sqlx"
 	"log"
 	"net/http"
@@ -49,12 +50,17 @@ func JoinServer(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 }
 
 func ServerStatus(w http.ResponseWriter, _ *http.Request, db *sqlx.DB) {
-	content, err := repository.GetCalcServers(db)
+	calcServers, err := repository.GetAllCalcServers(db)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusVariantAlsoNegotiates)
+		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
-	utils.RespondByte(w, http.StatusOK, content)
+	contents, err := json.Marshal(calcServers)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	utils.RespondByte(w, http.StatusOK, contents)
 }
 
 func DeleteServer(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {

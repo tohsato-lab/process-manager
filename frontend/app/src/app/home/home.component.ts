@@ -17,6 +17,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     public hiddenUploadPage = true;
     public fileInfos: any = [];
     public processList = [];
+    public serverList = [];
     public envList: any;
 
     private subscription: Subscription;
@@ -63,13 +64,20 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     public onAddButton(): void {
         this.hiddenUploadPage = false;
-        this.http.get(
-            `${config.httpScheme}${location.hostname}:${config.port}/env_info`
-        ).subscribe(value => {
-            this.envList = value;
-        }, error => {
-            console.log(error);
-        });
+        this.http.get(`${config.httpScheme}${location.hostname}:${config.port}/calculator`).subscribe(
+            (data: any) => {
+                this.serverList = data;
+            }, error => {
+                console.log(error);
+            }
+        )
+        this.http.get(`${config.httpScheme}${location.hostname}:${config.port}/env_info`).subscribe(
+            (data: any) => {
+                this.envList = data;
+            }, error => {
+                console.log(error);
+            }
+        );
     }
 
     public onCloseUpload(): void {
@@ -80,7 +88,15 @@ export class HomeComponent implements OnInit, OnDestroy {
     public onSelectFiles(event): void {
         console.log(event);
         for (const file of [...event.addedFiles]) {
-            this.fileInfos.push({file: file, vram: 0.0, env: 'base', target: 'main.py', exec_count: 1, comment: ''});
+            this.fileInfos.push({
+                file: file,
+                vram: 0.0,
+                env: 'base',
+                target: 'main.py',
+                exec_count: 1,
+                ip: this.serverList[0]['IP'],
+                comment: '',
+            });
         }
     }
 
@@ -126,7 +142,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         ).subscribe(value => {
             console.log(value);
         }, error => {
-            alert(error.error.text);
+            alert(error.error);
         });
     }
 }

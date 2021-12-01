@@ -1,22 +1,33 @@
 package repository
 
 import (
-	"encoding/json"
 	"github.com/jmoiron/sqlx"
 
 	"backend/utils"
 )
 
-func GetCalcServers(db *sqlx.DB) ([]byte, error) {
+func GetAllCalcServers(db *sqlx.DB) ([]utils.CalcServers, error) {
 	var calcServers []utils.CalcServers
 	if err := db.Select(&calcServers, `SELECT * FROM servers`); err != nil {
 		return nil, err
 	}
-	contents, err := json.Marshal(calcServers)
-	if err != nil {
+	return calcServers, nil
+}
+
+func GetActiveCalcServers(db *sqlx.DB) ([]utils.CalcServers, error) {
+	var calcServers []utils.CalcServers
+	if err := db.Select(&calcServers, `SELECT * FROM servers WHERE status='active'`); err != nil {
 		return nil, err
 	}
-	return contents, nil
+	return calcServers, nil
+}
+
+func GetCalcServer(db *sqlx.DB, ip string) (utils.CalcServers, error) {
+	var calcServer utils.CalcServers
+	if err := db.Get(&calcServer, "SELECT * FROM servers WHERE ip=?", ip); err != nil{
+		return calcServer, err
+	}
+	return calcServer, nil
 }
 
 func SetCalcServer(db *sqlx.DB, ip string, port string) error {
