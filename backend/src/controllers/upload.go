@@ -14,10 +14,6 @@ import (
 	"time"
 )
 
-type ExecInfo struct {
-	IP []string
-}
-
 func putFile(file multipart.File, fileHeader *multipart.FileHeader, err error) (string, error) {
 	if err != nil {
 		log.Println("ファイルアップロードを確認できませんでした")
@@ -93,12 +89,11 @@ func Upload(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 		return
 	}
 
-	calcServers, err := repository.GetCalcServer(db, ip)
+	calcServers, err := repository.GetCalcServerPort(db, ip)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
-	log.Println(calcServers)
-	utils.SendFile(filename, "http://"+ip+":5984/upload")
+	utils.SendFile(filename, "http://"+ip+":"+calcServers.Port+"/upload")
 
 }

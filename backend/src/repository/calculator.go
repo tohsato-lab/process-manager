@@ -22,7 +22,7 @@ func GetActiveCalcServers(db *sqlx.DB) ([]utils.CalcServers, error) {
 	return calcServers, nil
 }
 
-func GetCalcServer(db *sqlx.DB, ip string) (utils.CalcServers, error) {
+func GetCalcServerPort(db *sqlx.DB, ip string) (utils.CalcServers, error) {
 	var calcServer utils.CalcServers
 	if err := db.Get(&calcServer, "SELECT * FROM servers WHERE ip=?", ip); err != nil{
 		return calcServer, err

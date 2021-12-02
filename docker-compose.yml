@@ -27,8 +27,6 @@ services:
       - "8022:2222"
     networks:
       - backend-net
-    volumes_from:
-      - conda:rw
     environment:
       - PUID=1000
       - PGID=1000

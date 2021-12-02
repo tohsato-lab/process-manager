@@ -7,32 +7,28 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 )
 
-func SendFile(filename string, endpoint string) (io.ReadCloser, error) {
-	file, err := os.Open(filename)
-	if err != nil {
-		return nil, err
-	}
+func SendFile(filePath string, endpoint string) (io.ReadCloser, error) {
+	file, _ := os.Open(filePath)
+	defer file.Close()
+
 	body := &bytes.Buffer{}
-	mw := multipart.NewWriter(body)
-	fw, err := mw.CreateFormFile("file", filename)
-	if _, err = io.Copy(fw, file); err != nil {
-		return nil, err
-	}
-	if err := mw.Close(); err != nil {
-		return nil, err
-	}
-	res, err := http.Post(endpoint, mw.FormDataContentType(), body)
+	writer := multipart.NewWriter(body)
+	part, _ := writer.CreateFormFile("file", filepath.Base(file.Name()))
+	io.Copy(part, file)
+	writer.Close()
+
+	r, _ := http.NewRequest("PUT", endpoint, body)
+	r.Header.Add("Content-Type", writer.FormDataContentType())
+	client := &http.Client{}
+	res, err := client.Do(r)
 	if err != nil {
 		return nil, err
 	}
-	defer func(Body io.ReadCloser) {
-		if err := Body.Close(); err != nil {
-			return
-		}
-	}(res.Body)
+
 	return res.Body, nil
 }
 
