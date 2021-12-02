@@ -3,6 +3,7 @@ package controllers
 import (
 	"backend/repository"
 	"backend/utils"
+	"encoding/json"
 	"github.com/jmoiron/sqlx"
 	"io"
 	"log"
@@ -12,6 +13,10 @@ import (
 	"strconv"
 	"time"
 )
+
+type ExecInfo struct {
+	IP []string
+}
 
 func putFile(file multipart.File, fileHeader *multipart.FileHeader, err error) (string, error) {
 	if err != nil {
@@ -36,27 +41,37 @@ func putFile(file multipart.File, fileHeader *multipart.FileHeader, err error) (
 	return fileHeader.Filename, nil
 }
 
-func ServerInfo(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
+func ServerInfo(w http.ResponseWriter, _ *http.Request, db *sqlx.DB) {
 	calcServers, err := repository.GetActiveCalcServers(db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
-
-	var condaEnvs [][]byte
+	execInfos := map[string][]string{}
 	for _, server := range calcServers {
 		requestHTTP, err := utils.RequestHTTP(
-			"GET", "http://"+server.IP+":"+server.Port+"/conda_env",
-			5*time.Second,
+			"GET", "http://"+server.IP+":"+server.Port+"/conda", 5*time.Second,
 		)
 		if err != nil {
 			return
 		}
-
+		var envs []string
+		if err := json.Unmarshal(requestHTTP, &envs); err != nil {
+			http.Error(w, err.Error(), http.StatusBadGateway)
+			return
+		}
+		execInfos[server.IP] = envs
 	}
+	contents, err := json.Marshal(execInfos)
+	log.Println(string(contents))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	utils.RespondByte(w, http.StatusOK, contents)
 }
 
-func UploadHandler(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
+func Upload(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 
 	ip := r.FormValue("ip")
 	// env := r.FormValue("conda_env")

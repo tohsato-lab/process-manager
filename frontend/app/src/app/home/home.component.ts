@@ -17,7 +17,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     public hiddenUploadPage = true;
     public fileInfos: any = [];
     public processList = [];
-    public serverList = [];
+    public execEnvs = {};
     public envList: any;
 
     private subscription: Subscription;
@@ -58,19 +58,25 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.sseService.closeServerSentEvent();
     }
 
+    getKeys(dict: any) {
+        return Object.keys(dict)
+    }
+
     public onOpenExplorer(id) {
         window.location.href = `${config.httpScheme}${location.hostname}:${config.port}/programs/${id}`;
     }
 
     public onAddButton(): void {
         this.hiddenUploadPage = false;
-        this.http.get(`${config.httpScheme}${location.hostname}:${config.port}/calculator`).subscribe(
+        this.http.get(`${config.httpScheme}${location.hostname}:${config.port}/upload`).subscribe(
             (data: any) => {
-                this.serverList = data;
+                console.log(data);
+                this.execEnvs = data;
             }, error => {
                 console.log(error);
             }
         )
+        /*
         this.http.get(`${config.httpScheme}${location.hostname}:${config.port}/env_info`).subscribe(
             (data: any) => {
                 this.envList = data;
@@ -78,6 +84,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 console.log(error);
             }
         );
+         */
     }
 
     public onCloseUpload(): void {
@@ -94,7 +101,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 env: 'base',
                 target: 'main.py',
                 exec_count: 1,
-                ip: this.serverList[0]['IP'],
+                ip: this.getKeys(this.execEnvs)[0],
                 comment: '',
             });
         }

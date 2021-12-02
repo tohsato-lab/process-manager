@@ -39,6 +39,9 @@ func main() {
 	r.Methods(http.MethodDelete).Path("/connect").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		controllers.Disconnect(w, r)
 	})
+	r.Methods(http.MethodGet).Path("/conda").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		controllers.EnvInfo(w, r)
+	})
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
