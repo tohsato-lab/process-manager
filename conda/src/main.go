@@ -42,7 +42,7 @@ func main() {
 	r.Methods(http.MethodGet).Path("/conda").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		controllers.EnvInfo(w, r)
 	})
-	r.Methods(http.MethodPut).Path("/upload").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	r.Methods(http.MethodPost).Path("/upload").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		controllers.FileUpload(w, r, db)
 	})
 

@@ -11,25 +11,48 @@ import (
 	"time"
 )
 
-func SendFile(filePath string, endpoint string) (io.ReadCloser, error) {
-	file, _ := os.Open(filePath)
-	defer file.Close()
-
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-	part, _ := writer.CreateFormFile("file", filepath.Base(file.Name()))
-	io.Copy(part, file)
-	writer.Close()
-
-	r, _ := http.NewRequest("PUT", endpoint, body)
-	r.Header.Add("Content-Type", writer.FormDataContentType())
-	client := &http.Client{}
-	res, err := client.Do(r)
+func SendFile(filePath string, endpoint string, form map[string]string) ([]byte, error) {
+	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, err
 	}
 
-	return res.Body, nil
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, _ := writer.CreateFormFile("file", filepath.Base(file.Name()))
+	if _, err := io.Copy(part, file); err != nil {
+		return nil, err
+	}
+	for key, value := range form {
+		if err := writer.WriteField(key, value); err != nil {
+			return nil, err
+		}
+	}
+	if err := writer.Close(); err != nil {
+		return nil, err
+	}
+
+	r, err := http.NewRequest("POST", endpoint, body)
+	if err != nil {
+		return nil, err
+	}
+	r.Header.Add("Content-Type", writer.FormDataContentType())
+	client := &http.Client{}
+	resp, err := client.Do(r)
+	if err != nil {
+		return nil, err
+	}
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	if err := resp.Body.Close(); err != nil {
+		return nil, err
+	}
+	if err := file.Close(); err != nil {
+		return nil, err
+	}
+	return b, nil
 }
 
 func RequestHTTP(method string, endpoint string, timeOut time.Duration) ([]byte, error) {
@@ -48,10 +71,8 @@ func RequestHTTP(method string, endpoint string, timeOut time.Duration) ([]byte,
 	if err != nil {
 		return nil, err
 	}
-	defer func(Body io.ReadCloser) {
-		if err := Body.Close(); err != nil {
-			return
-		}
-	}(res.Body)
+	if err := res.Body.Close(); err != nil {
+		return nil, err
+	}
 	return body, nil
 }

@@ -70,10 +70,10 @@ func ServerInfo(w http.ResponseWriter, _ *http.Request, db *sqlx.DB) {
 func Upload(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 
 	ip := r.FormValue("ip")
-	// env := r.FormValue("conda_env")
-	// comment := r.FormValue("comment")
+	env := r.FormValue("conda_env")
+	comment := r.FormValue("comment")
 	execCount := r.FormValue("exec_count")
-	// targetFile := r.FormValue("target_file")
+	targetFile := r.FormValue("target_file")
 
 	if num, err := strconv.Atoi(execCount); num <= 0 {
 		http.Error(w, "実行回数が0以下です", http.StatusBadGateway)
@@ -89,11 +89,23 @@ func Upload(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 		return
 	}
 
-	calcServers, err := repository.GetCalcServerPort(db, ip)
+	calcServers, err := repository.GetCalcServer(db, ip)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
-	utils.SendFile(filename, "http://"+ip+":"+calcServers.Port+"/upload")
+	form := map[string]string{
+		"ip":          ip,
+		"conda_env":   env,
+		"comment":     comment,
+		"exec_count":  execCount,
+		"target_file": targetFile,
+	}
+	body, err := utils.SendFile(filename, "http://"+ip+":"+calcServers.Port+"/upload", form)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	log.Println(string(body))
 
 }
