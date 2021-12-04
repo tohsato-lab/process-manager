@@ -15,7 +15,7 @@ import {webSocket} from 'rxjs/webSocket';
 export class HomeComponent implements OnInit, OnDestroy {
 
     public hiddenUploadPage = true;
-    public fileInfos: any = [];
+    public uploadInfos: any = [];
     public processList = [];
     public execEnvs = {};
     public envList: any;
@@ -68,37 +68,30 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     public onAddButton(): void {
         this.hiddenUploadPage = false;
-        this.http.get(`${config.httpScheme}${location.hostname}:${config.port}/upload`).subscribe(
+        this.http.get(`${config.httpScheme}${location.hostname}:${config.port}/conda`).subscribe(
             (data: any) => {
                 console.log(data);
                 this.execEnvs = data;
             }, error => {
                 console.log(error);
+                this.onCloseUpload();
+                alert(error.error)
             }
         )
-        /*
-        this.http.get(`${config.httpScheme}${location.hostname}:${config.port}/env_info`).subscribe(
-            (data: any) => {
-                this.envList = data;
-            }, error => {
-                console.log(error);
-            }
-        );
-         */
     }
 
     public onCloseUpload(): void {
         this.hiddenUploadPage = true;
-        this.fileInfos = [];
+        this.uploadInfos = [];
     }
 
     public onSelectFiles(event): void {
         console.log(event);
         for (const file of [...event.addedFiles]) {
-            this.fileInfos.push({
+            this.uploadInfos.push({
                 file: file,
                 vram: 0.0,
-                env: 'base',
+                env: this.execEnvs[this.getKeys(this.execEnvs)[0]]['Envs'][0],
                 target: 'main.py',
                 exec_count: 1,
                 ip: this.getKeys(this.execEnvs)[0],
@@ -128,10 +121,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     public onUpload(): void {
-        for (const fileInfo of this.fileInfos) {
+        for (const fileInfo of this.uploadInfos) {
             this.upload(fileInfo);
         }
-        this.fileInfos = [];
+        this.onCloseUpload();
     }
 
     private upload(info): void {
@@ -144,9 +137,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         formData.append('comment', info.comment);
         formData.append('target_file', info.target);
         formData.append('exec_count', info.exec_count);
-        this.onCloseUpload();
-        this.http.post(
-            `${config.httpScheme}${location.hostname}:${config.port}/upload`, formData
+        this.http.post(`${config.httpScheme}${info.ip}:${this.execEnvs[info.ip]['Port']}/upload`, formData
         ).subscribe(value => {
             console.log(value);
         }, error => {

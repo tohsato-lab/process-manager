@@ -39,11 +39,8 @@ func main() {
 	r.Methods(http.MethodDelete).Path("/calculator").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		controllers.DeleteServer(w, r, db)
 	})
-	r.Methods(http.MethodGet).Path("/upload").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		controllers.ServerInfo(w, r, db)
-	})
-	r.Methods(http.MethodPost).Path("/upload").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		controllers.Upload(w, r, db)
+	r.Methods(http.MethodGet).Path("/conda").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		controllers.Envs(w, r, db)
 	})
 
 	c := cors.New(cors.Options{

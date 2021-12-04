@@ -55,7 +55,7 @@
       <ngx-dropzone (change)="onSelectFiles($event)" class="upload-drop-zone">
         <ngx-dropzone-label>ここにファイルをドロップしてください</ngx-dropzone-label>
       </ngx-dropzone>
-      <div *ngFor="let info of fileInfos" class="upload-item">
+      <div *ngFor="let info of uploadInfos" class="upload-item">
         <div style="margin: 0 2%;">{{info.file.name}}</div>
         <div>
           <div>
@@ -80,7 +80,7 @@
             <div class="upload-form-text">Conda環境</div>
             <label>
               <select class="upload-input-form" required [(ngModel)]="info['env']">
-                <option *ngFor="let env of execEnvs[info['ip']]">{{env}}</option>
+                <option *ngFor="let env of execEnvs[info['ip']]['Envs']">{{env}}</option>
               </select>
             </label>
           </div>
@@ -92,7 +92,7 @@
           </label>
         </div>
       </div>
-      <div (click)="onUpload()" *ngIf="fileInfos.length != 0" class="upload-button">upload</div>
+      <div (click)="onUpload()" *ngIf="uploadInfos.length != 0" class="upload-button">upload</div>
     </div>
   </div>
 </div>
