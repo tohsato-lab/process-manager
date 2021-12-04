@@ -45,8 +45,7 @@ conda env export | grep -v "^prefix: " > pytorch.yml
 開発用
 ```shell
 docker-compose -f docker-compose.dev.yml up --build
-docker-compose -f docker-compose.dev.yml up --detach --build backend
-docker-compose -f docker-compose.dev.yml up --detach --build conda
+docker-compose -f docker-compose.dev.yml up --detach --build conda backend
 ```
 
 # Author
