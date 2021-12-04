@@ -36,21 +36,19 @@
 
 ## プログラム登録
 - zipファイルを登録
-- サーバリストをbackendへGET
+- conda情報をbackendへGET
   - conda_server_tableからSELECTでipなどを取得
-  - return server list
-- ip一覧からipを選択し、condaへenv一覧をGETする
+  - ipをもとにcondaへenv情報をGET
+  - return conda env + server ip
+- condaへファイルをPUT
   - @
-    - env情報を取得
-    - return env list
-- backendへファイルをPOST
-  - ipをもとにさらにzipをcondaへPOST
     - zipを展開
-    - calc_process_tableへINSERT
-    - return success
-  - プログラムをprocess_tableへ登録
+    - プロセスをcalc_process_tableへ登録
+    - return process id
+- 登録のためbackendへGET
+  - プロセスをbackendのprocess_tableへ登録
   - channel経由でwebsocketにprocess_tableの一覧を流す
-  - プロセス実行
+  - 非同期でプロセス実行
   - return success
 - done
 
