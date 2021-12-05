@@ -22,3 +22,25 @@ func SetProcess(db *sqlx.DB, processID string, processName string, envName strin
 	}
 	return nil
 }
+
+func CanExecProcess(db *sqlx.DB, serverIP string, limit int) ([]string, error) {
+	var numRunning int
+	if err := db.Get(
+		&numRunning, `SELECT COUNT(*) FROM process_table WHERE status='running' AND server_ip=?`, serverIP,
+	); err != nil {
+		return nil, err
+	}
+	if numRunning >= limit {
+		return nil, nil
+	}
+
+	var canExecID []string
+	if err := db.Select(
+		&canExecID, `SELECT id FROM process_table 
+						   WHERE status='ready' AND in_trash = false AND server_ip=?
+		                   ORDER BY upload_date LIMIT ?`, serverIP, limit,
+	); err != nil {
+		return nil, err
+	}
+	return canExecID, nil
+}

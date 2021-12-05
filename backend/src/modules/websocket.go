@@ -7,8 +7,14 @@ import (
 )
 
 var connections []*websocket.Conn
+var Command = make(chan WebsocketCMD)
 
-func sync(connect *websocket.Conn) {
+type WebsocketCMD struct {
+	processID string
+	command   string
+}
+
+func readPump(connect *websocket.Conn) {
 	defer func(c *websocket.Conn) {
 		if c.Close() != nil {
 			return
@@ -25,6 +31,23 @@ func sync(connect *websocket.Conn) {
 	}
 }
 
+func writePump(connect *websocket.Conn) {
+	defer func(c *websocket.Conn) {
+		if c.Close() != nil {
+			return
+		}
+	}(connect)
+	for {
+		select {
+		case cmd := <-Command:
+			if err := connect.WriteJSON(cmd); err != nil {
+				log.Println(err.Error())
+				return
+			}
+		}
+	}
+}
+
 func Connection(ip string, port string) error {
 	u := url.URL{Scheme: "ws", Host: ip + ":" + port, Path: "/connect"}
 	log.Printf("connecting to %s", u.String())
@@ -34,6 +57,7 @@ func Connection(ip string, port string) error {
 		return err
 	}
 	connections = append(connections, connect)
-	go sync(connect)
+	go writePump(connect)
+	// go readPump(connect)
 	return nil
 }

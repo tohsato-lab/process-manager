@@ -2,28 +2,32 @@ package repository
 
 import (
 	"github.com/jmoiron/sqlx"
-
-	"backend/utils"
 )
 
-func GetAllCalcServers(db *sqlx.DB) ([]utils.CalcServers, error) {
-	var calcServers []utils.CalcServers
+type CalcServers struct {
+	IP     string `db:"ip"`
+	Port   string `db:"port"`
+	Status string `db:"status"`
+}
+
+func GetAllCalcServers(db *sqlx.DB) ([]CalcServers, error) {
+	var calcServers []CalcServers
 	if err := db.Select(&calcServers, `SELECT * FROM calc_server_table`); err != nil {
 		return nil, err
 	}
 	return calcServers, nil
 }
 
-func GetActiveCalcServers(db *sqlx.DB) ([]utils.CalcServers, error) {
-	var calcServers []utils.CalcServers
+func GetActiveCalcServers(db *sqlx.DB) ([]CalcServers, error) {
+	var calcServers []CalcServers
 	if err := db.Select(&calcServers, `SELECT * FROM calc_server_table WHERE status='active'`); err != nil {
 		return nil, err
 	}
 	return calcServers, nil
 }
 
-func GetCalcServer(db *sqlx.DB, ip string) (utils.CalcServers, error) {
-	var calcServer utils.CalcServers
+func GetCalcServer(db *sqlx.DB, ip string) (CalcServers, error) {
+	var calcServer CalcServers
 	if err := db.Get(&calcServer, "SELECT * FROM calc_server_table WHERE ip=?", ip); err != nil {
 		return calcServer, err
 	}

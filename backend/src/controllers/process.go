@@ -1,11 +1,13 @@
 package controllers
 
 import (
-	"backend/repository"
-	"backend/utils"
 	"encoding/json"
 	"github.com/jmoiron/sqlx"
 	"net/http"
+
+	"backend/modules"
+	"backend/repository"
+	"backend/utils"
 )
 
 func EntryProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
@@ -26,6 +28,8 @@ func EntryProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 			return
 		}
 	}
+
+	go modules.UpdateProcess(db)
 	utils.RespondByte(w, http.StatusOK, []byte(`{"status":"ok"}`))
 
 }

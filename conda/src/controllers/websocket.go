@@ -19,6 +19,40 @@ var upgrader = websocket.Upgrader{
 
 var disconnect = make(chan bool)
 
+func readPump(connect *websocket.Conn) {
+	defer func(c *websocket.Conn) {
+		if c.Close() != nil {
+			return
+		}
+	}(connect)
+	for {
+		_, message, err := connect.ReadMessage()
+		if err != nil {
+			log.Println("read:", err)
+			log.Println("disconnect")
+			return
+		}
+		log.Printf("recv: %s", message)
+	}
+}
+
+func writePump(connect *websocket.Conn) {
+	defer func(c *websocket.Conn) {
+		if c.Close() != nil {
+			return
+		}
+	}(connect)
+	for {
+		select {
+		case cmd := <-Command:
+			if err := connect.WriteJSON(cmd); err != nil {
+				log.Println(err.Error())
+				return
+			}
+		}
+	}
+}
+
 func serve(connect *websocket.Conn) error {
 	if err := connect.WriteMessage(websocket.TextMessage, []byte("hi.")); err != nil {
 		log.Println(err)
@@ -26,28 +60,26 @@ func serve(connect *websocket.Conn) error {
 	}
 	ticker := time.NewTicker(1 * time.Second)
 	defer func(connect *websocket.Conn) {
+		log.Println("disconnect1")
 		ticker.Stop()
 		if err := connect.Close(); err != nil {
 			return
 		}
 	}(connect)
-	for i := 0; i < 5; i++ {
+	for {
 		select {
 		case <-ticker.C:
-			if err := connect.WriteMessage(websocket.TextMessage, []byte(time.Now().String())); err != nil {
-				log.Println(err)
-				return err
-			}
+			/*
+				if err := connect.WriteMessage(websocket.TextMessage, []byte(time.Now().String())); err != nil {
+						log.Println(err)
+						return err
+				}
+			*/
 		case <-disconnect:
-			ticker.Stop()
-			if err := connect.Close(); err != nil {
-				log.Println(err)
-				return err
-			}
+			log.Println("disconnect2")
 			return nil
 		}
 	}
-	return nil
 }
 
 func Connect(w http.ResponseWriter, r *http.Request) {
@@ -56,10 +88,7 @@ func Connect(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
-	if err := serve(connect); err != nil {
-		http.Error(w, err.Error(), http.StatusBadGateway)
-		return
-	}
+	go serve(connect)
 }
 
 func Disconnect(w http.ResponseWriter, _ *http.Request) {
