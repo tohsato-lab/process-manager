@@ -8,7 +8,7 @@ import (
 
 func GetAllCalcServers(db *sqlx.DB) ([]utils.CalcServers, error) {
 	var calcServers []utils.CalcServers
-	if err := db.Select(&calcServers, `SELECT * FROM servers`); err != nil {
+	if err := db.Select(&calcServers, `SELECT * FROM calc_server_table`); err != nil {
 		return nil, err
 	}
 	return calcServers, nil
@@ -16,7 +16,7 @@ func GetAllCalcServers(db *sqlx.DB) ([]utils.CalcServers, error) {
 
 func GetActiveCalcServers(db *sqlx.DB) ([]utils.CalcServers, error) {
 	var calcServers []utils.CalcServers
-	if err := db.Select(&calcServers, `SELECT * FROM servers WHERE status='active'`); err != nil {
+	if err := db.Select(&calcServers, `SELECT * FROM calc_server_table WHERE status='active'`); err != nil {
 		return nil, err
 	}
 	return calcServers, nil
@@ -24,14 +24,14 @@ func GetActiveCalcServers(db *sqlx.DB) ([]utils.CalcServers, error) {
 
 func GetCalcServer(db *sqlx.DB, ip string) (utils.CalcServers, error) {
 	var calcServer utils.CalcServers
-	if err := db.Get(&calcServer, "SELECT * FROM servers WHERE ip=?", ip); err != nil {
+	if err := db.Get(&calcServer, "SELECT * FROM calc_server_table WHERE ip=?", ip); err != nil {
 		return calcServer, err
 	}
 	return calcServer, nil
 }
 
 func SetCalcServer(db *sqlx.DB, ip string, port string) error {
-	_, err := db.NamedExec(`INSERT INTO servers (ip, port, status) VALUES (:ip,:port,:status)`,
+	_, err := db.NamedExec(`INSERT INTO calc_server_table (ip, port, status) VALUES (:ip,:port,:status)`,
 		map[string]interface{}{
 			"ip":     ip,
 			"port":   port,
@@ -45,7 +45,7 @@ func SetCalcServer(db *sqlx.DB, ip string, port string) error {
 }
 
 func UpdateCalcServerStatus(db *sqlx.DB, ip string, status string) error {
-	_, err := db.NamedExec(`UPDATE servers SET status=:status WHERE ip=:ip`,
+	_, err := db.NamedExec(`UPDATE calc_server_table SET status=:status WHERE ip=:ip`,
 		map[string]interface{}{"ip": ip, "status": status},
 	)
 	if err != nil {
@@ -55,7 +55,7 @@ func UpdateCalcServerStatus(db *sqlx.DB, ip string, status string) error {
 }
 
 func DeleteCalcServer(db *sqlx.DB, ip string) error {
-	_, err := db.NamedExec(`DELETE FROM servers WHERE ip=:ip`, map[string]interface{}{"ip": ip})
+	_, err := db.NamedExec(`DELETE FROM calc_server_table WHERE ip=:ip`, map[string]interface{}{"ip": ip})
 	if err != nil {
 		return err
 	}

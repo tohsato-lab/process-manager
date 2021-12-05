@@ -131,15 +131,14 @@ export class HomeComponent implements OnInit, OnDestroy {
         console.log('upload');
         const formData = new FormData();
         formData.append('file', info.file, info.file.name);
-        formData.append('ip', info.ip);
-        formData.append('vram', info.vram);
         formData.append('conda_env', info.env);
         formData.append('comment', info.comment);
         formData.append('target_file', info.target);
         formData.append('exec_count', info.exec_count);
-        this.http.post(`${config.httpScheme}${info.ip}:${this.execEnvs[info.ip]['Port']}/upload`, formData
+        this.http.put(`${config.httpScheme}${info.ip}:${this.execEnvs[info.ip]['Port']}/upload`, formData
         ).subscribe(value => {
             console.log(value);
+
         }, error => {
             alert(error.error);
         });

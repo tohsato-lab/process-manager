@@ -42,6 +42,9 @@ func main() {
 	r.Methods(http.MethodGet).Path("/conda").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		controllers.Envs(w, r, db)
 	})
+	r.Methods(http.MethodPut).Path("/process").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		controllers.EntryProcess(w, r, db)
+	})
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
@@ -49,6 +52,7 @@ func main() {
 			http.MethodGet,
 			http.MethodPost,
 			http.MethodDelete,
+			http.MethodPut,
 			http.MethodOptions,
 		},
 	})
