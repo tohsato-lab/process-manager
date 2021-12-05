@@ -132,13 +132,20 @@ export class HomeComponent implements OnInit, OnDestroy {
         const formData = new FormData();
         formData.append('file', info.file, info.file.name);
         formData.append('conda_env', info.env);
-        formData.append('comment', info.comment);
         formData.append('target_file', info.target);
         formData.append('exec_count', info.exec_count);
         this.http.put(`${config.httpScheme}${info.ip}:${this.execEnvs[info.ip]['Port']}/upload`, formData
-        ).subscribe(value => {
-            console.log(value);
-
+        ).subscribe((processIDs: Array<string>) => {
+            const formData = new FormData();
+            formData.append('process_ids', JSON.stringify(processIDs));
+            formData.append('process_name', String(info.file.name).split('.')[0]);
+            formData.append('conda_env', info.env);
+            formData.append('server_ip', info.ip);
+            formData.append('comment', info.comment);
+            this.http.put(`${config.httpScheme}${location.hostname}:${config.port}/process`, formData
+            ).subscribe(value => {
+                console.log(value);
+            })
         }, error => {
             alert(error.error);
         });

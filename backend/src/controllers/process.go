@@ -1,14 +1,31 @@
 package controllers
 
 import (
+	"backend/repository"
+	"backend/utils"
+	"encoding/json"
 	"github.com/jmoiron/sqlx"
 	"net/http"
 )
 
 func EntryProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 
-	// env := r.FormValue("conda_env")
-	// comment := r.FormValue("comment")
-	// execCount := r.FormValue("exec_count")
+	processName := r.FormValue("process_name")
+	envName := r.FormValue("conda_env")
+	serverIP := r.FormValue("server_ip")
+	comment := r.FormValue("comment")
+
+	var processIDs []string
+	if err := json.Unmarshal([]byte(r.FormValue("process_ids")), &processIDs); err != nil {
+		http.Error(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	for _, processID := range processIDs {
+		if err := repository.SetProcess(db, processID, processName, envName, serverIP, comment); err != nil {
+			http.Error(w, err.Error(), http.StatusBadGateway)
+			return
+		}
+	}
+	utils.RespondByte(w, http.StatusOK, []byte(`{"status":"ok"}`))
 
 }

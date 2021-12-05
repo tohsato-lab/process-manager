@@ -41,6 +41,15 @@ func FileUpload(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	envName := r.FormValue("conda_env")
 	execCount, _ := strconv.Atoi(r.FormValue("exec_count"))
 	targetFile := r.FormValue("target_file")
+	execCount, err := strconv.Atoi(r.FormValue("exec_count"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	if execCount < 1 {
+		http.Error(w, "実行回数が1未満です", http.StatusBadGateway)
+		return
+	}
 
 	var processIDs []string
 
@@ -62,7 +71,8 @@ func FileUpload(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 			http.Error(w, err.Error(), http.StatusBadGateway)
 			return
 		}
-		if _, err := exec.Command("sh", "-c", "unzip "+targetDIR+filename+" -d "+targetDIR).Output(); err != nil {
+		cmd := "unzip " + targetDIR + filename + " -d " + targetDIR
+		if _, err := exec.Command("sh", "-c", cmd).Output(); err != nil {
 			http.Error(w, err.Error(), http.StatusBadGateway)
 			return
 		}
