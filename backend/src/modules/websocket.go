@@ -4,47 +4,25 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/url"
+	"time"
 )
 
-var connections []*websocket.Conn
-var Command = make(chan WebsocketCMD)
+var connections map[string]*websocket.Conn
 
-type WebsocketCMD struct {
-	processID string
-	command   string
+type Command struct {
+	ProcessID string
+	Command   string
 }
 
-func readPump(connect *websocket.Conn) {
-	defer func(c *websocket.Conn) {
-		if c.Close() != nil {
-			return
-		}
-	}(connect)
+func readPump(ip string) {
 	for {
-		_, message, err := connect.ReadMessage()
+		_, message, err := connections[ip].ReadMessage()
 		if err != nil {
 			log.Println("read:", err)
 			log.Println("disconnect")
 			return
 		}
 		log.Printf("recv: %s", message)
-	}
-}
-
-func writePump(connect *websocket.Conn) {
-	defer func(c *websocket.Conn) {
-		if c.Close() != nil {
-			return
-		}
-	}(connect)
-	for {
-		select {
-		case cmd := <-Command:
-			if err := connect.WriteJSON(cmd); err != nil {
-				log.Println(err.Error())
-				return
-			}
-		}
 	}
 }
 
@@ -56,8 +34,28 @@ func Connection(ip string, port string) error {
 		log.Println(err)
 		return err
 	}
-	connections = append(connections, connect)
-	go writePump(connect)
-	// go readPump(connect)
+	if connections == nil {
+		connections = map[string]*websocket.Conn{}
+	}
+	connections[ip] = connect
+	go readPump(ip)
+	return nil
+}
+
+func Disconnection(ip string) error {
+	if connections[ip] == nil {
+		return nil
+	}
+	if err := connections[ip].WriteMessage(websocket.TextMessage, []byte("hi~~~~~")); err != nil {
+		return err
+	}
+	time.Sleep(3 * time.Second)
+	if err := connections[ip].WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
+		return err
+	}
+	if err := connections[ip].Close(); err != nil {
+		return err
+	}
+	delete(connections, ip)
 	return nil
 }

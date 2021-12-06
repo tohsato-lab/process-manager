@@ -1,15 +1,13 @@
 package controllers
 
 import (
+	"backend/modules"
+	"backend/repository"
+	"backend/utils"
 	"encoding/json"
 	"github.com/jmoiron/sqlx"
 	"log"
 	"net/http"
-	"time"
-
-	"backend/modules"
-	"backend/repository"
-	"backend/utils"
 )
 
 func JoinServer(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
@@ -34,12 +32,11 @@ func JoinServer(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 				return
 			}
 		} else {
-			response, err := utils.RequestHTTP("DELETE", "http://"+ip+":"+port+"/connect", 5*time.Second)
-			if err != nil {
+			log.Println("try websocket disconnect")
+			if err := modules.Disconnection(ip); err != nil {
 				http.Error(w, err.Error(), http.StatusBadGateway)
 				return
 			}
-			log.Println(string(response))
 		}
 		if err := repository.UpdateCalcServerStatus(db, ip, status); err != nil {
 			http.Error(w, err.Error(), http.StatusBadGateway)

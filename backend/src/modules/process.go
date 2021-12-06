@@ -32,8 +32,4 @@ func UpdateProcess(db *sqlx.DB) {
 
 func ExecProcess(db *sqlx.DB, processID string) {
 	log.Println("ExecProcess")
-	Command <- WebsocketCMD{
-		processID: processID,
-		command:   "running",
-	}
 }
