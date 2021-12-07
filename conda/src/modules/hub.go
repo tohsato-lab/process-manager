@@ -27,7 +27,7 @@ func (h *Hub) Run() {
 			if _, ok := h.clients[client]; ok {
 				log.Println("disconnected")
 				delete(h.clients, client)
-				close(client.Send)
+				close(client.Pipe)
 			}
 		}
 	}

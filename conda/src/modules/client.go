@@ -1,27 +1,30 @@
 package modules
 
 import (
+	"encoding/json"
 	"github.com/gorilla/websocket"
+	"github.com/jmoiron/sqlx"
 	"log"
 	"time"
+
+	"conda/repository"
 )
 
 const (
-	writeWait      = 10 * time.Second
-	pongWait       = 60 * time.Second
-	pingPeriod     = (pongWait * 9) / 10
-	maxMessageSize = 512
+	writeWait  = 10 * time.Second
+	pongWait   = 60 * time.Second
+	pingPeriod = (pongWait * 9) / 10
 )
 
 type Client struct {
 	Hub  *Hub
+	DB   *sqlx.DB
 	Conn *websocket.Conn
-	Send chan []byte
+	Pipe chan string
 }
 
 func (c *Client) ReadPump() {
 	defer func() {
-		log.Println("disconnect")
 		c.Hub.unregister <- c
 		if err := c.Conn.Close(); err != nil {
 			return
@@ -36,14 +39,39 @@ func (c *Client) ReadPump() {
 			break
 		}
 		log.Println(string(message))
-		c.Send <- message
+
+		command := map[string]string{}
+		if err := json.Unmarshal(message, &command); err != nil {
+			log.Println(err)
+			continue
+		}
+		process, err := repository.GetProcess(c.DB, command["ID"])
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		switch command["command"] {
+		case "running":
+			go func() {
+				status := Execute(c.DB, process.ID, process.TargetFile, process.EnvName)
+				if err := repository.UpdateProcessStatus(c.DB, process.ID, status); err != nil {
+					log.Println(err)
+					return
+				}
+				c.Pipe <- process.ID
+			}()
+		case "kill":
+		case "delete":
+
+		}
+		c.Pipe <- process.ID
 	}
 }
 
 func (c *Client) WritePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
-		log.Println("destroy Write Pump")
 		ticker.Stop()
 		if err := c.Conn.Close(); err != nil {
 			return
@@ -54,46 +82,37 @@ func (c *Client) WritePump() {
 		return
 	}
 	for {
-		log.Println("wait")
 		select {
-		case message, ok := <-c.Send:
-			if err := c.Conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
-				log.Println(err)
-				return
-			}
+		case processID, ok := <-c.Pipe:
 			if !ok {
-				if err := c.Conn.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
-					log.Println(err)
-					return
-				}
-				return
-			}
-			w, err := c.Conn.NextWriter(websocket.TextMessage)
-			if err != nil {
-				return
-			}
-			if _, err := w.Write(message); err != nil {
+				err := c.Conn.WriteMessage(websocket.CloseMessage, []byte{})
 				log.Println(err)
 				return
 			}
-			if err := w.Close(); err != nil {
+			process, err := repository.GetProcess(c.DB, processID)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			contents, err := json.Marshal(map[string]string{"ID": processID, "status": process.Status})
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			_ = c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
+			if err := c.Conn.WriteMessage(websocket.TextMessage, contents); err != nil {
+				log.Println(err)
 				return
 			}
 
 		case <-ticker.C:
-			log.Println("ping")
-			if err := c.Conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
-				log.Println(err)
-				return
-			}
+			_ = c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				return
 			}
+
 		case <-time.After(2 * time.Second):
-			if err := c.Conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
-				log.Println(err)
-				return
-			}
+			_ = c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := c.Conn.WriteMessage(websocket.TextMessage, []byte("hi?")); err != nil {
 				log.Println(err)
 				return

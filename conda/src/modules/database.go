@@ -172,8 +172,8 @@ func StartProcess(db *sql.DB, id string, targetFile string, envName string) {
 	}
 	go func() {
 		// TODO: OS判定？
-		status := Execute(db, id, targetFile, envName)
-		CompleteProcess(db, id, status)
+		// status := Execute(db, id, targetFile, envName)
+		// CompleteProcess(db, id, status)
 	}()
 	UpdateAllProcess(db)
 }

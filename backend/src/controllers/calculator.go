@@ -6,7 +6,6 @@ import (
 	"backend/utils"
 	"encoding/json"
 	"github.com/jmoiron/sqlx"
-	"log"
 	"net/http"
 )
 
@@ -14,7 +13,7 @@ func JoinServer(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	if r.FormValue("mode") == "join" {
 		ip := r.FormValue("ip")
 		port := r.FormValue("port")
-		if err := modules.Connection(ip, port); err != nil {
+		if err := modules.Connection(ip, port, nil); err != nil {
 			http.Error(w, err.Error(), http.StatusBadGateway)
 			return
 		}
@@ -27,12 +26,11 @@ func JoinServer(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 		status := r.FormValue("mode")
 		port := r.FormValue("port")
 		if status == "active" {
-			if err := modules.Connection(ip, port); err != nil {
+			if err := modules.Connection(ip, port, db); err != nil {
 				http.Error(w, err.Error(), http.StatusBadGateway)
 				return
 			}
 		} else {
-			log.Println("try websocket disconnect")
 			if err := modules.Disconnection(ip); err != nil {
 				http.Error(w, err.Error(), http.StatusBadGateway)
 				return

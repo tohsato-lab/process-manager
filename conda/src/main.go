@@ -38,7 +38,7 @@ func main() {
 		controllers.Health(w, r)
 	})
 	r.Methods(http.MethodGet).Path("/connect").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		controllers.Connect(w, r, hub)
+		controllers.Connect(w, r, hub, db)
 	})
 	r.Methods(http.MethodGet).Path("/conda").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		controllers.EnvInfo(w, r)

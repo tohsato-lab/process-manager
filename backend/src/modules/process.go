@@ -23,13 +23,14 @@ func UpdateProcess(db *sqlx.DB) {
 			return
 		}
 		for _, processID := range execIDs {
-			log.Println(processID)
-			ExecProcess(db, processID)
+			ExecProcess(processID, server.IP)
 		}
 	}
-
 }
 
-func ExecProcess(db *sqlx.DB, processID string) {
-	log.Println("ExecProcess")
+func ExecProcess(processID string, serverIP string) {
+	if err := connections[serverIP].WriteJSON(map[string]string{"ID": processID, "command": "running"}); err != nil {
+		log.Println(err)
+		return
+	}
 }

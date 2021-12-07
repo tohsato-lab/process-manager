@@ -145,6 +145,8 @@ export class HomeComponent implements OnInit, OnDestroy {
             this.http.put(`${config.httpScheme}${location.hostname}:${config.port}/process`, formData
             ).subscribe(value => {
                 console.log(value);
+            },error => {
+                alert(error.error);
             })
         }, error => {
             alert(error.error);
