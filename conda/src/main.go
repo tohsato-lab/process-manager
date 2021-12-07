@@ -1,7 +1,6 @@
 package main
 
 import (
-	"conda/modules"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
@@ -30,15 +29,12 @@ func main() {
 		}
 	}(db)
 
-	hub := modules.NewHub()
-	go hub.Run()
-
 	r := mux.NewRouter()
 	r.Methods(http.MethodGet).Path("/health").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		controllers.Health(w, r)
 	})
 	r.Methods(http.MethodGet).Path("/connect").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		controllers.Connect(w, r, hub, db)
+		controllers.Connect(w, r, db)
 	})
 	r.Methods(http.MethodGet).Path("/conda").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		controllers.EnvInfo(w, r)

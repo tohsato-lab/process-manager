@@ -13,14 +13,14 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func Connect(w http.ResponseWriter, r *http.Request, hub *modules.Hub, db *sqlx.DB) {
+func Connect(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
-	client := &modules.Client{Hub: hub, DB: db, Conn: conn, Pipe: make(chan string, 256)}
-	client.Hub.Register <- client
+	client := &modules.Client{DB: db, Conn: conn, Pipe: make(chan string, 256)}
+	modules.Clients[client] = true
 	go client.ReadPump()
 	go client.WritePump()
 }

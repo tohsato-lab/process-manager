@@ -17,19 +17,14 @@ const (
 )
 
 type Client struct {
-	Hub  *Hub
 	DB   *sqlx.DB
 	Conn *websocket.Conn
 	Pipe chan string
 }
 
+var Clients = make(map[*Client]bool)
+
 func (c *Client) ReadPump() {
-	defer func() {
-		c.Hub.unregister <- c
-		if err := c.Conn.Close(); err != nil {
-			return
-		}
-	}()
 	for {
 		_, message, err := c.Conn.ReadMessage()
 		if err != nil {
@@ -50,6 +45,7 @@ func (c *Client) ReadPump() {
 			log.Println(err)
 			return
 		}
+		log.Println(process)
 
 		switch command["command"] {
 		case "running":
@@ -74,8 +70,12 @@ func (c *Client) WritePump() {
 	defer func() {
 		ticker.Stop()
 		if err := c.Conn.Close(); err != nil {
+			log.Println(err)
 			return
 		}
+		delete(Clients, c)
+		close(c.Pipe)
+		log.Println("destroyed socket")
 	}()
 	if err := c.Conn.WriteMessage(websocket.TextMessage, []byte("hi.")); err != nil {
 		log.Println(err)
