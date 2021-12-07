@@ -59,7 +59,6 @@ func (c *Client) ReadPump() {
 			}()
 		case "kill":
 		case "delete":
-
 		}
 		c.Pipe <- process.ID
 	}

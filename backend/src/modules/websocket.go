@@ -8,7 +8,7 @@ import (
 	"net/url"
 )
 
-var connections map[string]*websocket.Conn
+var connections = make(map[string]*websocket.Conn)
 
 func readPump(ip string, db *sqlx.DB) {
 	for {
@@ -30,9 +30,6 @@ func Connection(ip string, port string, db *sqlx.DB) error {
 	if err != nil {
 		log.Println(err)
 		return err
-	}
-	if connections == nil {
-		connections = map[string]*websocket.Conn{}
 	}
 	connections[ip] = connect
 	go readPump(ip, db)

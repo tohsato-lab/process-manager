@@ -1,0 +1,60 @@
+package modules
+
+import (
+	"encoding/json"
+	"github.com/gorilla/websocket"
+	"github.com/jmoiron/sqlx"
+	"log"
+	"time"
+
+	"backend/repository"
+)
+
+const (
+	writeWait = 10 * time.Second
+)
+
+type Client struct {
+	Hub  *Hub
+	DB   *sqlx.DB
+	Conn *websocket.Conn
+	Send chan []byte
+}
+
+func (c *Client) WritePump() {
+	defer func() {
+		c.Hub.Unregister <- c
+		if err := c.Conn.Close(); err != nil {
+			return
+		}
+	}()
+	activeProcess, err := repository.GetActiveProcess(c.DB)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	contents, err := json.Marshal(activeProcess)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	if err := c.Conn.WriteMessage(websocket.TextMessage, contents); err != nil {
+		log.Println(err)
+		return
+	}
+	for {
+		select {
+		case message, ok := <-c.Send:
+			if !ok {
+				err := c.Conn.WriteMessage(websocket.CloseMessage, []byte{})
+				log.Println(err)
+				return
+			}
+			_ = c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
+			if err := c.Conn.WriteMessage(websocket.TextMessage, message); err != nil {
+				log.Println(err)
+				return
+			}
+		}
+	}
+}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/modules"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
@@ -29,6 +30,8 @@ func main() {
 		}
 	}(db)
 
+	hub := modules.NewHub()
+
 	r := mux.NewRouter()
 	r.Methods(http.MethodGet).Path("/calculator").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		controllers.ServerStatus(w, r, db)
@@ -44,6 +47,9 @@ func main() {
 	})
 	r.Methods(http.MethodPut).Path("/process").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		controllers.EntryProcess(w, r, db)
+	})
+	r.Methods(http.MethodGet).Path("/connect").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		controllers.Connect(w, r, hub, db)
 	})
 
 	c := cors.New(cors.Options{
