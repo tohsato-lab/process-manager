@@ -13,7 +13,7 @@ func JoinServer(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	if r.FormValue("mode") == "join" {
 		ip := r.FormValue("ip")
 		port := r.FormValue("port")
-		if err := modules.Connection(ip, port, nil); err != nil {
+		if err := modules.Connection(ip, port, db); err != nil {
 			http.Error(w, err.Error(), http.StatusBadGateway)
 			return
 		}

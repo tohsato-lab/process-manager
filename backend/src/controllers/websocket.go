@@ -3,7 +3,6 @@ package controllers
 import (
 	"github.com/gorilla/websocket"
 	"github.com/jmoiron/sqlx"
-	"log"
 	"net/http"
 
 	"backend/modules"
@@ -19,7 +18,6 @@ var upgrader = websocket.Upgrader{
 
 func Connect(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	conn, err := upgrader.Upgrade(w, r, nil)
-	log.Println(err)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
