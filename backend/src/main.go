@@ -2,6 +2,7 @@ package main
 
 import (
 	"backend/modules"
+	"backend/repository"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
@@ -19,6 +20,21 @@ const (
 	DataSourceName = "docker:docker@tcp(mysql_host:3306)/process_manager_db?parseTime=true"
 )
 
+func initDB(db *sqlx.DB) {
+	servers, err := repository.GetActiveCalcServers(db)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	for _, server := range servers {
+		err := repository.UpdateCalcServerStatus(db, server.IP, "stop")
+		if err != nil {
+			log.Println(err)
+			return
+		}
+	}
+}
+
 func main() {
 	db, err := sqlx.Open(DriverName, DataSourceName)
 	if err != nil {
@@ -30,7 +46,8 @@ func main() {
 		}
 	}(db)
 
-	hub := modules.NewHub()
+	initDB(db)
+	modules.NewHub()
 
 	r := mux.NewRouter()
 	r.Methods(http.MethodGet).Path("/calculator").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -49,7 +66,7 @@ func main() {
 		controllers.EntryProcess(w, r, db)
 	})
 	r.Methods(http.MethodGet).Path("/connect").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		controllers.Connect(w, r, hub, db)
+		controllers.Connect(w, r, db)
 	})
 
 	c := cors.New(cors.Options{

@@ -1,11 +1,13 @@
 package modules
 
 import (
-	"backend/repository"
+	"encoding/json"
 	"github.com/gorilla/websocket"
 	"github.com/jmoiron/sqlx"
 	"log"
 	"net/url"
+
+	"backend/repository"
 )
 
 var connections = make(map[string]*websocket.Conn)
@@ -20,6 +22,29 @@ func readPump(ip string, db *sqlx.DB) {
 			break
 		}
 		log.Printf("recv: %s", message)
+		var contents map[string]string
+		if err := json.Unmarshal(message, &contents); err != nil {
+			log.Println(err)
+			return
+		}
+		if err := repository.UpdateProcessStatus(db, contents["ID"], contents["status"]); err != nil {
+			log.Println(err)
+			return
+		}
+		switch contents["status"] {
+		case "ready":
+		case "running":
+			if err := repository.SetStartDate(db, contents["ID"]); err != nil {
+				log.Println(err)
+				return
+			}
+		default:
+			if err := repository.SetCompleteDate(db, contents["ID"]); err != nil {
+				log.Println(err)
+				return
+			}
+		}
+		go UpdateProcess(db)
 	}
 }
 

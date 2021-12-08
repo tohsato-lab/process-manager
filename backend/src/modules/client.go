@@ -15,7 +15,6 @@ const (
 )
 
 type Client struct {
-	Hub  *Hub
 	DB   *sqlx.DB
 	Conn *websocket.Conn
 	Send chan []byte
@@ -23,7 +22,7 @@ type Client struct {
 
 func (c *Client) WritePump() {
 	defer func() {
-		c.Hub.Unregister <- c
+		SocketCore.Unregister <- c
 		if err := c.Conn.Close(); err != nil {
 			return
 		}

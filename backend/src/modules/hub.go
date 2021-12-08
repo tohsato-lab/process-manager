@@ -20,15 +20,16 @@ type Hub struct {
 	Unregister chan *Client
 }
 
-func NewHub() *Hub {
-	hub := &Hub{
+var SocketCore *Hub
+
+func NewHub() {
+	SocketCore = &Hub{
 		Broadcast:  make(chan []byte),
 		Register:   make(chan *Client),
 		Unregister: make(chan *Client),
 		Clients:    make(map[*Client]bool),
 	}
-	go hub.run()
-	return hub
+	go SocketCore.run()
 }
 
 func (h *Hub) run() {

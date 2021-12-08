@@ -97,3 +97,35 @@ func CanExecProcess(db *sqlx.DB, serverIP string, limit int) ([]string, error) {
 	}
 	return canExecID, nil
 }
+
+func UpdateProcessStatus(db *sqlx.DB, processID string, status string) error {
+	_, err := db.NamedExec(`UPDATE process_table SET status=:status WHERE id=:id`,
+		map[string]interface{}{"id": processID, "status": status},
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func SetStartDate(db *sqlx.DB, processID string) error {
+	_, err := db.NamedExec(
+		`UPDATE process_table SET start_date=:start_date WHERE id=:id AND start_date IS NULL`,
+		map[string]interface{}{"id": processID, "start_date": time.Now()},
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func SetCompleteDate(db *sqlx.DB, processID string) error {
+	_, err := db.NamedExec(
+		`UPDATE process_table SET complete_date=:complete_date WHERE id=:id AND complete_date IS NULL`,
+		map[string]interface{}{"id": processID, "complete_date": time.Now()},
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}

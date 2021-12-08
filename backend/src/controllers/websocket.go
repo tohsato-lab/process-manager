@@ -17,14 +17,14 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func Connect(w http.ResponseWriter, r *http.Request, hub *modules.Hub, db *sqlx.DB) {
+func Connect(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	log.Println(err)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
-	client := &modules.Client{Hub: hub, DB: db, Conn: conn, Send: make(chan []byte, 256)}
-	hub.Register <- client
+	client := &modules.Client{DB: db, Conn: conn, Send: make(chan []byte, 256)}
+	modules.SocketCore.Register <- client
 	go client.WritePump()
 }

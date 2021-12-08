@@ -46,15 +46,22 @@ func (c *Client) ReadPump() {
 			return
 		}
 		log.Println(process)
+		if err := repository.UpdateProcessStatus(c.DB, command["ID"], command["status"]); err != nil {
+			log.Println(err)
+			return
+		}
 
-		switch command["command"] {
+		switch command["status"] {
 		case "running":
 			go func() {
+				log.Println("exec start")
 				status := Execute(c.DB, process.ID, process.TargetFile, process.EnvName)
-				if err := repository.UpdateProcessStatus(c.DB, process.ID, status); err != nil {
+				if err := repository.UpdateProcessStatus(c.DB, command["ID"], status); err != nil {
 					log.Println(err)
 					return
 				}
+				log.Println("exec done")
+				log.Println(status)
 				c.Pipe <- process.ID
 			}()
 		case "kill":
@@ -76,10 +83,12 @@ func (c *Client) WritePump() {
 		close(c.Pipe)
 		log.Println("destroyed socket")
 	}()
-	if err := c.Conn.WriteMessage(websocket.TextMessage, []byte("hi.")); err != nil {
-		log.Println(err)
-		return
-	}
+	/*
+		if err := c.Conn.WriteMessage(websocket.TextMessage, []byte("hi.")); err != nil {
+				log.Println(err)
+				return
+			}
+	*/
 	for {
 		select {
 		case processID, ok := <-c.Pipe:
@@ -110,12 +119,15 @@ func (c *Client) WritePump() {
 				return
 			}
 
-		case <-time.After(2 * time.Second):
-			_ = c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if err := c.Conn.WriteMessage(websocket.TextMessage, []byte("hi?")); err != nil {
-				log.Println(err)
-				return
-			}
+			/*
+				case <-time.After(2 * time.Second):
+						_ = c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
+						if err := c.Conn.WriteMessage(websocket.TextMessage, []byte("hi?")); err != nil {
+							log.Println(err)
+							return
+						}
+					}
+			*/
 		}
 	}
 }

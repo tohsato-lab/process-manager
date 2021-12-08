@@ -56,46 +56,4 @@ func main() {
 
 	log.Println("conda start")
 	log.Fatal(http.ListenAndServe(":5984", c.Handler(r)))
-	/*
-		http.HandleFunc("/connect", func(w http.ResponseWriter, r *http.Request) {
-				api.Connect(w, r, db)
-			})
-
-			http.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
-				api.UploadHandler(w, r, db)
-			})
-			http.HandleFunc("/kill", func(w http.ResponseWriter, r *http.Request) {
-				api.KillHandler(w, r, db)
-			})
-			http.HandleFunc("/delete", func(w http.ResponseWriter, r *http.Request) {
-				api.DeleteHandler(w, r, db)
-			})
-			http.HandleFunc("/trash", func(w http.ResponseWriter, r *http.Request) {
-				api.TrashHandler(w, r, db)
-			})
-			http.HandleFunc("/env_info", func(w http.ResponseWriter, r *http.Request) {
-				api.EnvInfoHandler(w, r)
-			})
-			http.HandleFunc("/host_status", func(w http.ResponseWriter, r *http.Request) {
-				api.HostStatus(w, r)
-			})
-			http.HandleFunc("/process_status", func(w http.ResponseWriter, r *http.Request) {
-				api.ProcessStatus(w, r, db)
-			})
-			http.HandleFunc("/programs/", func(w http.ResponseWriter, r *http.Request) {
-				api.Explorer(w, r, db)
-			})
-			go api.ProcessStatusKernel()
-
-			// サーバー
-			http.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
-				api.Servers(w, r, db)
-			})
-			http.HandleFunc("/exec_once", func(w http.ResponseWriter, r *http.Request) {
-				api.ExecOnce(w, r, db)
-			})
-
-			log.Println("conda start")
-			log.Fatal(http.ListenAndServe(":5984", nil))
-	*/
 }
