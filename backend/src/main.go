@@ -65,6 +65,9 @@ func main() {
 	r.Methods(http.MethodPut).Path("/process").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		controllers.EntryProcess(w, r, db)
 	})
+	r.Methods(http.MethodGet).Path("/kill").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		controllers.KillProcess(w, r, db)
+	})
 	r.Methods(http.MethodGet).Path("/connect").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		controllers.Connect(w, r, db)
 	})

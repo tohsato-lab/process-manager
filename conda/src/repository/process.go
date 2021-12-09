@@ -1,21 +1,21 @@
 package repository
 
 import (
+	"database/sql"
 	"github.com/jmoiron/sqlx"
 )
 
 type Process struct {
-	ID         string `db:"id"`
-	TargetFile string `db:"target_file"`
-	EnvName    string `db:"env_name"`
-	Status     string `db:"status"`
+	ID         string        `db:"id"`
+	TargetFile string        `db:"target_file"`
+	EnvName    string        `db:"env_name"`
+	Status     string        `db:"status"`
+	PID        sql.NullInt32 `db:"pid"`
 }
 
 func GetProcess(db *sqlx.DB, processID string) (Process, error) {
 	var process Process
-	if err := db.Get(
-		&process,
-		`SELECT id, target_file, env_name, status FROM calc_process_table WHERE id=?`, processID); err != nil {
+	if err := db.Get(&process, `SELECT * FROM calc_process_table WHERE id=?`, processID); err != nil {
 		return process, err
 	}
 	return process, nil

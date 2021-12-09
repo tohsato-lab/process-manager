@@ -58,6 +58,14 @@ func GetActiveProcess(db *sqlx.DB) ([]Process, error) {
 	return activeProcess, nil
 }
 
+func GetProcessServerIP(db *sqlx.DB, processID string) (string, error) {
+	var serverIP string
+	if err := db.Get(&serverIP, `SELECT server_ip FROM process_table WHERE id=?`, processID); err != nil {
+		return "", err
+	}
+	return serverIP, nil
+}
+
 func SetProcess(db *sqlx.DB, processID string, processName string, envName string, IP string, comment string) error {
 	_, err := db.NamedExec(
 		`INSERT INTO process_table (id, process_name, env_name, server_ip, comment, upload_date) 
@@ -91,7 +99,7 @@ func CanExecProcess(db *sqlx.DB, serverIP string, limit int) ([]string, error) {
 	if err := db.Select(
 		&canExecID, `SELECT id FROM process_table 
 						   WHERE status='ready' AND in_trash = false AND server_ip=?
-		                   ORDER BY upload_date LIMIT ?`, serverIP, limit,
+		                   ORDER BY upload_date LIMIT ?`, serverIP, limit-numRunning,
 	); err != nil {
 		return nil, err
 	}

@@ -39,7 +39,6 @@ export class HomeComponent implements OnInit, OnDestroy {
                 for (const process of this.processList) {
                     process.Selected = false;
                 }
-                console.log(this.processList);
             },
             err => {
                 console.log(err);
@@ -103,7 +102,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     public onKill(id): void {
         this.http.get(
-            `${config.httpScheme}${location.hostname}:${config.port}/kill?id=${id}`
+            `${config.httpScheme}${location.hostname}:${config.port}/kill?process_id=${id}`
         ).subscribe(value => {
             console.log(value);
         }, error => {

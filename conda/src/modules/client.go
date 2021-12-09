@@ -50,12 +50,13 @@ func (c *Client) ReadPump() {
 			log.Println(err)
 			return
 		}
+		c.Pipe <- process.ID
 
 		switch command["status"] {
 		case "running":
 			go func() {
-				log.Println("exec start")
-				status := Execute(c.DB, process.ID, process.TargetFile, process.EnvName)
+				log.Println("exec process")
+				status := execute(c.DB, process.ID, process.TargetFile, process.EnvName)
 				if err := repository.UpdateProcessStatus(c.DB, command["ID"], status); err != nil {
 					log.Println(err)
 					return
@@ -65,9 +66,19 @@ func (c *Client) ReadPump() {
 				c.Pipe <- process.ID
 			}()
 		case "kill":
+			log.Println("kill process")
+			status, err := kill(c.DB, process.ID)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			if err := repository.UpdateProcessStatus(c.DB, command["ID"], status); err != nil {
+				log.Println(err)
+				return
+			}
 		case "delete":
+			log.Println("delete process")
 		}
-		c.Pipe <- process.ID
 	}
 }
 

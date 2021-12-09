@@ -11,8 +11,7 @@ import (
 	"conda/repository"
 )
 
-// Execute 起動スクリプト実行
-func Execute(db *sqlx.DB, id string, targetFile string, envName string) string {
+func execute(db *sqlx.DB, id string, targetFile string, envName string) string {
 	//実行
 	cmd := exec.Command("bash", "scripts/execute.sh", "../../data/"+id, targetFile, envName)
 	cmd.Stdout = os.Stdout
@@ -25,7 +24,7 @@ func Execute(db *sqlx.DB, id string, targetFile string, envName string) string {
 	err := repository.SetPID(db, id, cmd.Process.Pid)
 	if err != nil {
 		log.Println(err)
-		return ""
+		return "error"
 	}
 
 	if err := cmd.Wait(); err != nil {
@@ -45,4 +44,19 @@ func Execute(db *sqlx.DB, id string, targetFile string, envName string) string {
 		status = "unknown:" + strconv.Itoa(signal)
 	}
 	return status
+}
+
+func kill(db *sqlx.DB, processID string) (string, error) {
+	process, err := repository.GetProcess(db, processID)
+	if err != nil {
+		return "", err
+	}
+	if process.PID.Valid {
+		cmd := "kill `ps ho pid --ppid=" + strconv.Itoa(int(process.PID.Int32)) + "`"
+		if err := exec.Command("sh", "-c", cmd).Run(); err != nil {
+			return "", err
+		}
+		return "killed", nil
+	}
+	return process.Status, nil
 }

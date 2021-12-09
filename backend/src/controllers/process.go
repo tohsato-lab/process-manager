@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/jmoiron/sqlx"
+	"log"
 	"net/http"
 
 	"backend/modules"
@@ -29,7 +30,28 @@ func EntryProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 		}
 	}
 
-	go modules.UpdateProcess(db)
+	if err := modules.UpdateProcess(db); err != nil {
+		log.Println(err)
+		return
+	}
 	utils.RespondByte(w, http.StatusOK, []byte(`{"status":"ok"}`))
+
+}
+
+func KillProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
+	processID := r.FormValue("process_id")
+	serverIP, err := repository.GetProcessServerIP(db, processID)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	if err := modules.KillProcess(db, processID, serverIP); err != nil {
+		log.Println(err)
+		return
+	}
+	utils.RespondByte(w, http.StatusOK, []byte(`{"status":"ok"}`))
+}
+
+func DeleteProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 
 }

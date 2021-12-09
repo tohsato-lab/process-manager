@@ -12,40 +12,41 @@ import (
 
 var connections = make(map[string]*websocket.Conn)
 
-func readPump(ip string, db *sqlx.DB) {
+func readPump(ip string, db *sqlx.DB) error {
 	for {
 		_, message, err := connections[ip].ReadMessage()
 		if err != nil {
 			log.Println("read:", err)
 			log.Println("disconnect backend")
-			_ = repository.UpdateCalcServerStatus(db, ip, "stop")
+			if err := repository.UpdateCalcServerStatus(db, ip, "stop"); err != nil {
+				return err
+			}
 			break
 		}
 		log.Printf("recv: %s", message)
 		var contents map[string]string
 		if err := json.Unmarshal(message, &contents); err != nil {
-			log.Println(err)
-			return
+			return err
 		}
 		if err := repository.UpdateProcessStatus(db, contents["ID"], contents["status"]); err != nil {
-			log.Println(err)
-			return
+			return err
 		}
 		switch contents["status"] {
 		case "ready":
 		case "running":
 			if err := repository.SetStartDate(db, contents["ID"]); err != nil {
-				log.Println(err)
-				return
+				return err
 			}
 		default:
 			if err := repository.SetCompleteDate(db, contents["ID"]); err != nil {
-				log.Println(err)
-				return
+				return err
 			}
 		}
-		go UpdateProcess(db)
+		if err := UpdateProcess(db); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func Connection(ip string, port string, db *sqlx.DB) error {
@@ -57,7 +58,12 @@ func Connection(ip string, port string, db *sqlx.DB) error {
 		return err
 	}
 	connections[ip] = connect
-	go readPump(ip, db)
+	go func() {
+		if err := readPump(ip, db); err != nil {
+			log.Println(err)
+			return
+		}
+	}()
 	return nil
 }
 
