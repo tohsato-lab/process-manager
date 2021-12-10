@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"github.com/jmoiron/sqlx"
-	"log"
 	"time"
 )
 
@@ -18,21 +17,20 @@ type Process struct {
 	CompleteDate string `db:"complete_date"`
 }
 
-func GetActiveProcess(db *sqlx.DB) ([]Process, error) {
+func GetProcess(db *sqlx.DB, inTrash bool) ([]Process, error) {
 	var activeProcess []Process
 	rows, err := db.Query(
 		`SELECT id, process_name, env_name, server_ip, comment, status, start_date, complete_date 
-			   FROM process_table WHERE !in_trash ORDER BY upload_date DESC`,
+			   FROM process_table WHERE in_trash=? ORDER BY upload_date DESC`, inTrash,
 	)
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 	for rows.Next() {
 		var process Process
 		var startDate sql.NullTime
 		var completeDate sql.NullTime
-		err := rows.Scan(
+		if err := rows.Scan(
 			&process.ID,
 			&process.ProcessName,
 			&process.EnvName,
@@ -41,9 +39,7 @@ func GetActiveProcess(db *sqlx.DB) ([]Process, error) {
 			&process.Status,
 			&startDate,
 			&completeDate,
-		)
-		if err != nil {
-			log.Println(err)
+		); err != nil {
 			return nil, err
 		}
 		jst, _ := time.LoadLocation("Asia/Tokyo")
@@ -133,6 +129,19 @@ func SetCompleteDate(db *sqlx.DB, processID string) error {
 		map[string]interface{}{"id": processID, "complete_date": time.Now()},
 	)
 	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func UpdateProcessTrash(db *sqlx.DB, processID string) error {
+	var inTrash bool
+	if err := db.Get(&inTrash, `SELECT in_trash FROM process_table WHERE id=?`, processID); err != nil {
+		return err
+	}
+	if _, err := db.NamedExec(`UPDATE process_table SET in_trash=:in_trash WHERE id=:id`,
+		map[string]interface{}{"id": processID, "in_trash": !inTrash},
+	); err != nil {
 		return err
 	}
 	return nil

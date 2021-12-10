@@ -53,8 +53,10 @@ export class TrashComponent implements OnInit, OnDestroy {
     }
 
     public onRecover(id): void {
-        this.http.get(
-            `${config.httpScheme}${location.hostname}:${config.port}/trash?id=${id}`
+        const formData = new FormData();
+        formData.append('process_id', id);
+        this.http.post(
+            `${config.httpScheme}${location.hostname}:${config.port}/trash`, formData
         ).subscribe(value => {
             console.log(value);
             this.getTrashProcesses();

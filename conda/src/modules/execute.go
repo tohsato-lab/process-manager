@@ -3,7 +3,6 @@ package modules
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"log"
 	"os"
 	"os/exec"
 	"strconv"
@@ -11,20 +10,19 @@ import (
 	"conda/repository"
 )
 
-func execute(db *sqlx.DB, id string, targetFile string, envName string) string {
+func execute(db *sqlx.DB, id string, targetFile string, envName string) (string, error) {
 	//実行
 	cmd := exec.Command("bash", "scripts/execute.sh", "../../data/"+id, targetFile, envName)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {
-		return "unknown:" + err.Error()
+		return "unknown:" + err.Error(), err
 	}
 
 	// PID登録
 	err := repository.SetPID(db, id, cmd.Process.Pid)
 	if err != nil {
-		log.Println(err)
-		return "error"
+		return "error", err
 	}
 
 	if err := cmd.Wait(); err != nil {
@@ -43,7 +41,7 @@ func execute(db *sqlx.DB, id string, targetFile string, envName string) string {
 	default:
 		status = "unknown:" + strconv.Itoa(signal)
 	}
-	return status
+	return status, nil
 }
 
 func kill(db *sqlx.DB, processID string) (string, error) {

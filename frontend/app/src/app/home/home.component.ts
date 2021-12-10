@@ -111,8 +111,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     public onTrash(id): void {
-        this.http.get(
-            `${config.httpScheme}${location.hostname}:${config.port}/trash?id=${id}`
+        const formData = new FormData();
+        formData.append('process_id', id);
+        this.http.post(
+            `${config.httpScheme}${location.hostname}:${config.port}/trash`, formData
         ).subscribe(value => {
             console.log(value);
         }, error => {
@@ -145,7 +147,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             this.http.put(`${config.httpScheme}${location.hostname}:${config.port}/process`, formData
             ).subscribe(value => {
                 console.log(value);
-            },error => {
+            }, error => {
                 alert(error.error);
             })
         }, error => {

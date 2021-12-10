@@ -12,12 +12,10 @@ import (
 )
 
 func EntryProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
-
 	processName := r.FormValue("process_name")
 	envName := r.FormValue("conda_env")
 	serverIP := r.FormValue("server_ip")
 	comment := r.FormValue("comment")
-
 	var processIDs []string
 	if err := json.Unmarshal([]byte(r.FormValue("process_ids")), &processIDs); err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
@@ -29,13 +27,11 @@ func EntryProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 			return
 		}
 	}
-
 	if err := modules.UpdateProcess(db); err != nil {
 		log.Println(err)
 		return
 	}
 	utils.RespondByte(w, http.StatusOK, []byte(`{"status":"ok"}`))
-
 }
 
 func KillProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
@@ -50,6 +46,29 @@ func KillProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 		return
 	}
 	utils.RespondByte(w, http.StatusOK, []byte(`{"status":"ok"}`))
+}
+
+func TrashProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
+	processID := r.FormValue("process_id")
+	if err := modules.TrashProcess(db, processID); err != nil {
+		log.Println(err)
+		return
+	}
+	utils.RespondByte(w, http.StatusOK, []byte(`{"status":"ok"}`))
+}
+
+func TrashAllProcess(w http.ResponseWriter, _ *http.Request, db *sqlx.DB) {
+	trashProcess, err := repository.GetProcess(db, true)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	contents, err := json.Marshal(trashProcess)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	utils.RespondByte(w, http.StatusOK, contents)
 }
 
 func DeleteProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {

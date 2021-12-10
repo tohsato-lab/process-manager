@@ -68,6 +68,15 @@ func main() {
 	r.Methods(http.MethodGet).Path("/kill").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		controllers.KillProcess(w, r, db)
 	})
+	r.Methods(http.MethodGet).Path("/trash").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		controllers.TrashAllProcess(w, r, db)
+	})
+	r.Methods(http.MethodPost).Path("/trash").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		controllers.TrashProcess(w, r, db)
+	})
+	r.Methods(http.MethodDelete).Path("/trash").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		controllers.DeleteProcess(w, r, db)
+	})
 	r.Methods(http.MethodGet).Path("/connect").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		controllers.Connect(w, r, db)
 	})

@@ -27,7 +27,7 @@ func (c *Client) WritePump() {
 			return
 		}
 	}()
-	activeProcess, err := repository.GetActiveProcess(c.DB)
+	activeProcess, err := repository.GetProcess(c.DB, false)
 	if err != nil {
 		log.Println(err)
 		return

@@ -9,7 +9,7 @@ import (
 )
 
 func syncProcess(db *sqlx.DB) error {
-	activeProcess, err := repository.GetActiveProcess(db)
+	activeProcess, err := repository.GetProcess(db, false)
 	if err != nil {
 		return err
 	}
@@ -61,6 +61,17 @@ func KillProcess(db *sqlx.DB, processID string, serverIP string) error {
 		return err
 	}
 	if err := connections[serverIP].WriteJSON(map[string]string{"ID": processID, "status": "kill"}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func TrashProcess(db *sqlx.DB, processID string) error {
+	log.Println("trash")
+	if err := repository.UpdateProcessTrash(db, processID); err != nil {
+		return err
+	}
+	if err := syncProcess(db); err != nil {
 		return err
 	}
 	return nil
