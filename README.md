@@ -41,6 +41,13 @@ conda activate 'hogehoge'
 conda env export | grep -v "^prefix: " > pytorch.yml
 ```
 
+# Develop
+開発用
+```shell
+docker-compose -f docker-compose.dev.yml up --build
+docker-compose -f docker-compose.dev.yml up --detach --build conda backend
+```
+
 # Author
 * Hirorittsu
 * 遠里研究室１期生

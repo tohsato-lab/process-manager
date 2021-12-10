@@ -60,8 +60,7 @@ programs/
 
 # End of https://www.toptal.com/developers/gitignore/api/angular,go
 *.zip
-server/src/process-manager-server
 
 data/
 
-!sample/sample.zip
+!sample/*
