@@ -83,11 +83,21 @@ func DeleteProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
-	if _, err := utils.RequestHTTP(
+	if requestHTTP, err := utils.RequestHTTP(
 		"DELETE", "http://"+server.IP+":"+server.Port+"/delete?process_id="+processID, 5*time.Second,
 	); err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
+	} else {
+		var res map[string]string
+		if err := json.Unmarshal(requestHTTP, &res); err != nil {
+			http.Error(w, err.Error(), http.StatusBadGateway)
+			return
+		}
+		if res["status"] != "ok" {
+			http.Error(w, res["status"], http.StatusBadGateway)
+			return
+		}
 	}
 	if err := repository.DeleteProcess(db, processID); err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
