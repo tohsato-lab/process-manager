@@ -55,3 +55,12 @@ func UpdateProcessStatus(db *sqlx.DB, processID string, status string) error {
 	}
 	return nil
 }
+
+func DeleteProcess(db *sqlx.DB, processID string) error {
+	if _, err := db.NamedExec(
+		`DELETE FROM calc_process_table WHERE id=:processID`,
+		map[string]interface{}{"processID": processID}); err != nil {
+		return err
+	}
+	return nil
+}

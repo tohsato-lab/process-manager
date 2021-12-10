@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"conda/modules"
 	"conda/repository"
 	"conda/utils"
 	"crypto/md5"
@@ -90,4 +91,17 @@ func FileUpload(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	}
 	utils.RespondByte(w, http.StatusOK, contents)
 
+}
+
+func DeleteFile(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
+	processID := r.FormValue("process_id")
+	if err := modules.DeleteCMD(processID); err != nil {
+		http.Error(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	if err := repository.DeleteProcess(db, processID); err != nil {
+		http.Error(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	utils.RespondByte(w, http.StatusOK, []byte(`{"status":"ok"}`))
 }

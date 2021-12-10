@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"github.com/jmoiron/sqlx"
+	"log"
 	"time"
 )
 
@@ -142,6 +143,16 @@ func UpdateProcessTrash(db *sqlx.DB, processID string) error {
 	if _, err := db.NamedExec(`UPDATE process_table SET in_trash=:in_trash WHERE id=:id`,
 		map[string]interface{}{"id": processID, "in_trash": !inTrash},
 	); err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteProcess(db *sqlx.DB, processID string) error {
+	if _, err := db.NamedExec(
+		`DELETE FROM process_table WHERE id=:processID`,
+		map[string]interface{}{"processID": processID}); err != nil {
+		log.Println(err)
 		return err
 	}
 	return nil

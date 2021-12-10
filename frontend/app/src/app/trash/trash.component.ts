@@ -66,8 +66,8 @@ export class TrashComponent implements OnInit, OnDestroy {
     }
 
     public onDelete(id): void {
-        this.http.get(
-            `${config.httpScheme}${location.hostname}:${config.port}/delete?id=${id}`
+        this.http.delete(
+            `${config.httpScheme}${location.hostname}:${config.port}/trash?process_id=${id}`
         ).subscribe(value => {
             console.log(value);
             this.getTrashProcesses();

@@ -3,6 +3,7 @@ package modules
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"log"
 	"os"
 	"os/exec"
 	"strconv"
@@ -44,7 +45,7 @@ func execute(db *sqlx.DB, id string, targetFile string, envName string) (string,
 	return status, nil
 }
 
-func kill(db *sqlx.DB, processID string) (string, error) {
+func killCMD(db *sqlx.DB, processID string) (string, error) {
 	process, err := repository.GetProcess(db, processID)
 	if err != nil {
 		return "", err
@@ -57,4 +58,14 @@ func kill(db *sqlx.DB, processID string) (string, error) {
 		return "killed", nil
 	}
 	return process.Status, nil
+}
+
+func DeleteCMD(processID string) error {
+	log.Println("delete")
+	cmd := "rm -rf ../../data/" + processID + "/"
+	log.Println(cmd)
+	if _, err := exec.Command("sh", "-c", cmd).Output(); err != nil {
+		return err
+	}
+	return nil
 }

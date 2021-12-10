@@ -4,9 +4,12 @@ import (
 	"encoding/json"
 	"github.com/jmoiron/sqlx"
 	"log"
+	"time"
 
 	"backend/repository"
 )
+
+var deleteSignal chan bool
 
 func syncProcess(db *sqlx.DB) error {
 	activeProcess, err := repository.GetProcess(db, false)
@@ -75,4 +78,19 @@ func TrashProcess(db *sqlx.DB, processID string) error {
 		return err
 	}
 	return nil
+}
+
+func DeleteProcess(db *sqlx.DB, processID string, serverIP string) (bool, error) {
+	if err := repository.UpdateProcessStatus(db, processID, "delete"); err != nil {
+		return false, err
+	}
+	if err := connections[serverIP].WriteJSON(map[string]string{"ID": processID, "status": "delete"}); err != nil {
+		return false, err
+	}
+	select {
+	case signal := <-deleteSignal:
+		return signal, nil
+	case <-time.After(5 * time.Second):
+		return false, nil
+	}
 }

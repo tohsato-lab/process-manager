@@ -3,8 +3,8 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/jmoiron/sqlx"
-	"log"
 	"net/http"
+	"time"
 
 	"backend/modules"
 	"backend/repository"
@@ -28,7 +28,7 @@ func EntryProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 		}
 	}
 	if err := modules.UpdateProcess(db); err != nil {
-		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
 	utils.RespondByte(w, http.StatusOK, []byte(`{"status":"ok"}`))
@@ -38,11 +38,11 @@ func KillProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	processID := r.FormValue("process_id")
 	serverIP, err := repository.GetProcessServerIP(db, processID)
 	if err != nil {
-		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
 	if err := modules.KillProcess(db, processID, serverIP); err != nil {
-		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
 	utils.RespondByte(w, http.StatusOK, []byte(`{"status":"ok"}`))
@@ -51,7 +51,7 @@ func KillProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 func TrashProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	processID := r.FormValue("process_id")
 	if err := modules.TrashProcess(db, processID); err != nil {
-		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
 	utils.RespondByte(w, http.StatusOK, []byte(`{"status":"ok"}`))
@@ -60,17 +60,38 @@ func TrashProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 func TrashAllProcess(w http.ResponseWriter, _ *http.Request, db *sqlx.DB) {
 	trashProcess, err := repository.GetProcess(db, true)
 	if err != nil {
-		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
 	contents, err := json.Marshal(trashProcess)
 	if err != nil {
-		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
 	utils.RespondByte(w, http.StatusOK, contents)
 }
 
 func DeleteProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
-
+	processID := r.FormValue("process_id")
+	serverIP, err := repository.GetProcessServerIP(db, processID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	server, err := repository.GetCalcServer(db, serverIP)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	if _, err := utils.RequestHTTP(
+		"DELETE", "http://"+server.IP+":"+server.Port+"/delete?process_id="+processID, 5*time.Second,
+	); err != nil {
+		http.Error(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	if err := repository.DeleteProcess(db, processID); err != nil {
+		http.Error(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	TrashAllProcess(w, r, db)
 }

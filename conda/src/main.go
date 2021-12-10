@@ -42,6 +42,9 @@ func main() {
 	r.Methods(http.MethodPut).Path("/upload").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		controllers.FileUpload(w, r, db)
 	})
+	r.Methods(http.MethodDelete).Path("/delete").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		controllers.DeleteFile(w, r, db)
+	})
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},

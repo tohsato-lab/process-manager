@@ -19,7 +19,7 @@ const (
 type Client struct {
 	DB   *sqlx.DB
 	Conn *websocket.Conn
-	Pipe chan string
+	Pipe chan map[string]string
 }
 
 var Clients = make(map[*Client]bool)
@@ -55,7 +55,7 @@ func (c *Client) ReadPump() {
 					log.Println(err)
 					return
 				}
-				c.Pipe <- process.ID
+				c.Pipe <- map[string]string{"ID": process.ID, "status": "running"}
 				status, err := execute(c.DB, process.ID, process.TargetFile, process.EnvName)
 				if err != nil {
 					log.Println(err)
@@ -66,11 +66,11 @@ func (c *Client) ReadPump() {
 					return
 				}
 				log.Println("exec done")
-				c.Pipe <- process.ID
+				c.Pipe <- map[string]string{"ID": process.ID, "status": status}
 			}()
 		case "kill":
 			log.Println("kill process")
-			status, err := kill(c.DB, process.ID)
+			status, err := killCMD(c.DB, process.ID)
 			if err != nil {
 				log.Println(err)
 				return
@@ -79,9 +79,7 @@ func (c *Client) ReadPump() {
 				log.Println(err)
 				return
 			}
-			c.Pipe <- process.ID
-		case "delete":
-			log.Println("delete process")
+			c.Pipe <- map[string]string{"ID": process.ID, "status": status}
 		}
 	}
 }
@@ -106,18 +104,13 @@ func (c *Client) WritePump() {
 	*/
 	for {
 		select {
-		case processID, ok := <-c.Pipe:
+		case result, ok := <-c.Pipe:
 			if !ok {
 				err := c.Conn.WriteMessage(websocket.CloseMessage, []byte{})
 				log.Println(err)
 				return
 			}
-			process, err := repository.GetProcess(c.DB, processID)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			contents, err := json.Marshal(map[string]string{"ID": processID, "status": process.Status})
+			contents, err := json.Marshal(result)
 			if err != nil {
 				log.Println(err)
 				return
