@@ -46,7 +46,7 @@ func ProcessLog(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 		}
 		hostName = server.IP + ":" + server.Port
 	} else {
-		hostName = "localhost:5983"
+		hostName = r.Host
 	}
 	http.Redirect(w, r, "http://"+hostName+"/data/"+processID, http.StatusMovedPermanently)
 }
