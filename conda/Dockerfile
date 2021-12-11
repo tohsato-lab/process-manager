@@ -30,12 +30,12 @@ FROM backend-base
 ARG UID=1000
 ARG USERNAME=docker
 RUN useradd -m -u ${UID} $USERNAME
-RUN mkdir -p /process-manager/backend/src/ && \
-    chown  $USERNAME:$USERNAME /process-manager/backend/src/
+RUN mkdir -p /process-manager/conda/src/ && \
+    chown  $USERNAME:$USERNAME /process-manager/conda/src/
 
 USER $USERNAME
 
-WORKDIR /process-manager/backend/src
+WORKDIR /process-manager/conda/src
 COPY --from=builder /go/bin/main ./main
 COPY ./src/scripts/ ./scripts/
 

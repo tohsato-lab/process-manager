@@ -16,9 +16,10 @@ RUN go build \
 
 FROM linuxserver/openssh-server
 
-RUN apk add --no-cache rsync
+RUN apk add --no-cache rsync sshpass
 
-WORKDIR /process-manager/conda/src
+WORKDIR /process-manager/backend/src
 COPY --from=builder /go/bin/main ./main
+COPY ./src/scripts/ ./scripts/
 
 CMD ["./main"]
