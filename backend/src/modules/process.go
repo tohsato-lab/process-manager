@@ -12,7 +12,7 @@ import (
 var deleteSignal chan bool
 
 func syncProcess(db *sqlx.DB) error {
-	activeProcess, err := repository.GetProcess(db, false)
+	activeProcess, err := repository.GetProcesses(db, false)
 	if err != nil {
 		return err
 	}

@@ -63,7 +63,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     public onOpenExplorer(id) {
-        window.location.href = `${config.httpScheme}${location.hostname}:${config.port}/programs/${id}`;
+        window.location.href = `${config.httpScheme}${location.hostname}:${config.port}/log?process_id=${id}`;
     }
 
     public onAddButton(): void {

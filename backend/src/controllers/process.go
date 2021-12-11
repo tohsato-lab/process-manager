@@ -58,7 +58,7 @@ func TrashProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 }
 
 func TrashAllProcess(w http.ResponseWriter, _ *http.Request, db *sqlx.DB) {
-	trashProcess, err := repository.GetProcess(db, true)
+	trashProcess, err := repository.GetProcesses(db, true)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return

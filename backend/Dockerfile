@@ -18,6 +18,7 @@ FROM linuxserver/openssh-server
 
 RUN apk add --no-cache rsync
 
+WORKDIR /process-manager/conda/src
 COPY --from=builder /go/bin/main ./main
 
 CMD ["./main"]
