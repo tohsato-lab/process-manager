@@ -24,26 +24,28 @@ func readPump(ip string, db *sqlx.DB) error {
 			break
 		}
 		log.Printf("recv: %s", message)
-		var contents map[string]string
-		if err := json.Unmarshal(message, &contents); err != nil {
+		var results []map[string]string
+		if err := json.Unmarshal(message, &results); err != nil {
 			return err
 		}
-		if err := repository.UpdateProcessStatus(db, contents["ID"], contents["status"]); err != nil {
-			return err
-		}
-		switch contents["status"] {
-		case "ready":
-		case "running":
-			if err := repository.SetStartDate(db, contents["ID"]); err != nil {
+		for _, contents := range results {
+			if err := repository.UpdateProcessStatus(db, contents["ID"], contents["status"]); err != nil {
 				return err
 			}
-		default:
-			if err := repository.SetCompleteDate(db, contents["ID"]); err != nil {
+			switch contents["status"] {
+			case "ready":
+			case "running":
+				if err := repository.SetStartDate(db, contents["ID"]); err != nil {
+					return err
+				}
+			default:
+				if err := repository.SetCompleteDate(db, contents["ID"]); err != nil {
+					return err
+				}
+			}
+			if err := UpdateProcess(db); err != nil {
 				return err
 			}
-		}
-		if err := UpdateProcess(db); err != nil {
-			return err
 		}
 	}
 	return nil

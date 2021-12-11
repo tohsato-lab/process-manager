@@ -19,7 +19,7 @@ func Connect(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
-	client := &modules.Client{DB: db, Conn: conn, Pipe: make(chan map[string]string, 256)}
+	client := &modules.Client{DB: db, Conn: conn, Pipe: make(chan []map[string]string, 256)}
 	modules.Clients[client] = true
 	go client.ReadPump()
 	go client.WritePump()
