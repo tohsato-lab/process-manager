@@ -23,14 +23,14 @@ sudo reboot #必ず！！
 # Usage
 ```bash
 cd process-manager
-docker-compose up -d
+docker-compose up --build -d
 ```
 ブラウザで http://localhost:8080 にアクセス
 
 # Update
 ```bash
 docker-compose down
-git pull origin master
+git pull origin main
 docker-compose up --build -d
 ```
 
