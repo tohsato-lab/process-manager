@@ -3,7 +3,9 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/jmoiron/sqlx"
+	"log"
 	"net/http"
+	"os/exec"
 	"time"
 
 	"backend/modules"
@@ -48,7 +50,7 @@ func KillProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	utils.RespondByte(w, http.StatusOK, []byte(`{"status":"ok"}`))
 }
 
-func TrashProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
+func InTrashProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	processID := r.FormValue("process_id")
 	if err := modules.TrashProcess(db, processID); err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
@@ -57,7 +59,7 @@ func TrashProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	utils.RespondByte(w, http.StatusOK, []byte(`{"status":"ok"}`))
 }
 
-func TrashAllProcess(w http.ResponseWriter, _ *http.Request, db *sqlx.DB) {
+func InTrashAllProcess(w http.ResponseWriter, _ *http.Request, db *sqlx.DB) {
 	trashProcess, err := repository.GetProcesses(db, true)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
@@ -103,5 +105,11 @@ func DeleteProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
-	TrashAllProcess(w, r, db)
+	cmd := "rm -rf ../../data/" + processID + "/"
+	log.Println(cmd)
+	if _, err := exec.Command("sh", "-c", cmd).Output(); err != nil {
+		http.Error(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	InTrashAllProcess(w, r, db)
 }
