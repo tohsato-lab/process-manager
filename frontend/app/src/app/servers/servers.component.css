@@ -1,0 +1,221 @@
+.grid-bse {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 450px));
+}
+
+.host-card-base {
+    margin: 50px;
+    padding: 20px;
+    border-radius: 10px;
+    border: solid #cccccc 2px;
+    position: relative;
+}
+
+.chart {
+    display: inline-block;
+    width: 110px;
+    margin: 40px auto 20px;
+    padding: 0 10px;
+}
+
+.percentage,
+.label {
+    margin-bottom: 0.5em;
+    text-align: center;
+    font-weight: 100;
+}
+
+.percentage {
+    font-size: 17px;
+}
+
+
+.graph-data-text {
+    font-size: 1.5em;
+    font-weight: 100;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    margin: 0;
+    padding: 0;
+}
+
+.graph-label-text {
+    font-size: 1.5em;
+    font-weight: 100;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    padding: 0;
+    color: white;
+}
+
+.top-graph {
+
+}
+
+.top-graph-text {
+    top: 45%;
+}
+
+.top-graph-label-text {
+    top: 23%;
+}
+
+.bottom-graph {
+    transform: scale(1, -1);
+}
+
+.bottom-graph-text {
+    top: 55%;
+}
+
+.bottom-graph-label-text {
+    bottom: 12%;
+}
+
+.host-name-text {
+    position: absolute;
+    right: 5%;
+    bottom: 2%;
+    font-weight: 100;
+}
+
+.no-active-base {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 330px;
+    justify-content: space-around;
+}
+
+.no-active-title {
+    text-align: center;
+    font-size: x-large;
+    border-bottom: solid 1px;
+    width: 50%;
+    padding-bottom: 10px;
+}
+
+.no-active-icons-base {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.no-active-icon-base {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: large;
+}
+
+.add-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: gray;
+}
+
+.float-page-background {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    z-index: 5;
+    background-color: rgba(0, 0, 0, 0.29);
+}
+
+
+.register-base {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 10px;
+    width: 50%;
+}
+
+.register-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2% 5% 2% 5%;
+    border-bottom: solid 1px gray;
+    color: black;
+    font-size: large;
+    min-height: 50px;
+}
+
+.register-content {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    max-height: 50vh;
+    overflow-y: scroll;
+}
+
+.register-drop-zone {
+    margin: 10%;
+    padding: 20px;
+    width: 70%;
+    min-height: 200px;
+}
+
+.register-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    border-radius: 10px;
+    width: 80%;
+    padding: 2%;
+    margin: 2%;
+    background-color: #666666;
+    color: white;
+    flex-wrap: wrap;
+}
+
+.register-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5%;
+    padding: 2%;
+    font-size: larger;
+    width: 20%;
+    border-radius: 5px;
+    color: white;
+    background-color: #20bdf9;
+}
+
+.register-input-form {
+    background: white;
+    color: gray;
+    border: solid 1px white;
+    border-radius: 10px;
+    resize: none;
+    outline: none;
+    margin-bottom: 10px;
+    padding: 5px;
+    width: 80%;
+}
+
+.register-comment-text-input {
+    height: 100px;
+}
+
+
+.register-form-text {
+    margin-bottom: 5px;
+    font-weight: 100;
+}

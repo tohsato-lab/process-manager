@@ -1,0 +1,38 @@
+<div class="trash-base">
+  <table style="min-width: 840px;">
+    <thead>
+    <tr>
+      <th style="width: 200px;">ファイル名</th>
+      <th style="width: 150px;">環境名</th>
+      <th style="width: 100px;">状態</th>
+      <th>開始時間</th>
+      <th>終了時間</th>
+      <th style="width: 150px;"></th>
+      <th></th>
+    </tr>
+    </thead>
+    <tr *ngFor="let process of processList" class="table-item">
+      <th (click)="onOpenExplorer(process['ID'])">
+        <div>{{process["ProcessName"]}}</div>
+        <div class="comment-text">{{process["Comment"]}}</div>
+      </th>
+      <th (click)="onOpenExplorer(process['ID'])">{{process["EnvName"]}}</th>
+      <th (click)="onOpenExplorer(process['ID'])">
+        <div class="table-deleted">{{process["Status"]}}</div>
+      </th>
+      <th>{{process["StartDate"]}}</th>
+      <th>{{process["CompleteDate"]}}</th>
+      <th style="padding: 15px;">
+        <img (click)="onRecover(process['ID'])" src="../../assets/icon/undo.svg" alt="undo">
+        <div>戻す</div>
+      </th>
+      <th style="padding: 15px;">
+        <img (click)="onDelete(process['ID'])" src="../../assets/icon/delete.svg" alt="delete">
+        <div>削除</div>
+      </th>
+    </tr>
+  </table>
+  <div *ngIf="processList.length == 0" class="none-process">
+    プロセスが追加されていません
+  </div>
+</div>

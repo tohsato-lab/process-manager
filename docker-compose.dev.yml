@@ -27,6 +27,8 @@ services:
       - "8022:2222"
     networks:
       - backend-net
+    volumes_from:
+      - conda:rw
     environment:
       - PUID=1000
       - PGID=1000
@@ -53,11 +55,16 @@ services:
     tty: true
 
   frontend:
-    build: ./frontend
-    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: ./dev/Dockerfile
+    container_name: frontend-dev
     ports:
       - "8080:8080"
-    tty: true
+    volumes:
+      - ./frontend/app/:/app
+      - /usr/src/app/node_modules
+    command: npx ng serve --aot --host=0.0.0.0 --port 8080
 
 networks:
   backend-net:
