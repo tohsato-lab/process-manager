@@ -16,43 +16,68 @@ type Process struct {
 	Status       string `db:"status"`
 	StartDate    string `db:"start_date"`
 	CompleteDate string `db:"complete_date"`
+	InTrash      bool   `db:"in_trash"`
 }
 
-func GetProcess(db *sqlx.DB, inTrash bool) ([]Process, error) {
+func scanProcess(rows *sql.Rows) (Process, error) {
+	var process Process
+	var startDate sql.NullTime
+	var completeDate sql.NullTime
+	if err := rows.Scan(
+		&process.ID,
+		&process.ProcessName,
+		&process.EnvName,
+		&process.ServerIP,
+		&process.Comment,
+		&process.Status,
+		&startDate,
+		&completeDate,
+		&process.InTrash,
+	); err != nil {
+		return process, err
+	}
+	jst, _ := time.LoadLocation("Asia/Tokyo")
+	if startDate.Valid {
+		process.StartDate = startDate.Time.In(jst).Format("2006年01月02日 15時04分05秒")
+	}
+	if completeDate.Valid {
+		process.CompleteDate = completeDate.Time.In(jst).Format("2006年01月02日 15時04分05秒")
+	}
+	return process, nil
+}
+
+func GetProcesses(db *sqlx.DB, inTrash bool) ([]Process, error) {
 	var activeProcess []Process
 	rows, err := db.Query(
-		`SELECT id, process_name, env_name, server_ip, comment, status, start_date, complete_date 
+		`SELECT id, process_name, env_name, server_ip, comment, status, start_date, complete_date, in_trash 
 			   FROM process_table WHERE in_trash=? ORDER BY upload_date DESC`, inTrash,
 	)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
-		var process Process
-		var startDate sql.NullTime
-		var completeDate sql.NullTime
-		if err := rows.Scan(
-			&process.ID,
-			&process.ProcessName,
-			&process.EnvName,
-			&process.ServerIP,
-			&process.Comment,
-			&process.Status,
-			&startDate,
-			&completeDate,
-		); err != nil {
+		if process, err := scanProcess(rows); err != nil {
 			return nil, err
+		} else {
+			activeProcess = append(activeProcess, process)
 		}
-		jst, _ := time.LoadLocation("Asia/Tokyo")
-		if startDate.Valid {
-			process.StartDate = startDate.Time.In(jst).Format("2006年01月02日 15時04分05秒")
-		}
-		if completeDate.Valid {
-			process.CompleteDate = completeDate.Time.In(jst).Format("2006年01月02日 15時04分05秒")
-		}
-		activeProcess = append(activeProcess, process)
 	}
 	return activeProcess, nil
+}
+
+func GetProcess(db *sqlx.DB, processID string) (Process, error) {
+	rows, err := db.Query(
+		`SELECT id, process_name, env_name, server_ip, comment, status, start_date, complete_date, in_trash 
+			   FROM process_table WHERE id=? ORDER BY upload_date DESC`, processID,
+	)
+	if err != nil || !rows.Next() {
+		return Process{}, err
+	}
+	process, err := scanProcess(rows)
+	if err != nil {
+		return Process{}, err
+	}
+	return process, nil
 }
 
 func GetProcessServerIP(db *sqlx.DB, processID string) (string, error) {
@@ -156,4 +181,13 @@ func DeleteProcess(db *sqlx.DB, processID string) error {
 		return err
 	}
 	return nil
+}
+
+func NeedSyncProcesses(db *sqlx.DB) ([]string, error) {
+	var processIDs []string
+	if err := db.Select(&processIDs,
+		`SELECT id FROM process_table WHERE status='ready' OR status='running' OR status='syncing'`); err != nil {
+		return nil, err
+	}
+	return processIDs, nil
 }

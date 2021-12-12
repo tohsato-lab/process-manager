@@ -35,28 +35,44 @@ func (c *Client) ReadPump() {
 		}
 		log.Println(string(message))
 
-		command := map[string]string{}
-		if err := json.Unmarshal(message, &command); err != nil {
+		var commands []map[string]string
+		if err := json.Unmarshal(message, &commands); err != nil {
 			log.Println(err)
 			continue
 		}
-		process, err := repository.GetProcess(c.DB, command["ID"])
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		log.Println(process)
+		for _, command := range commands {
+			process, err := repository.GetProcess(c.DB, command["ID"])
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			log.Println(process)
 
-		switch command["status"] {
-		case "running":
-			go func() {
-				log.Println("exec process")
-				if err := repository.UpdateProcessStatus(c.DB, command["ID"], command["status"]); err != nil {
-					log.Println(err)
-					return
-				}
-				c.Pipe <- map[string]string{"ID": process.ID, "status": "running"}
-				status, err := execute(c.DB, process.ID, process.TargetFile, process.EnvName)
+			switch command["status"] {
+			case "running":
+				go func() {
+					log.Println("exec process")
+					if err := repository.UpdateProcessStatus(c.DB, command["ID"], command["status"]); err != nil {
+						log.Println(err)
+						return
+					}
+
+					c.Pipe <- map[string]string{"ID": process.ID, "status": "running"}
+					status, err := execute(c.DB, process.ID, process.TargetFile, process.EnvName)
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					if err := repository.UpdateProcessStatus(c.DB, command["ID"], status); err != nil {
+						log.Println(err)
+						return
+					}
+					log.Println("exec done")
+					c.Pipe <- map[string]string{"ID": process.ID, "status": status}
+				}()
+			case "kill":
+				log.Println("kill process")
+				status, err := killCMD(c.DB, process.ID)
 				if err != nil {
 					log.Println(err)
 					return
@@ -65,21 +81,10 @@ func (c *Client) ReadPump() {
 					log.Println(err)
 					return
 				}
-				log.Println("exec done")
 				c.Pipe <- map[string]string{"ID": process.ID, "status": status}
-			}()
-		case "kill":
-			log.Println("kill process")
-			status, err := killCMD(c.DB, process.ID)
-			if err != nil {
-				log.Println(err)
-				return
+			case "sync":
+				c.Pipe <- map[string]string{"ID": process.ID, "status": process.Status}
 			}
-			if err := repository.UpdateProcessStatus(c.DB, command["ID"], status); err != nil {
-				log.Println(err)
-				return
-			}
-			c.Pipe <- map[string]string{"ID": process.ID, "status": status}
 		}
 	}
 }
@@ -96,12 +101,6 @@ func (c *Client) WritePump() {
 		close(c.Pipe)
 		log.Println("destroyed socket")
 	}()
-	/*
-		if err := c.Conn.WriteMessage(websocket.TextMessage, []byte("hi.")); err != nil {
-				log.Println(err)
-				return
-			}
-	*/
 	for {
 		select {
 		case result, ok := <-c.Pipe:
@@ -120,22 +119,11 @@ func (c *Client) WritePump() {
 				log.Println(err)
 				return
 			}
-
 		case <-ticker.C:
 			_ = c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				return
 			}
-
-			/*
-				case <-time.After(2 * time.Second):
-						_ = c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
-						if err := c.Conn.WriteMessage(websocket.TextMessage, []byte("hi?")); err != nil {
-							log.Println(err)
-							return
-						}
-					}
-			*/
 		}
 	}
 }

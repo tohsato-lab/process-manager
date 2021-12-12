@@ -23,6 +23,7 @@
         <div [ngClass]="
         process['Status']=='ready'?'table-ready':
         process['Status']=='running'?'table-running':
+        process['Status']=='syncing'?'table-running':
         process['Status']=='complete'?'table-complete':
         'table-error'">{{process["Status"]}}</div>
       </th>

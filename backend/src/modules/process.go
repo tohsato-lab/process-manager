@@ -1,18 +1,14 @@
 package modules
 
 import (
+	"backend/repository"
 	"encoding/json"
 	"github.com/jmoiron/sqlx"
 	"log"
-	"time"
-
-	"backend/repository"
 )
 
-var deleteSignal chan bool
-
 func syncProcess(db *sqlx.DB) error {
-	activeProcess, err := repository.GetProcess(db, false)
+	activeProcess, err := repository.GetProcesses(db, false)
 	if err != nil {
 		return err
 	}
@@ -53,7 +49,8 @@ func ExecProcess(db *sqlx.DB, processID string, serverIP string) error {
 	if err := repository.UpdateProcessStatus(db, processID, "running"); err != nil {
 		return err
 	}
-	if err := connections[serverIP].WriteJSON(map[string]string{"ID": processID, "status": "running"}); err != nil {
+	commands := []map[string]string{{"ID": processID, "status": "running"}}
+	if err := connections[serverIP].WriteJSON(commands); err != nil {
 		return err
 	}
 	return nil
@@ -63,7 +60,8 @@ func KillProcess(db *sqlx.DB, processID string, serverIP string) error {
 	if err := repository.UpdateProcessStatus(db, processID, "killed"); err != nil {
 		return err
 	}
-	if err := connections[serverIP].WriteJSON(map[string]string{"ID": processID, "status": "kill"}); err != nil {
+	commands := []map[string]string{{"ID": processID, "status": "kill"}}
+	if err := connections[serverIP].WriteJSON(commands); err != nil {
 		return err
 	}
 	return nil
@@ -78,19 +76,4 @@ func TrashProcess(db *sqlx.DB, processID string) error {
 		return err
 	}
 	return nil
-}
-
-func DeleteProcess(db *sqlx.DB, processID string, serverIP string) (bool, error) {
-	if err := repository.UpdateProcessStatus(db, processID, "delete"); err != nil {
-		return false, err
-	}
-	if err := connections[serverIP].WriteJSON(map[string]string{"ID": processID, "status": "delete"}); err != nil {
-		return false, err
-	}
-	select {
-	case signal := <-deleteSignal:
-		return signal, nil
-	case <-time.After(5 * time.Second):
-		return false, nil
-	}
 }

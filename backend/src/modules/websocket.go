@@ -1,13 +1,12 @@
 package modules
 
 import (
+	"backend/repository"
 	"encoding/json"
 	"github.com/gorilla/websocket"
 	"github.com/jmoiron/sqlx"
 	"log"
 	"net/url"
-
-	"backend/repository"
 )
 
 var connections = make(map[string]*websocket.Conn)
@@ -28,19 +27,37 @@ func readPump(ip string, db *sqlx.DB) error {
 		if err := json.Unmarshal(message, &contents); err != nil {
 			return err
 		}
-		if err := repository.UpdateProcessStatus(db, contents["ID"], contents["status"]); err != nil {
-			return err
-		}
 		switch contents["status"] {
 		case "ready":
 		case "running":
+			if err := repository.UpdateProcessStatus(db, contents["ID"], "running"); err != nil {
+				return err
+			}
 			if err := repository.SetStartDate(db, contents["ID"]); err != nil {
 				return err
 			}
 		default:
+			if err := repository.UpdateProcessStatus(db, contents["ID"], "syncing"); err != nil {
+				return err
+			}
 			if err := repository.SetCompleteDate(db, contents["ID"]); err != nil {
 				return err
 			}
+			go func() {
+				log.Println("sync")
+				_, err := Rsync(db, contents["ID"])
+				if err != nil {
+					log.Println(err)
+					return
+				}
+				log.Println("sync done")
+				if err := repository.UpdateProcessStatus(db, contents["ID"], contents["status"]); err != nil {
+					return
+				}
+				if err := UpdateProcess(db); err != nil {
+					return
+				}
+			}()
 		}
 		if err := UpdateProcess(db); err != nil {
 			return err
@@ -64,6 +81,18 @@ func Connection(ip string, port string, db *sqlx.DB) error {
 			return
 		}
 	}()
+	processIDs, err := repository.NeedSyncProcesses(db)
+	log.Println(processIDs)
+	if err != nil {
+		return err
+	}
+	var commands []map[string]string
+	for _, processID := range processIDs {
+		commands = append(commands, map[string]string{"ID": processID, "status": "sync"})
+	}
+	if err := connections[ip].WriteJSON(commands); err != nil {
+		return err
+	}
 	return nil
 }
 
