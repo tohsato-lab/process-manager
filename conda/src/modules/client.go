@@ -19,7 +19,7 @@ const (
 type Client struct {
 	DB   *sqlx.DB
 	Conn *websocket.Conn
-	Pipe chan []map[string]string
+	Pipe chan map[string]string
 }
 
 var Clients = make(map[*Client]bool)
@@ -56,7 +56,8 @@ func (c *Client) ReadPump() {
 						log.Println(err)
 						return
 					}
-					c.Pipe <- []map[string]string{{"ID": process.ID, "status": "running"}}
+
+					c.Pipe <- map[string]string{"ID": process.ID, "status": "running"}
 					status, err := execute(c.DB, process.ID, process.TargetFile, process.EnvName)
 					if err != nil {
 						log.Println(err)
@@ -67,7 +68,7 @@ func (c *Client) ReadPump() {
 						return
 					}
 					log.Println("exec done")
-					c.Pipe <- []map[string]string{{"ID": process.ID, "status": status}}
+					c.Pipe <- map[string]string{"ID": process.ID, "status": status}
 				}()
 			case "kill":
 				log.Println("kill process")
@@ -80,9 +81,9 @@ func (c *Client) ReadPump() {
 					log.Println(err)
 					return
 				}
-				c.Pipe <- []map[string]string{{"ID": process.ID, "status": status}}
+				c.Pipe <- map[string]string{"ID": process.ID, "status": status}
 			case "sync":
-
+				c.Pipe <- map[string]string{"ID": process.ID, "status": process.Status}
 			}
 		}
 	}

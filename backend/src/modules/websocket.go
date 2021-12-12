@@ -23,46 +23,44 @@ func readPump(ip string, db *sqlx.DB) error {
 			break
 		}
 		log.Printf("recv: %s", message)
-		var results []map[string]string
-		if err := json.Unmarshal(message, &results); err != nil {
+		var contents map[string]string
+		if err := json.Unmarshal(message, &contents); err != nil {
 			return err
 		}
-		for _, contents := range results {
-			switch contents["status"] {
-			case "ready":
-			case "running":
-				if err := repository.UpdateProcessStatus(db, contents["ID"], "running"); err != nil {
-					return err
-				}
-				if err := repository.SetStartDate(db, contents["ID"]); err != nil {
-					return err
-				}
-			default:
-				if err := repository.UpdateProcessStatus(db, contents["ID"], "syncing"); err != nil {
-					return err
-				}
-				if err := repository.SetCompleteDate(db, contents["ID"]); err != nil {
-					return err
-				}
-				go func() {
-					log.Println("sync")
-					_, err := Rsync(db, contents["ID"])
-					if err != nil {
-						log.Println(err)
-						return
-					}
-					log.Println("sync done")
-					if err := repository.UpdateProcessStatus(db, contents["ID"], contents["status"]); err != nil {
-						return
-					}
-					if err := UpdateProcess(db); err != nil {
-						return
-					}
-				}()
-			}
-			if err := UpdateProcess(db); err != nil {
+		switch contents["status"] {
+		case "ready":
+		case "running":
+			if err := repository.UpdateProcessStatus(db, contents["ID"], "running"); err != nil {
 				return err
 			}
+			if err := repository.SetStartDate(db, contents["ID"]); err != nil {
+				return err
+			}
+		default:
+			if err := repository.UpdateProcessStatus(db, contents["ID"], "syncing"); err != nil {
+				return err
+			}
+			if err := repository.SetCompleteDate(db, contents["ID"]); err != nil {
+				return err
+			}
+			go func() {
+				log.Println("sync")
+				_, err := Rsync(db, contents["ID"])
+				if err != nil {
+					log.Println(err)
+					return
+				}
+				log.Println("sync done")
+				if err := repository.UpdateProcessStatus(db, contents["ID"], contents["status"]); err != nil {
+					return
+				}
+				if err := UpdateProcess(db); err != nil {
+					return
+				}
+			}()
+		}
+		if err := UpdateProcess(db); err != nil {
+			return err
 		}
 	}
 	return nil
@@ -83,6 +81,18 @@ func Connection(ip string, port string, db *sqlx.DB) error {
 			return
 		}
 	}()
+	processIDs, err := repository.NeedSyncProcesses(db)
+	log.Println(processIDs)
+	if err != nil {
+		return err
+	}
+	var commands []map[string]string
+	for _, processID := range processIDs {
+		commands = append(commands, map[string]string{"ID": processID, "status": "sync"})
+	}
+	if err := connections[ip].WriteJSON(commands); err != nil {
+		return err
+	}
 	return nil
 }
 
