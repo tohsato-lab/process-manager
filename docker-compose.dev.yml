@@ -64,7 +64,7 @@ services:
     volumes:
       - ./frontend/app/:/app
       - /usr/src/app/node_modules
-    command: npx ng serve --aot --host=0.0.0.0 --port 8080
+    command: npx ng serve --host=0.0.0.0 --port 8080
 
 networks:
   backend-net:
