@@ -9,6 +9,7 @@ dist/
 tmp/
 app/src/app/**/*.js
 app/src/app/**/*.js.map
+.angular/
 
 # dependencies
 node_modules/
