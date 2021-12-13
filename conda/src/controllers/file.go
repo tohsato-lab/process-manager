@@ -5,6 +5,7 @@ import (
 	"conda/repository"
 	"conda/utils"
 	"crypto/md5"
+	"database/sql"
 	"encoding/hex"
 	"encoding/json"
 	"github.com/jmoiron/sqlx"
@@ -95,11 +96,11 @@ func FileUpload(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 
 func DeleteFile(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	processID := r.FormValue("process_id")
-	if err := modules.DeleteCMD(processID); err != nil {
+	if err := repository.DeleteProcess(db, processID); err != nil && err != sql.ErrNoRows {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
-	if err := repository.DeleteProcess(db, processID); err != nil {
+	if err := modules.DeleteCMD(processID); err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}

@@ -1,6 +1,7 @@
 package modules
 
 import (
+	"database/sql"
 	"encoding/json"
 	"github.com/gorilla/websocket"
 	"github.com/jmoiron/sqlx"
@@ -42,7 +43,10 @@ func (c *Client) ReadPump() {
 		}
 		for _, command := range commands {
 			process, err := repository.GetProcess(c.DB, command["ID"])
-			if err != nil {
+			if err == sql.ErrNoRows {
+				log.Println("ErrNoRows")
+				continue
+			} else if err != nil {
 				log.Println(err)
 				return
 			}

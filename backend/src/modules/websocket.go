@@ -81,7 +81,7 @@ func Connection(ip string, port string, db *sqlx.DB) error {
 			return
 		}
 	}()
-	processIDs, err := repository.NeedSyncProcesses(db)
+	processIDs, err := repository.NeedSyncProcesses(db, ip)
 	log.Println(processIDs)
 	if err != nil {
 		return err

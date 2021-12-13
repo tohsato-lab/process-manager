@@ -14,6 +14,7 @@ import (
 )
 
 func EntryProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
+	log.Println("### EntryProcess")
 	processName := r.FormValue("process_name")
 	envName := r.FormValue("conda_env")
 	serverIP := r.FormValue("server_ip")
@@ -37,6 +38,7 @@ func EntryProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 }
 
 func KillProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
+	log.Println("### KillProcess")
 	processID := r.FormValue("process_id")
 	serverIP, err := repository.GetProcessServerIP(db, processID)
 	if err != nil {
@@ -74,6 +76,7 @@ func InTrashAllProcess(w http.ResponseWriter, _ *http.Request, db *sqlx.DB) {
 }
 
 func DeleteProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
+	log.Println("### DeleteProcess")
 	processID := r.FormValue("process_id")
 	serverIP, err := repository.GetProcessServerIP(db, processID)
 	if err != nil {

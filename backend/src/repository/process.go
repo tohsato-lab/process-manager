@@ -183,10 +183,11 @@ func DeleteProcess(db *sqlx.DB, processID string) error {
 	return nil
 }
 
-func NeedSyncProcesses(db *sqlx.DB) ([]string, error) {
+func NeedSyncProcesses(db *sqlx.DB, serverIP string) ([]string, error) {
 	var processIDs []string
 	if err := db.Select(&processIDs,
-		`SELECT id FROM process_table WHERE status='ready' OR status='running' OR status='syncing'`); err != nil {
+		`SELECT id FROM process_table 
+   			   WHERE (status='ready' OR status='running' OR status='syncing') AND server_ip=?`, serverIP); err != nil {
 		return nil, err
 	}
 	return processIDs, nil
