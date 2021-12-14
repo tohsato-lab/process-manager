@@ -35,8 +35,9 @@ export class ServersComponent implements OnInit, OnDestroy {
     public serverStatuses: any = {};
     public hiddenRegisterServer = true;
     public localhostName = location.hostname;
-    public inputIPAdder = '192.168.10.109';
+    public inputIPAdder = location.hostname;
     public inputPort = 5984;
+    public inputLimit = 1;
 
     private serverList = [];
     private headerTitle = 'サーバーリスト';
@@ -101,6 +102,7 @@ export class ServersComponent implements OnInit, OnDestroy {
             formData.append('mode', 'join');
             formData.append('ip', String(this.inputIPAdder));
             formData.append('port', String(this.inputPort));
+            formData.append('limit', String(this.inputLimit));
             this.http.post(`${config.httpScheme}${location.hostname}:${config.port}/calculator`, formData).subscribe(
                 () => {
                     window.location.reload();

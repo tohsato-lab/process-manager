@@ -5,9 +5,10 @@ import (
 )
 
 type CalcServers struct {
-	IP     string `db:"ip"`
-	Port   string `db:"port"`
-	Status string `db:"status"`
+	IP       string `db:"ip"`
+	Port     string `db:"port"`
+	Status   string `db:"status"`
+	NumLimit int    `db:"num_limit"`
 }
 
 func GetAllCalcServers(db *sqlx.DB) ([]CalcServers, error) {
@@ -34,13 +35,10 @@ func GetCalcServer(db *sqlx.DB, ip string) (CalcServers, error) {
 	return calcServer, nil
 }
 
-func SetCalcServer(db *sqlx.DB, ip string, port string) error {
-	_, err := db.NamedExec(`INSERT INTO calc_server_table (ip, port, status) VALUES (:ip,:port,:status)`,
-		map[string]interface{}{
-			"ip":     ip,
-			"port":   port,
-			"status": "active",
-		},
+func SetCalcServer(db *sqlx.DB, ip string, port string, numLimit int) error {
+	_, err := db.Query(
+		`INSERT INTO calc_server_table (ip, port, status, num_limit) VALUES (?, ?, ?, ?)`,
+		ip, port, "active", numLimit,
 	)
 	if err != nil {
 		return err
