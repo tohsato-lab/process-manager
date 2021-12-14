@@ -15,7 +15,7 @@ export class TrashComponent implements OnInit, OnDestroy {
     public processList = [];
 
     private headerTitle = 'ゴミ箱';
-    private subscription: Subscription;
+    private subscription!: Subscription;
 
     constructor(
         private commonService: CommonService,
@@ -48,11 +48,11 @@ export class TrashComponent implements OnInit, OnDestroy {
         this.sseService.closeServerSentEvent();
     }
 
-    public onOpenExplorer(id) {
+    public onOpenExplorer(id: string) {
         window.location.href = `${config.httpScheme}${location.hostname}:${config.port}/programs/${id}`;
     }
 
-    public onRecover(id): void {
+    public onRecover(id: string): void {
         const formData = new FormData();
         formData.append('process_id', id);
         this.http.post(
@@ -65,7 +65,7 @@ export class TrashComponent implements OnInit, OnDestroy {
         });
     }
 
-    public onDelete(id): void {
+    public onDelete(id: string): void {
         this.http.delete(
             `${config.httpScheme}${location.hostname}:${config.port}/trash?process_id=${id}`
         ).subscribe(value => {

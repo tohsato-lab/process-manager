@@ -17,7 +17,7 @@ FROM base as build
 COPY ./app /app/
 
 # 本番用ビルド
-RUN ng build --prod --output-path=./dist/build-by-docker
+RUN ng build --output-path=./dist/build-by-docker
 
 ### プロダクションステージ ###
 FROM nginx:latest as prod
