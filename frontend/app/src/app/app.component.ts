@@ -14,7 +14,7 @@ export class AppComponent implements OnInit {
 
     public headerTitle = 'process manager';
 
-    private subscription: Subscription;
+    private subscription!: Subscription;
 
     title = 'process manager';
     isHandset$: Observable<boolean> = this.breakpointObserver.observe('(max-width: 1200px)')
