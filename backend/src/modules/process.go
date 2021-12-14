@@ -26,7 +26,7 @@ func UpdateProcess(db *sqlx.DB) error {
 		return err
 	}
 	for _, server := range servers {
-		execIDs, err := repository.CanExecProcess(db, server.IP, 1)
+		execIDs, err := repository.CanExecProcess(db, server.IP, server.NumLimit)
 		if err != nil {
 			return err
 		} else if execIDs == nil {
