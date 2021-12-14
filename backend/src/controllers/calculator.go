@@ -7,17 +7,28 @@ import (
 	"encoding/json"
 	"github.com/jmoiron/sqlx"
 	"net/http"
+	"strconv"
 )
 
 func JoinServer(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	if r.FormValue("mode") == "join" {
 		ip := r.FormValue("ip")
 		port := r.FormValue("port")
+		limit, err := strconv.Atoi(r.FormValue("limit"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadGateway)
+			return
+		}
+		if limit < 1 {
+			http.Error(w, "実行数が1未満です", http.StatusBadGateway)
+			return
+		}
+
 		if err := modules.Connection(ip, port, db); err != nil {
 			http.Error(w, err.Error(), http.StatusBadGateway)
 			return
 		}
-		if err := repository.SetCalcServer(db, ip, port); err != nil {
+		if err := repository.SetCalcServer(db, ip, port, limit); err != nil {
 			http.Error(w, err.Error(), http.StatusBadGateway)
 			return
 		}
