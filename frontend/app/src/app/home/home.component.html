@@ -21,27 +21,27 @@
       </th>
       <th (click)="onOpenExplorer(process['ID'])" style="padding: 20px;">
         <div [ngClass]="
-        process['Status']=='ready'?'table-ready':
-        process['Status']=='running'?'table-running':
-        process['Status']=='syncing'?'table-running':
-        process['Status']=='complete'?'table-complete':
+        process['Status']==='ready'?'table-ready':
+        process['Status']==='running'?'table-running':
+        process['Status']==='syncing'?'table-running':
+        process['Status']==='complete'?'table-complete':
         'table-error'">{{process["Status"]}}</div>
       </th>
       <th (click)="onOpenExplorer(process['ID'])">{{process["EnvName"]}}</th>
       <th>{{process["StartDate"]}}</th>
       <th>{{process["CompleteDate"]}}</th>
       <th>
-        <div *ngIf="process['Status'] == 'running'" (click)="onKill(process['ID'])" class="kill-button">
+        <div *ngIf="process['Status'] === 'running'" (click)="onKill(process['ID'])" class="kill-button">
           kill
         </div>
-        <div *ngIf="process['Status'] != 'running'" style="border-radius: 10px; background: #8e8e8e; color: white;">
+        <div *ngIf="process['Status'] !== 'running'" style="border-radius: 10px; background: #8e8e8e; color: white;">
           kill
         </div>
       </th>
       <th><img (click)="onTrash(process['ID'])" src="../../assets/icon/trash.svg" alt="delete"></th>
     </tr>
   </table>
-  <div *ngIf="processList.length == 0" class="none-process">
+  <div *ngIf="processList.length === 0" class="none-process">
     プロセスが追加されていません
   </div>
 </div>
@@ -93,7 +93,7 @@
           </label>
         </div>
       </div>
-      <div (click)="onUpload()" *ngIf="uploadInfos.length != 0" class="upload-button">upload</div>
+      <div (click)="onUpload()" *ngIf="uploadInfos.length !== 0" class="upload-button">upload</div>
     </div>
   </div>
 </div>

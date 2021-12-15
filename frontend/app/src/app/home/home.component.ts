@@ -16,11 +16,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     public hiddenUploadPage = true;
     public uploadInfos: any = [];
-    public processList = [];
-    public execEnvs = {};
-    public envList: any;
+    public processList: any[] = [];
+    public execEnvs: { [index: string]: any } = {}
 
-    private subscription: Subscription;
+    private subscription!: Subscription;
     private headerTitle = 'プロセス一覧';
 
     constructor(
@@ -62,7 +61,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         return Object.keys(dict)
     }
 
-    public onOpenExplorer(id) {
+    public onOpenExplorer(id: string) {
         window.location.href = `${config.httpScheme}${location.hostname}:${config.port}/log?process_id=${id}`;
     }
 
@@ -85,7 +84,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.uploadInfos = [];
     }
 
-    public onSelectFiles(event): void {
+    public onSelectFiles(event: any): void {
         console.log(event);
         for (const file of [...event.addedFiles]) {
             this.uploadInfos.push({
@@ -100,7 +99,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
     }
 
-    public onKill(id): void {
+    public onKill(id: string): void {
         this.http.get(
             `${config.httpScheme}${location.hostname}:${config.port}/kill?process_id=${id}`
         ).subscribe(value => {
@@ -110,7 +109,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         });
     }
 
-    public onTrash(id): void {
+    public onTrash(id: string): void {
         const formData = new FormData();
         formData.append('process_id', id);
         this.http.post(
@@ -129,7 +128,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.onCloseUpload();
     }
 
-    private upload(info): void {
+    private upload(info: any): void {
         console.log('upload');
         const formData = new FormData();
         formData.append('file', info.file, info.file.name);
@@ -137,7 +136,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         formData.append('target_file', info.target);
         formData.append('exec_count', info.exec_count);
         this.http.put(`${config.httpScheme}${info.ip}:${this.execEnvs[info.ip]['Port']}/upload`, formData
-        ).subscribe((processIDs: Array<string>) => {
+        ).subscribe((processIDs: any) => {
             const formData = new FormData();
             formData.append('process_ids', JSON.stringify(processIDs));
             formData.append('process_name', String(info.file.name).split('.')[0]);

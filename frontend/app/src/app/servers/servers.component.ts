@@ -25,22 +25,23 @@ export class ServersComponent implements OnInit, OnDestroy {
     public chartColors: Colors[] = [{
         backgroundColor: ['#89c148', '#8d8d8d']
     }];
-    public options = {
+    public options: any = {
         rotation: Math.PI,
         circumference: Math.PI,
         tooltips: {enabled: false},
         hover: {mode: null},
     };
     public chartType: ChartType = 'doughnut';
-    public serverStatuses: { [ip: string]: MultiDataSet } = {};
+    public serverStatuses: any = {};
     public hiddenRegisterServer = true;
     public localhostName = location.hostname;
-    public inputIPAdder = '192.168.10.109';
+    public inputIPAdder = location.hostname;
     public inputPort = 5984;
+    public inputLimit = 1;
 
     private serverList = [];
     private headerTitle = 'サーバーリスト';
-    private subscription: Subscription;
+    private subscription!: Subscription;
 
     constructor(
         private sseService: SseService,
@@ -49,7 +50,7 @@ export class ServersComponent implements OnInit, OnDestroy {
     ) {
     }
 
-    getKeys(data): any {
+    getKeys(data: any): any {
         return Object.keys(data);
     }
 
@@ -101,6 +102,7 @@ export class ServersComponent implements OnInit, OnDestroy {
             formData.append('mode', 'join');
             formData.append('ip', String(this.inputIPAdder));
             formData.append('port', String(this.inputPort));
+            formData.append('limit', String(this.inputLimit));
             this.http.post(`${config.httpScheme}${location.hostname}:${config.port}/calculator`, formData).subscribe(
                 () => {
                     window.location.reload();

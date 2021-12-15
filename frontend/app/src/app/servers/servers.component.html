@@ -1,7 +1,7 @@
 <div class="grid-bse">
   <div *ngFor="let ip of getKeys(serverStatuses)" class="host-card-base">
-    <div *ngIf="serverStatuses[ip][3]=='active'">
-      <div *ngIf="this.localhostName!=ip" (click)="onStopServer(ip, serverStatuses[ip][2])"
+    <div *ngIf="serverStatuses[ip][3]==='active'">
+      <div *ngIf="this.localhostName!==ip" (click)="onStopServer(ip, serverStatuses[ip][2])"
            style="font-size: xx-large; text-align: right">
         ×
       </div>
@@ -27,7 +27,7 @@
       <div class="graph-label-text bottom-graph-label-text">ram</div>
       <div class="host-name-text">{{ip}}</div>
     </div>
-    <div *ngIf="serverStatuses[ip][3]!='active'" class="no-active-base">
+    <div *ngIf="serverStatuses[ip][3]!=='active'" class="no-active-base">
       <div class="no-active-title">No Active</div>
       <div class="no-active-icons-base">
         <div (click)="onResumeServer(ip, serverStatuses[ip][2])" class="no-active-icon-base">
@@ -67,6 +67,10 @@
         <div>
           <div class="register-form-text">ポート</div>
           <label><input class="register-input-form" type="number" [(ngModel)]="inputPort"></label>
+        </div>
+        <div>
+          <div class="register-form-text">同時実行数</div>
+          <label><input class="register-input-form" type="number" [(ngModel)]="inputLimit"></label>
         </div>
       </div>
       <div class="register-button" (click)="onRegisterServer()">register</div>

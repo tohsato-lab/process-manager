@@ -5,7 +5,6 @@ import {HttpClientModule} from '@angular/common/http';
 import {NgxDropzoneModule} from 'ngx-dropzone';
 import {FormsModule} from '@angular/forms';
 import {HomeComponent} from './home/home.component';
-import {HistoryComponent} from './history/history.component';
 import {DatasetComponent} from './dataset/dataset.component';
 import {CommonService} from './service/commom.service';
 import {RouterModule, Routes} from '@angular/router';
@@ -32,7 +31,6 @@ const routes: Routes = [
     declarations: [
         AppComponent,
         HomeComponent,
-        HistoryComponent,
         DatasetComponent,
         ServersComponent,
         TrashComponent,
