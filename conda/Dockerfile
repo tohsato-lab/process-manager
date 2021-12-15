@@ -5,7 +5,7 @@ COPY docker/conda_packages/ /conda_packages/
 RUN for package in `ls /conda_packages`; do conda env create -f="/conda_packages/$package"; done
 
 RUN apt-get update -y && \
-    apt-get install -y unzip ssh rsync sshpass libglib2.0-0 libsm6 libxrender1 libxext6 && \
+    apt-get install -y unzip ssh rsync sshpass libgl1-mesa-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
