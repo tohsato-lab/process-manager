@@ -7,6 +7,9 @@ Webアプリなのでスマホなどでも閲覧可能。
 
 # Features
 特に機械学習の研究目的で作成しており、Pytorch、Keras用のプログラムも自動で実行できる。
+技術的な点としては、frontendから実行ファイルを固めたzipをアップ→backendで実行命令→conda nodeで実際に実行し、終わったらconda node→backend→frontendへステータスをwebsocketで流している。
+
+![FGuTHa8VIAMiehX](https://user-images.githubusercontent.com/33301907/154478427-27d07eff-a46e-436c-8f9c-7759050bd68c.jpg)
 
 # Requirement
 * Ubuntu18.04以降（セットアップ用スクリプトがBashなため
