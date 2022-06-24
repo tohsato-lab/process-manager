@@ -53,6 +53,7 @@ services:
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     tty: true
+    shm_size: '32gb'
 
   frontend:
     build:
