@@ -22,9 +22,9 @@
               [options]="options"
               [legend]="false">
       </canvas>
-      <div class="bottom-graph-text graph-data-text">{{serverStatuses[ip][1][0] * 100 | number:'1.2-2'}}%</div>
+      <div class="bottom-graph-text graph-data-text">{{serverStatuses[ip][1][0] | number:'1.2-2'}}%</div>
       <div class="graph-label-text top-graph-label-text">vram</div>
-      <div class="graph-label-text bottom-graph-label-text">ram</div>
+      <div class="graph-label-text bottom-graph-label-text">used</div>
       <div class="host-name-text">{{ip}}</div>
     </div>
     <div *ngIf="serverStatuses[ip][3]!=='active'" class="no-active-base">

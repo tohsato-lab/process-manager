@@ -8,7 +8,7 @@ import {ChartType} from 'chart.js';
 import {HttpClient} from '@angular/common/http';
 
 interface hostStatus {
-    RAM: number;
+    USED: number;
     VRAM: number;
 }
 
@@ -71,7 +71,7 @@ export class ServersComponent implements OnInit, OnDestroy {
                         const data: hostStatus = JSON.parse(hostData.data);
                         this.serverStatuses[server['IP']] = [
                             [data.VRAM, 1 - data.VRAM],
-                            [data.RAM, 1 - data.RAM],
+                            [data.USED, 100 - data.USED],
                             server['Port'],
                             server['Status'],
                         ];
