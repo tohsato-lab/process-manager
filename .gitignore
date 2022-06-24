@@ -62,7 +62,7 @@ programs/
 # End of https://www.toptal.com/developers/gitignore/api/angular,go
 *.zip
 
-/data
-/data/
+/log
+/log/
 
 !sample/*

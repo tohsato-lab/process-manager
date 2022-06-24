@@ -49,7 +49,7 @@ export class TrashComponent implements OnInit, OnDestroy {
     }
 
     public onOpenExplorer(id: string) {
-        window.location.href = `${config.httpScheme}${location.hostname}:${config.port}/programs/${id}`;
+        window.location.href = `${config.httpScheme}${location.hostname}:${config.port}/log/${id}`;
     }
 
     public onRecover(id: string): void {

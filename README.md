@@ -15,6 +15,9 @@ Webアプリなのでスマホなどでも閲覧可能。
 
 # Installation
 ```bash
+cd process-manager
+mkdir log
+
 cd process-manager/setup
 bash docker-install.sh
 sudo reboot #必ず！！

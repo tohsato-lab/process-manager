@@ -108,7 +108,7 @@ func DeleteProcess(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
-	cmd := "rm -rf ../../data/" + processID + "/"
+	cmd := "rm -rf ../../log/" + processID + "/"
 	log.Println(cmd)
 	if _, err := exec.Command("sh", "-c", cmd).Output(); err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)

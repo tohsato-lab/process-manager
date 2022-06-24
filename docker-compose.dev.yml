@@ -47,8 +47,8 @@ services:
       - backend-net
     volumes:
       - type: bind
-        source: ./data
-        target: /process-manager/data
+        source: ./log
+        target: /process-manager/log
     runtime: nvidia
     environment:
       - NVIDIA_VISIBLE_DEVICES=all

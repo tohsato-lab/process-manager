@@ -83,7 +83,7 @@ func main() {
 	r.Methods(http.MethodGet).Path("/log").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		controllers.ProcessLog(w, r, db)
 	})
-	r.PathPrefix("/data/").Handler(controllers.SpaHandler{StaticPath: "../../"})
+	r.PathPrefix("/log/").Handler(controllers.SpaHandler{StaticPath: "../../"})
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},

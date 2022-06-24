@@ -12,8 +12,8 @@ func Rsync(db *sqlx.DB, processID string) (int, error) {
 	if err != nil {
 		return 1, err
 	}
-	source := "docker@" + process.ServerIP + ":/process-manager/data/" + processID
-	target := "../../data/"
+	source := "docker@" + process.ServerIP + ":/process-manager/log/" + processID
+	target := "../../log/"
 	cmd := exec.Command("bash", "scripts/rsync.sh", source, target)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

@@ -45,7 +45,7 @@ func main() {
 	r.Methods(http.MethodDelete).Path("/delete").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		controllers.DeleteFile(w, r, db)
 	})
-	r.PathPrefix("/data/").Handler(controllers.SpaHandler{StaticPath: "../../"})
+	r.PathPrefix("/log/").Handler(controllers.SpaHandler{StaticPath: "../../"})
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},

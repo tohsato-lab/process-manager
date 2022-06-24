@@ -13,7 +13,7 @@ import (
 
 func execute(db *sqlx.DB, id string, targetFile string, envName string) (string, error) {
 	//実行
-	cmd := exec.Command("bash", "scripts/execute.sh", "../../data/"+id, targetFile, envName)
+	cmd := exec.Command("bash", "scripts/execute.sh", "../../log/"+id, targetFile, envName)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {
@@ -62,7 +62,7 @@ func killCMD(db *sqlx.DB, processID string) (string, error) {
 
 func DeleteCMD(processID string) error {
 	log.Println("delete")
-	cmd := "rm -rf ../../data/" + processID + "/"
+	cmd := "rm -rf ../../log/" + processID + "/"
 	log.Println(cmd)
 	if _, err := exec.Command("sh", "-c", cmd).Output(); err != nil {
 		return err

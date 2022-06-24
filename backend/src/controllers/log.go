@@ -48,5 +48,5 @@ func ProcessLog(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	} else {
 		hostName = r.Host
 	}
-	http.Redirect(w, r, "http://"+hostName+"/data/"+processID, http.StatusMovedPermanently)
+	http.Redirect(w, r, "http://"+hostName+"/log/"+processID, http.StatusMovedPermanently)
 }
