@@ -14,9 +14,14 @@ RUN go build \
     -o /go/bin/main \
     -ldflags '-s -w'
 
-FROM linuxserver/openssh-server
+FROM ubuntu:20.04
 
-RUN apk add --no-cache rsync sshpass
+RUN DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && \
+    apt-get install -y tzdata wget && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+ENV TZ Asia/Tokyo
 
 WORKDIR /process-manager/backend/src
 COPY --from=builder /go/bin/main ./main

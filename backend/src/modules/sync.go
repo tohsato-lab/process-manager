@@ -7,14 +7,14 @@ import (
 	"os/exec"
 )
 
-func Rsync(db *sqlx.DB, processID string) (int, error) {
+func DownloadLogs(db *sqlx.DB, processID string) (int, error) {
 	process, err := repository.GetProcess(db, processID)
 	if err != nil {
 		return 1, err
 	}
-	source := "docker@" + process.ServerIP + ":/process-manager/log/" + processID
+	source := "http://" + process.ServerIP + ":5983/log/" + processID
 	target := "../../log/"
-	cmd := exec.Command("bash", "scripts/rsync.sh", source, target)
+	cmd := exec.Command("bash", "scripts/wget.sh", processID, source, target)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {

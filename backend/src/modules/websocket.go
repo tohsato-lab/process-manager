@@ -45,7 +45,7 @@ func readPump(ip string, db *sqlx.DB) error {
 			}
 			go func() {
 				log.Println("sync")
-				_, err := Rsync(db, contents["ID"])
+				_, err := DownloadLogs(db, contents["ID"])
 				if err != nil {
 					log.Println(err)
 					return

@@ -29,14 +29,6 @@ services:
       - backend-net
     volumes_from:
       - conda:rw
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Asia/Tokyo
-      - SUDO_ACCESS=false #optional
-      - PASSWORD_ACCESS=true #optional
-      - USER_PASSWORD=docker #optional
-      - USER_NAME=docker #optional
 
   conda:
     build: ./conda
