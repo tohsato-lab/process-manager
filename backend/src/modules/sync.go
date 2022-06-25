@@ -12,9 +12,7 @@ func DownloadLogs(db *sqlx.DB, processID string) (int, error) {
 	if err != nil {
 		return 1, err
 	}
-	source := "http://" + process.ServerIP + ":5983/log/" + processID
-	target := "../../log/"
-	cmd := exec.Command("bash", "scripts/wget.sh", processID, source, target)
+	cmd := exec.Command("bash", "scripts/lftp.sh", process.ServerIP, processID)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {

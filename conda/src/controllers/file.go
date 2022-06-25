@@ -58,7 +58,7 @@ func FileUpload(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	for i := 0; i < execCount; i++ {
 		md5Data := md5.Sum([]byte(time.Now().String()))
 		processID := hex.EncodeToString(md5Data[:])
-		targetDIR := "/process-manager/log/" + processID + "/"
+		targetDIR := "/home/process-manager/log/" + processID + "/"
 		if err := os.MkdirAll(targetDIR, 0755); err != nil {
 			http.Error(w, err.Error(), http.StatusBadGateway)
 			return

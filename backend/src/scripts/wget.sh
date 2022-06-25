@@ -4,14 +4,28 @@ FILENAME=$1
 SOURCE=$2
 TARGET=$3
 
+if [ -z $FILENAME ]; then
+    echo "FILENAME is empty"
+    exit 1
+fi
+
 # すでにログがある場合
-if [ -d $TARGET ]; then
-    echo "$FILENAME is already exists."
+echo $TARGET
+if [ -d "$TARGET" ]; then
+    echo "$TARGET is already exists."
     exit 0
 fi
 
-if [ -d .tmp/$FILENAME ]; then
-    rm -r .tmp/$FILENAME
-fi
-wget -r --level=0 -q --show-progress -np -nH --cut-dirs=1 -R index.html $SOURCE -P .tmp
+wget --mirror \
+     --page-requisites \
+     --span-hosts \
+     --no-parent \
+     --convert-links \
+     --no-host-directories \
+     --execute robots=off \
+     --cut-dirs=1 \
+     $SOURCE \
+     -P .tmp/
+
+echo "mv .tmp/$FILENAME $TARGET"
 mv .tmp/$FILENAME $TARGET

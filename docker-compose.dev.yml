@@ -25,10 +25,17 @@ services:
     ports:
       - "5983:5983"
       - "8022:2222"
+      - "21:21"
+      - "30000-30059:30000-30059"
     networks:
       - backend-net
     volumes_from:
       - conda:rw
+    environment:
+      - PUBLICHOST=0.0.0.0
+      - FTP_USER_NAME=docker
+      - FTP_USER_PASS=docker
+      - FTP_USER_HOME=/home/process-manager
 
   conda:
     build: ./conda
@@ -40,7 +47,7 @@ services:
     volumes:
       - type: bind
         source: ./log
-        target: /process-manager/log
+        target: /home/process-manager/log
     runtime: nvidia
     environment:
       - NVIDIA_VISIBLE_DEVICES=all

@@ -14,17 +14,17 @@ RUN go build \
     -o /go/bin/main \
     -ldflags '-s -w'
 
-FROM ubuntu:20.04
+FROM stilliard/pure-ftpd
 
 RUN DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get install -y tzdata wget && \
+    apt-get install -y tzdata lftp && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 ENV TZ Asia/Tokyo
 
-WORKDIR /process-manager/backend/src
+WORKDIR /home/process-manager/backend/src
 COPY --from=builder /go/bin/main ./main
 COPY ./src/scripts/ ./scripts/
 
-CMD ["./main"]
+CMD sh -c "/run.sh -c 30 -C 10 -l puredb:/etc/pure-ftpd/pureftpd.pdb -E -j -R -P $PUBLICHOST -p 30000:30059 & ./main"
