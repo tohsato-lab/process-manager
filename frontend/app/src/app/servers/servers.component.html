@@ -5,6 +5,9 @@
            style="font-size: xx-large; text-align: right">
         ×
       </div>
+      <div *ngIf="this.localhostName===ip" style="font-size: xx-large; text-align: right; color: #ffffff00">
+        ×
+      </div>
       <canvas baseChart class="top-graph"
               [data]="serverStatuses[ip][0]"
               [labels]="chartLabels"
