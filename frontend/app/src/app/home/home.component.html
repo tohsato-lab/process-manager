@@ -38,7 +38,10 @@
           kill
         </div>
       </th>
-      <th><img (click)="onTrash(process['ID'])" src="../../assets/icon/trash.svg" alt="delete"></th>
+      <th>
+        <img *ngIf="process['Status']==='running' || process['Status']==='syncing'" src="../../assets/icon/trash-active-process.svg" alt="trash">
+        <img *ngIf="!(process['Status']==='running' || process['Status']==='syncing')" (click)="onTrash(process['ID'])" src="../../assets/icon/trash.svg" alt="trash">
+      </th>
     </tr>
   </table>
   <div *ngIf="processList.length === 0" class="none-process">
