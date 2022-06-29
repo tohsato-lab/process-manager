@@ -8,6 +8,7 @@ import (
 type Process struct {
 	ID         string        `db:"id"`
 	TargetFile string        `db:"target_file"`
+	Args       string        `db:"args"`
 	EnvName    string        `db:"env_name"`
 	Status     string        `db:"status"`
 	PID        sql.NullInt32 `db:"pid"`
@@ -21,12 +22,13 @@ func GetProcess(db *sqlx.DB, processID string) (Process, error) {
 	return process, nil
 }
 
-func SetProcess(db *sqlx.DB, processID string, targetFilename string, envName string) error {
+func SetProcess(db *sqlx.DB, processID string, targetFilename string, args string, envName string) error {
 	_, err := db.NamedExec(
-		`INSERT INTO calc_process_table (id, target_file, env_name) VALUES (:id, :target_file, :env_name)`,
+		`INSERT INTO calc_process_table (id, target_file, args, env_name) VALUES (:id, :target_file, :args, :env_name)`,
 		map[string]interface{}{
 			"id":          processID,
 			"target_file": targetFilename,
+			"args":        args,
 			"env_name":    envName,
 		},
 	)

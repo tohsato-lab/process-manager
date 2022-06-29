@@ -62,7 +62,7 @@ func (c *Client) ReadPump() {
 					}
 
 					c.Pipe <- map[string]string{"ID": process.ID, "status": "running"}
-					status, err := execute(c.DB, process.ID, process.TargetFile, process.EnvName)
+					status, err := execute(c.DB, process.ID, process.TargetFile, process.Args, process.EnvName)
 					if err != nil {
 						log.Println(err)
 						return

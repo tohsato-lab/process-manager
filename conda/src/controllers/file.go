@@ -43,6 +43,7 @@ func FileUpload(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 	envName := r.FormValue("conda_env")
 	execCount, _ := strconv.Atoi(r.FormValue("exec_count"))
 	targetFile := r.FormValue("target_file")
+	args := r.FormValue("args")
 	execCount, err := strconv.Atoi(r.FormValue("exec_count"))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
@@ -78,7 +79,7 @@ func FileUpload(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 			http.Error(w, err.Error(), http.StatusBadGateway)
 			return
 		}
-		if err := repository.SetProcess(db, processID, targetFile, envName); err != nil {
+		if err := repository.SetProcess(db, processID, targetFile, args, envName); err != nil {
 			http.Error(w, err.Error(), http.StatusBadGateway)
 			return
 		}

@@ -11,9 +11,9 @@ import (
 	"conda/repository"
 )
 
-func execute(db *sqlx.DB, id string, targetFile string, envName string) (string, error) {
+func execute(db *sqlx.DB, id string, targetFile string, args string, envName string) (string, error) {
 	//実行
-	cmd := exec.Command("bash", "scripts/execute.sh", "../../log/"+id, targetFile, envName)
+	cmd := exec.Command("bash", "scripts/execute.sh", "../../log/"+id, targetFile, args, envName)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {

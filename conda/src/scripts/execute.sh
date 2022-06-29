@@ -1,6 +1,7 @@
 cd "$1" || exit
 TARGET=$2
-CONDA_ENV=$3
+ARGS=$3
+CONDA_ENV=$4
 ROOT=$(pwd)
 DIR=($(find ./ | grep "$TARGET"))
 
@@ -16,7 +17,7 @@ cd $(dirname "${DIR[0]}") || exit
 
 source /opt/conda/etc/profile.d/conda.sh
 conda activate "$CONDA_ENV"
-python -u "$TARGET" >> "$ROOT/history.log" 2>&1
+python -u "$TARGET" "$ARGS" >> "$ROOT/history.log" 2>&1
 
 # 0番目のコマンドのシグナルをキャッチ
 signal=${PIPESTATUS[0]}

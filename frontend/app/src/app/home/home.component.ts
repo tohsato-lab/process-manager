@@ -92,6 +92,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 vram: 0.0,
                 env: this.execEnvs[this.getKeys(this.execEnvs)[0]]['Envs'][0],
                 target: 'main.py',
+                args: '',
                 exec_count: 1,
                 ip: this.getKeys(this.execEnvs)[0],
                 comment: '',
@@ -135,6 +136,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         formData.append('conda_env', info.env);
         formData.append('target_file', info.target);
         formData.append('exec_count', info.exec_count);
+        formData.append('args', info.args);
         this.http.put(`${config.httpScheme}${info.ip}:${this.execEnvs[info.ip]['Port']}/upload`, formData
         ).subscribe((processIDs: any) => {
             const formData = new FormData();
@@ -143,6 +145,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             formData.append('conda_env', info.env);
             formData.append('server_ip', info.ip);
             formData.append('comment', info.comment);
+            formData.append('args', info.args);
             this.http.put(`${config.httpScheme}${location.hostname}:${config.port}/process`, formData
             ).subscribe(value => {
                 console.log(value);

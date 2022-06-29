@@ -88,15 +88,16 @@ func GetProcessServerIP(db *sqlx.DB, processID string) (string, error) {
 	return serverIP, nil
 }
 
-func SetProcess(db *sqlx.DB, processID string, processName string, envName string, IP string, comment string) error {
+func SetProcess(db *sqlx.DB, processID string, processName string, envName string, IP string, comment string, args string) error {
 	_, err := db.NamedExec(
-		`INSERT INTO process_table (id, process_name, env_name, server_ip, comment, upload_date) 
-			   VALUES (:id, :process_name, :env_name, :server_ip, :comment, :upload_date)`, map[string]interface{}{
+		`INSERT INTO process_table (id, process_name, env_name, server_ip, comment, args, upload_date) 
+			   VALUES (:id, :process_name, :env_name, :server_ip, :comment, :args, :upload_date)`, map[string]interface{}{
 			"id":           processID,
 			"process_name": processName,
 			"env_name":     envName,
 			"server_ip":    IP,
 			"comment":      comment,
+			"args":         args,
 			"upload_date":  time.Now(),
 		},
 	)

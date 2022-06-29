@@ -51,6 +51,10 @@ docker-compose -f docker-compose.dev.yml up --build
 docker-compose -f docker-compose.dev.yml up --detach --build conda backend
 ```
 
+```
+ALTER TABLE calc_process_table ADD COLUMN args VARCHAR(3641) DEFAULT '' COMMENT '';
+```
+
 # Author
 * Hirorittsu
 * 遠里研究室１期生

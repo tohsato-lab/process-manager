@@ -29,8 +29,9 @@ CREATE TABLE IF NOT EXISTS `calc_process_table`
     `id`          VARCHAR(100) NOT NULL PRIMARY KEY COMMENT 'ID',
     `target_file` VARCHAR(200) NOT NULL COMMENT '起動ファイル名',
     `env_name`    VARCHAR(200) NOT NULL COMMENT '環境名',
-    `status`      VARCHAR(100) DEFAULT 'ready' COMMENT '状態',
-    `pid`         INT          DEFAULT NULL COMMENT 'PID'
+    `status`      VARCHAR(100)  DEFAULT 'ready' COMMENT '状態',
+    `pid`         INT           DEFAULT NULL COMMENT 'PID',
+    `args`        VARCHAR(3641) DEFAULT '' COMMENT '引数'
 ) DEFAULT CHARACTER SET = utf8;
 
 CREATE USER IF NOT EXISTS 'golang'@'%' IDENTIFIED BY 'process_manager';
