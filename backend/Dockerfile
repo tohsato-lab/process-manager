@@ -14,17 +14,15 @@ RUN go build \
     -o /go/bin/main \
     -ldflags '-s -w'
 
-FROM stilliard/pure-ftpd
+FROM delfer/alpine-ftp-server
 
 RUN DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && \
-    apt-get install -y tzdata lftp && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk --no-cache add tzdata lftp bash \
+    && rm -rf pidproxy
 ENV TZ Asia/Tokyo
 
 WORKDIR /home/process-manager/backend/src
 COPY --from=builder /go/bin/main ./main
 COPY ./src/scripts/ ./scripts/
 
-CMD sh -c "/run.sh -c 30 -C 10 -l puredb:/etc/pure-ftpd/pureftpd.pdb -E -j -R -P $PUBLICHOST -p 30000:30059 & ./main"
+CMD sh -c "/sbin/tini -- /bin/start_vsftpd.sh & ./main"
