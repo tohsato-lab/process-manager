@@ -16,7 +16,6 @@ export class SseService {
     }
 
     public closeServerSentEvent() {
-        console.log(this.eventSource);
         this.eventSource.close();
     }
 
@@ -29,9 +28,9 @@ export class SseService {
                 });
             };
             this.eventSource.onerror = error => {
-                console.log(error);
                 this._zone.run(() => {
                     observer.error(error);
+                    this.closeServerSentEvent()
                 });
             };
         });

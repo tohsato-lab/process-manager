@@ -46,22 +46,22 @@ func UpdateProcess(db *sqlx.DB) error {
 }
 
 func ExecProcess(db *sqlx.DB, processID string, serverIP string) error {
-	if err := repository.UpdateProcessStatus(db, processID, "running"); err != nil {
-		return err
-	}
 	commands := []map[string]string{{"ID": processID, "status": "running"}}
 	if err := connections[serverIP].WriteJSON(commands); err != nil {
+		return err
+	}
+	if err := repository.UpdateProcessStatus(db, processID, "running"); err != nil {
 		return err
 	}
 	return nil
 }
 
 func KillProcess(db *sqlx.DB, processID string, serverIP string) error {
-	if err := repository.UpdateProcessStatus(db, processID, "killed"); err != nil {
-		return err
-	}
 	commands := []map[string]string{{"ID": processID, "status": "kill"}}
 	if err := connections[serverIP].WriteJSON(commands); err != nil {
+		return err
+	}
+	if err := repository.UpdateProcessStatus(db, processID, "killed"); err != nil {
 		return err
 	}
 	return nil

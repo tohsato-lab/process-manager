@@ -72,7 +72,11 @@ func (c *Client) ReadPump() {
 						return
 					}
 					log.Println("exec done")
-					c.Pipe <- map[string]string{"ID": process.ID, "status": status}
+					if _, ok := Clients[c]; ok {
+						c.Pipe <- map[string]string{"ID": process.ID, "status": status}
+					} else {
+						log.Println("channel closed")
+					}
 				}()
 			case "kill":
 				log.Println("kill process")
@@ -85,9 +89,17 @@ func (c *Client) ReadPump() {
 					log.Println(err)
 					return
 				}
-				c.Pipe <- map[string]string{"ID": process.ID, "status": status}
+				if _, ok := Clients[c]; ok {
+					c.Pipe <- map[string]string{"ID": process.ID, "status": status}
+				} else {
+					log.Println("channel closed")
+				}
 			case "sync":
-				c.Pipe <- map[string]string{"ID": process.ID, "status": process.Status}
+				if _, ok := Clients[c]; ok {
+					c.Pipe <- map[string]string{"ID": process.ID, "status": process.Status}
+				} else {
+					log.Println("channel closed")
+				}
 			}
 		}
 	}

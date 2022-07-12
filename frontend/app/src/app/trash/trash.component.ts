@@ -73,6 +73,7 @@ export class TrashComponent implements OnInit, OnDestroy {
             this.getTrashProcesses();
         }, error => {
             console.log(error);
+            alert("Failed to Delete Process");
         });
     }
 

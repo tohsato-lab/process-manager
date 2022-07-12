@@ -26,7 +26,8 @@
       <div class="graph-label-text bottom-graph-label-text">used</div>
       <div class="host-name-text">{{ip}}</div>
     </div>
-    <div *ngIf="serverStatuses[ip][3]!=='active'" class="no-active-base">
+
+    <div *ngIf="serverStatuses[ip][3]==='stop'" class="no-active-base">
       <div class="no-active-title">No Active</div>
       <div class="no-active-icons-base">
         <div (click)="onResumeServer(ip, serverStatuses[ip][2])" class="no-active-icon-base">
@@ -38,6 +39,11 @@
           <div>delete</div>
         </div>
       </div>
+      <div class="host-name-text" style="position: relative; font-size: large; right: 0; bottom: 0;">- {{ip}} -</div>
+    </div>
+
+    <div *ngIf="serverStatuses[ip][3]==='lost'" class="no-active-base">
+      <div class="no-active-title">Lost</div>
       <div class="host-name-text" style="position: relative; font-size: large; right: 0; bottom: 0;">- {{ip}} -</div>
     </div>
 

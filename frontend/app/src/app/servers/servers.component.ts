@@ -3,7 +3,7 @@ import {SseService} from '../service/sse.service';
 import config from '../../../config';
 import {CommonService} from '../service/commom.service';
 import {Subscription} from 'rxjs';
-import {MultiDataSet, Label, Colors} from 'ng2-charts';
+import {Label, Colors} from 'ng2-charts';
 import {ChartType} from 'chart.js';
 import {HttpClient} from '@angular/common/http';
 
@@ -34,7 +34,6 @@ export class ServersComponent implements OnInit, OnDestroy {
     public chartType: ChartType = 'doughnut';
     public serverStatuses: any = {};
     public hiddenRegisterServer = true;
-    public localhostName = location.hostname;
     public inputIPAdder = location.hostname;
     public inputPort = 5984;
     public inputLimit = 1;
@@ -75,8 +74,13 @@ export class ServersComponent implements OnInit, OnDestroy {
                             server['Port'],
                             server['Status'],
                         ];
-                    }, error => {
-                        console.log(error)
+                    }, _ => {
+                        this.serverStatuses[server['IP']] = [
+                            [],
+                            [],
+                            server['Port'],
+                            "lost",
+                        ];
                     })
                 }
             })
