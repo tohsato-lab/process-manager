@@ -37,7 +37,7 @@ func execute(db *sqlx.DB, id string, targetFile string, args string, envName str
 		status = "complete"
 	case 1:
 		status = "error"
-	case 128 + 15:
+	case 128 + 2:
 		status = "killed"
 	default:
 		status = "unknown:" + strconv.Itoa(signal)
@@ -51,7 +51,7 @@ func killCMD(db *sqlx.DB, processID string) (string, error) {
 		return "", err
 	}
 	if process.PID.Valid {
-		cmd := "kill `ps ho pid --ppid=" + strconv.Itoa(int(process.PID.Int32)) + "`"
+		cmd := "kill -2 `ps ho pid --ppid=" + strconv.Itoa(int(process.PID.Int32)) + "`"
 		if err := exec.Command("sh", "-c", cmd).Run(); err != nil {
 			return "", err
 		}
