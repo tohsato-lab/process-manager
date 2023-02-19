@@ -74,7 +74,7 @@ func FileUpload(w http.ResponseWriter, r *http.Request, db *sqlx.DB) {
 			http.Error(w, err.Error(), http.StatusBadGateway)
 			return
 		}
-		cmd := "unzip " + targetDIR + filename + " -d " + targetDIR
+		cmd := "unzip '" + targetDIR + filename + "' -d " + targetDIR
 		if _, err := exec.Command("sh", "-c", cmd).Output(); err != nil {
 			http.Error(w, err.Error(), http.StatusBadGateway)
 			return
