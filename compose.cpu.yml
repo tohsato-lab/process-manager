@@ -43,13 +43,9 @@ services:
       - backend-net
     volumes:
       - /home/migly/LAB/data:/home/migly/LAB/data:ro
-      - /home/yuki/code/dataset:/home/yuki/code/dataset:ro
       - type: bind
         source: ./log
         target: /home/process-manager/log
-    runtime: nvidia
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
     tty: true
     shm_size: '32gb'
 

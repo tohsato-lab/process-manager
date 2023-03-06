@@ -1,0 +1,69 @@
+version: "2.4"
+services:
+  db:
+    image: mysql:5.7
+    container_name: mysql_host
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: process_manager_db
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: docker
+      TZ: 'Asia/Tokyo'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-db:/var/lib/mysql
+      - ./mysql/docker/my.conf:/etc/mysql/conf.d/my.conf
+      - ./mysql/docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3305:3306"
+    networks:
+      - backend-net
+
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "5983:5983"
+      - "31:21"
+      - "21000-21010:21000-21010"
+    networks:
+      - backend-net
+    volumes_from:
+      - conda:rw
+    environment:
+      - ADDRESS=0.0.0.0
+      - USERS=docker|docker
+
+  conda:
+    build: ./conda
+    container_name: conda
+    ports:
+      - "5984:5984"
+    networks:
+      - backend-net
+    volumes:
+      - /home/migly/LAB/data:/home/migly/LAB/data:ro
+      - /home/yuki/code/dataset:/home/yuki/code/dataset:ro
+      - type: bind
+        source: ./log
+        target: /home/process-manager/log
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    tty: true
+    shm_size: '64gb'
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "8080:8080"
+    tty: true
+
+networks:
+  backend-net:
+    driver: bridge
+
+volumes:
+  mysql-db:
+    driver: local
