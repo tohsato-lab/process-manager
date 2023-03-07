@@ -44,6 +44,12 @@
 
     <div *ngIf="serverStatuses[ip][3]==='lost'" class="no-active-base">
       <div class="no-active-title">Lost</div>
+      <div class="no-active-icons-base">
+        <div (click)="onDeleteServer(ip)" class="no-active-icon-base">
+          <img src="../../assets/icon/cut.svg" alt="delete">
+          <div>delete</div>
+        </div>
+      </div>
       <div class="host-name-text" style="position: relative; font-size: large; right: 0; bottom: 0;">- {{ip}} -</div>
     </div>
 

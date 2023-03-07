@@ -26,15 +26,15 @@ sudo reboot #必ず！！
 # Usage
 ```bash
 cd process-manager
-docker-compose up --build -d
+docker compose up --build -d
 ```
 ブラウザで http://localhost:8080 にアクセス
 
 # Update
 ```bash
-docker-compose down
+docker compose down
 git pull origin main
-docker-compose up --build -d
+docker compose up --build -d
 ```
 
 # Note
@@ -47,8 +47,8 @@ conda env export | grep -v "^prefix: " > pytorch.yml
 # Develop
 開発用
 ```shell
-docker-compose -f docker-compose.dev.yml up --build
-docker-compose -f docker-compose.dev.yml up --detach --build conda backend
+docker compose -f docker-compose.dev.yml up --build
+docker compose -f docker-compose.dev.yml up --detach --build conda backend
 ```
 
 ```
