@@ -1,5 +1,5 @@
 ### ベースステージ ###
-FROM node:16.15.1 as base
+FROM node:18.14.1 as base
 
 # install angular
 RUN npm install -g @angular/cli
