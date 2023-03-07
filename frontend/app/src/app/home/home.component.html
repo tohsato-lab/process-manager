@@ -39,8 +39,10 @@
         </div>
       </th>
       <th>
-        <img *ngIf="process['Status']==='running' || process['Status']==='syncing'" src="../../assets/icon/trash-active-process.svg" alt="trash">
-        <img *ngIf="!(process['Status']==='running' || process['Status']==='syncing')" (click)="onTrash(process['ID'])" src="../../assets/icon/trash.svg" alt="trash">
+        <img *ngIf="process['Status']==='running' || process['Status']==='syncing'"
+             src="../../assets/icon/trash-active-process.svg" alt="trash">
+        <img *ngIf="!(process['Status']==='running' || process['Status']==='syncing')" (click)="onTrash(process['ID'])"
+             src="../../assets/icon/trash.svg" alt="trash">
       </th>
     </tr>
   </table>
@@ -59,7 +61,9 @@
       <ngx-dropzone (change)="onSelectFiles($event)" class="upload-drop-zone">
         <ngx-dropzone-label>ここにファイルをドロップしてください</ngx-dropzone-label>
       </ngx-dropzone>
-      <div *ngFor="let info of uploadInfos" class="upload-item">
+      <div *ngFor="let info of uploadInfos" class="upload-item"
+           [ngStyle]="{'background': 'linear-gradient(to right, #009efd ' + info['uploadProgress']+
+           '%, #666666 ' + info['uploadProgress'] + '%)'}">
         <div style="margin: 0 2%;">{{info.file.name}}</div>
         <div>
           <div>
@@ -99,8 +103,14 @@
             <textarea class="upload-input-form upload-comment-text-input" [(ngModel)]="info['comment']"></textarea>
           </label>
         </div>
+        <div *ngIf="isUploading" style="width: 100%; margin: 0 2%;">
+          <div *ngIf="info['uploadProgress'] !== 100">{{info['uploadProgress']}}%</div>
+          <div *ngIf="info['uploadProgress'] === 100">処理中・・・</div>
+        </div>
       </div>
-      <div (click)="onUpload()" *ngIf="uploadInfos.length !== 0" class="upload-button">upload</div>
+      <div (click)="onUpload()" *ngIf="uploadInfos.length !== 0 && !isUploading" class="upload-button">
+        upload
+      </div>
     </div>
   </div>
 </div>

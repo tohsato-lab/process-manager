@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpEventType, HttpRequest} from '@angular/common/http';
 import config from '../../../config';
 import {Subscription} from 'rxjs';
 import {CommonService} from '../service/commom.service';
@@ -18,6 +18,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     public uploadInfos: any = [];
     public processList: any[] = [];
     public execEnvs: { [index: string]: any } = {}
+    public isUploading = false;
 
     private subscription!: Subscription;
     private headerTitle = 'プロセス一覧';
@@ -73,8 +74,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                 this.execEnvs = data;
             }, error => {
                 console.log(error);
+                alert(error.error);
                 this.onCloseUpload();
-                alert(error.error)
             }
         )
     }
@@ -82,6 +83,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     public onCloseUpload(): void {
         this.hiddenUploadPage = true;
         this.uploadInfos = [];
+        this.isUploading = false;
     }
 
     public onSelectFiles(event: any): void {
@@ -96,6 +98,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 exec_count: 1,
                 ip: this.getKeys(this.execEnvs)[0],
                 comment: '',
+                uploadProgress: 0,
             });
         }
     }
@@ -123,10 +126,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     public onUpload(): void {
+        this.isUploading = true;
         for (const fileInfo of this.uploadInfos) {
             this.upload(fileInfo);
         }
-        this.onCloseUpload();
     }
 
     private upload(info: any): void {
@@ -137,23 +140,45 @@ export class HomeComponent implements OnInit, OnDestroy {
         formData.append('target_file', info.target);
         formData.append('exec_count', info.exec_count);
         formData.append('args', info.args);
-        this.http.put(`${config.httpScheme}${info.ip}:${this.execEnvs[info.ip]['Port']}/upload`, formData
-        ).subscribe((processIDs: any) => {
-            const formData = new FormData();
-            formData.append('process_ids', JSON.stringify(processIDs));
-            formData.append('process_name', String(info.file.name).split('.')[0]);
-            formData.append('conda_env', info.env);
-            formData.append('server_ip', info.ip);
-            formData.append('comment', info.comment);
-            formData.append('args', info.args);
-            this.http.put(`${config.httpScheme}${location.hostname}:${config.port}/process`, formData
-            ).subscribe(value => {
-                console.log(value);
+
+        this.http.request(
+            new HttpRequest(
+                'PUT',
+                `${config.httpScheme}${info.ip}:${this.execEnvs[info.ip]['Port']}/upload`,
+                formData,
+                {
+                    reportProgress: true
+                }
+            )
+        ).subscribe(
+            event => {
+                switch (event.type) {
+                    case HttpEventType.UploadProgress:
+                        console.log("upload progress");
+                        info.uploadProgress = Math.round(event.loaded / (event.total ? event.total : 0) * 100);
+                        console.log(`Uploaded! ${info.uploadProgress}%`);
+                        break;
+                    case HttpEventType.Response:
+                        console.log(event.body);
+                        const stateFormData = new FormData();
+                        stateFormData.append('process_ids', JSON.stringify(event.body));
+                        stateFormData.append('process_name', String(info.file.name).split('.')[0]);
+                        stateFormData.append('conda_env', info.env);
+                        stateFormData.append('server_ip', info.ip);
+                        stateFormData.append('comment', info.comment);
+                        stateFormData.append('args', info.args);
+                        this.http.put(`${config.httpScheme}${location.hostname}:${config.port}/process`, stateFormData
+                        ).subscribe(value => {
+                            console.log(value);
+                        }, error => {
+                            alert(error.error);
+                        });
+                        break;
+                }
             }, error => {
                 alert(error.error);
-            })
-        }, error => {
-            alert(error.error);
+            }).add(() => { // 最後に呼ばれる
+            this.onCloseUpload();
         });
     }
 }
